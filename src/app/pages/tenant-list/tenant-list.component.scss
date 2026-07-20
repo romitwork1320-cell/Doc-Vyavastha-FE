@@ -1,0 +1,194 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  height: 100%;
+  min-height: 0;
+}
+
+mat-card.cardWithShadow {
+  // Makes the card grow to fill the component
+  flex-grow: 1;
+
+  // Makes the card a flex container for its content
+  display: flex;
+  flex-direction: column;
+
+  // Fixes a flexbox overflow bug
+  min-height: 0;
+
+  // This removes the extra padding from the card
+  // so the table can be truly full-width
+  padding: 0 !important;
+  overflow: visible;
+}
+
+// Default style for mat-card-content (if you add another card)
+mat-card-content {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  padding: 24px;
+  overflow: visible;
+  box-sizing: border-box;
+}
+
+// Override for the *table's* card content
+mat-card-content.table-card-content {
+  padding: 0;
+}
+
+.table-container {
+  // THIS IS THE KEY:
+  // Makes the table container grow to fill the mat-card-content
+  flex-grow: 1;
+  // Adds the vertical scrollbar *only* to this container
+  overflow-y: auto;
+  // Prevents any horizontal scroll
+  overflow-x: hidden;
+  // Fixes a flexbox overflow bug
+  min-height: 0;
+}
+
+/* --- Your component-specific styles (UNCHANGED) --- */
+.truncate-cell-content {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 250px; 
+  display: block; 
+}
+
+.mat-mdc-table {
+  .mat-mdc-cell.mat-column-companyName {
+    max-width: 250px;
+  }
+}
+
+/* --- Standard helper styles for consistency --- */
+.loading-spinner {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  min-height: 300px;
+  
+  p {
+    margin-top: 16px;
+    font-size: 16px;
+  }
+}
+
+.action-link {
+  text-align: left;
+}
+
+.mat-mdc-row {
+  cursor: pointer;
+}
+
+.mat-sort-header-container {
+  display: flex !important;
+  align-items: center;
+}
+
+/* Style for the small "Add Balance" input */
+.tiny-input {
+  .mat-mdc-form-field-flex {
+    height: 40px;
+  }
+  .mat-mdc-form-field-infix {
+    padding-top: 10px;
+    padding-bottom: 10px;
+  }
+}
+
+/* ========================================= */
+/* Dashboard Stats Cards Styling          */
+/* ========================================= */
+
+// 1. Override the global generic card style for these specific stats cards
+// We use a specific class (you might need to add class="stats-card" to HTML)
+// or we just target the color classes if you prefer.
+.cardWithShadow.bg-light-primary, 
+.cardWithShadow.bg-light-accent, 
+.cardWithShadow.bg-light-success {
+    padding: 0 !important; // Wrapper padding 0 is fine
+    min-height: 100px;
+    
+    // Ensure the content inside has proper padding
+    mat-card-content {
+        padding: 20px 24px !important; 
+        flex-direction: row; // Align icon and text side-by-side
+        align-items: center;
+    }
+}
+
+// 2. Color Utilities (If not already global)
+// Primary (Purple-ish)
+.bg-light-primary { 
+    background-color: #ECF2FF !important; 
+    color: #5D87FF;
+}
+.bg-primary { 
+    background-color: #5D87FF !important; 
+}
+
+// Accent (Cyan-ish)
+.bg-light-accent { 
+    background-color: #E8F7FF !important; 
+    color: #49BEFF;
+}
+.bg-accent { 
+    background-color: #49BEFF !important; 
+}
+
+// Success (Green-ish)
+.bg-light-success { 
+    background-color: #E6FFFA !important; 
+    color: #13DEB9;
+}
+.bg-success { 
+    background-color: #13DEB9 !important; 
+}
+
+// 3. Icon Styling
+.rounded-circle {
+    border-radius: 50% !important;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 48px;
+    height: 48px;
+    flex-shrink: 0; // Prevent icon from squishing
+}
+
+.text-white {
+    color: #ffffff !important;
+}
+
+// 4. Typography Tweaks
+h4 {
+    margin-bottom: 4px;
+    font-size: 20px;
+    line-height: 24px;
+}
+
+.f-s-12 {
+    font-size: 13px; // Slightly readable
+    opacity: 0.8;
+}
+
+/* ========================================= */
+/* Adjustments to Existing Table Styles   */
+/* ========================================= */
+
+// Ensure the table inputs don't look squashed
+.tiny-input {
+    .mat-mdc-form-field-flex {
+        background-color: #fff; // Ensure white background on gray rows
+        border-radius: 4px;
+    }
+}

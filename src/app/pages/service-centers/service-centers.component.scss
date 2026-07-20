@@ -1,0 +1,313 @@
+/* ============================================================
+   1. GLOBAL HOST & LAYOUT
+   ============================================================ */
+:host {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  height: 100%;
+  min-height: 0;
+}
+
+/* Spinner styling */
+.loading-spinner {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  min-height: 300px;
+
+  p {
+    margin-top: 16px;
+    font-size: 16px;
+  }
+}
+
+/* ============================================================
+   2. DESKTOP STYLES (Default)
+   ============================================================ */
+.action-link {
+  text-align: right; 
+  padding-right: 24px;
+}
+
+.desktop-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  height: 100%;
+}
+
+/* FIX: Hide mobile drawer content by default on desktop */
+.mobile-drawer-content {
+  display: none;
+}
+
+/* --- HOVER ACTIONS (Delete Icon) --- */
+.hover-actions {
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.2s ease-in-out;
+  transform: translateX(10px);
+  
+  display: flex;
+  align-items: center;
+  margin-right: 8px; /* Space between Trash and 3-Dots */
+}
+
+/* Show actions when hovering the ROW */
+.mat-mdc-row:hover .hover-actions {
+  opacity: 1;
+  visibility: visible;
+  transform: translateX(0);
+}
+
+.mat-mdc-row {
+  cursor: pointer;
+}
+
+.mat-sort-header-container {
+  display: flex !important;
+  align-items: center;
+}
+
+/* Utilities for Icons/Colors */
+.icon-22 { width: 22px; height: 22px; font-size: 22px; }
+.m-r-8 { margin-right: 8px; }
+.text-primary { color: #635bff !important; }
+.text-error { color: #fa896b !important; }
+
+/* ============================================================
+   FIX: ADDRESS COLUMN TRUNCATION (Desktop)
+   ============================================================ */
+.mat-mdc-table .mat-mdc-cell.mat-column-address {
+  /* Use a fixed max-width for better control on desktop, or keep percentage if preferred */
+  max-width: 300px; 
+  width: 300px; /* Ensure it tries to respect this width */
+  
+  /* Reset padding to prevent alignment issues */
+  padding-right: 24px; 
+}
+
+/* Common truncation styles for both Link and Span */
+.address-link, .address-text {
+  display: block; /* Important: Block allows width restrictions to work */
+  max-width: 100%; /* Force it to fit inside the parent cell */
+  
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+
+/* ============================================================
+   3. MOBILE & TABLET VIEW (Max-width: 960px)
+   Transforms table into a list view + Swipe Drawer
+   ============================================================ */
+@media (max-width: 960px) {
+
+  /* --- A. HIDE DESKTOP ELEMENTS --- */
+  .desktop-actions { display: none !important; }
+  
+  /* Hide the Table Header completely */
+  .mat-mdc-table .mat-mdc-header-row {
+    display: none !important;
+  }
+
+  /* Ensure Mobile Drawer is visible here */
+  .mobile-drawer-content { display: flex !important; }
+
+  /* --- B. ROW LAYOUT (Flexbox transformation) --- */
+  .mat-mdc-table .mat-mdc-row {
+    display: flex !important;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between; /* Name Left, Address Right */
+    
+    padding: 12px 16px;
+    border-bottom: 1px solid #eeeeee;
+    background: #ffffff;
+    min-height: 60px; /* Comfortable touch target height */
+    max-width: 100%;
+    
+    position: relative; /* Essential for positioning the drawer */
+    overflow: hidden;   /* Hides the drawer when closed */
+  }
+
+  /* Active/Selected State (Feedback on tap) */
+  .mat-mdc-table .mat-mdc-row:active,
+  .mat-mdc-table .mat-mdc-row:focus {
+    background-color: #f5f5f5 !important;
+  }
+
+  /* --- C. SWIPE DRAWER (The Action Column) --- */
+  /* We force this column to show, positioned absolutely off-screen */
+  .mat-mdc-table .mat-mdc-cell.mat-column-action.mobile-action-drawer {
+    display: flex !important;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    right: 0;
+    
+    /* WIDTH: 80px fits exactly one circular button comfortably */
+    width: 80px; 
+    
+    background-color: #f8f9fa;
+    border-left: 1px solid #e0e0e0;
+    z-index: 10;
+    padding: 0;
+    
+    /* Start hidden off to the right */
+    transform: translateX(100%);
+    transition: transform 0.25s cubic-bezier(0.4, 0.0, 0.2, 1);
+    box-shadow: none;
+  }
+
+  /* OPEN STATE (Triggered by [class.mobile-swipe-active]) */
+  .mobile-swipe-active .mobile-action-drawer {
+    transform: translateX(0);
+    box-shadow: -6px 0 12px rgba(0,0,0,0.08); 
+  }
+
+  /* Content Alignment inside Drawer */
+  .mobile-drawer-content {
+    width: 100%;
+    height: 100%;
+    align-items: center;
+    justify-content: center; /* Centers the single delete button */
+  }
+
+  /* Circular Button Style */
+  .mobile-action-btn {
+    background: #fff;
+    border-radius: 50%;
+    width: 42px;
+    height: 42px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.08);
+    
+    transition: transform 0.1s;
+    
+    &:active { transform: scale(0.95); }
+    
+    /* Delete Specific Color */
+    &.delete { color: #fa896b; border: 1px solid #fa896b20; } 
+  }
+
+  /* --- D. HIDE UNUSED COLUMNS --- */
+  .mat-mdc-table .mat-mdc-cell:first-of-type,
+  .mat-mdc-table .mat-mdc-cell.mat-column-\# {
+    display: none !important;
+  }
+
+  /* --- E. PRIMARY COLUMN: NAME (Left Aligned) --- */
+  .mat-mdc-table .mat-mdc-cell.mat-column-name {
+    flex: 1;              /* Take all available remaining space */
+    width: 0;             /* Force flexbox to respect text overflow */
+    min-width: 0;
+    padding: 0;
+    padding-right: 12px;
+    border-bottom: none;
+    
+    /* Typography */
+    font-size: 16px;
+    font-weight: 500;
+    color: #333;
+    text-align: left;
+    
+    /* Text Truncation (Ellipsis) */
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: block;
+  }
+  
+  /* Ensure inner p tags also truncate */
+  .mat-mdc-table .mat-mdc-cell.mat-column-name > * {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: block;
+    max-width: 100%;
+  }
+
+  /* --- F. SECONDARY COLUMN: ADDRESS (Right Aligned) --- */
+  .mat-mdc-table .mat-mdc-cell.mat-column-address {
+    flex: 0 0 auto;       /* Don't grow, don't shrink */
+    width: auto;
+    max-width: 45%;       /* Limit address to 45% of width so it doesn't crush Name */
+    
+    font-size: 14px;
+    font-weight: 400;
+    color: #666;          
+    text-align: right;
+    
+    padding: 0;
+    border-bottom: none;
+    
+    /* Note: Truncation logic is handled in the .address-link override below */
+  }
+}
+
+/* ============================================================
+   4. ADDRESS LINK STYLING
+   ============================================================ */
+
+.address-link {
+  text-decoration: none;
+  color: inherit; /* Inherit default text color */
+  transition: all 0.2s ease;
+  
+  /* FIXED: Removed 'width: fit-content' to allow truncation */
+  display: flex; /* Helps align icon */
+  align-items: center;
+
+  .map-icon {
+    color: #635bff; /* Primary Color for the pin */
+    flex-shrink: 0; /* Prevent icon from squishing */
+  }
+
+  /* Hover State */
+  &:hover {
+    color: #635bff;
+    text-decoration: underline;
+    
+    .map-icon {
+      transform: translateY(-2px); /* Little bounce effect */
+      transition: transform 0.2s;
+    }
+  }
+}
+
+/* MOBILE OVERRIDE 
+   Since your mobile view aligns address to the right, 
+   we need to adjust the flex direction of the link 
+*/
+@media (max-width: 960px) {
+  .mat-mdc-table .mat-mdc-cell.mat-column-address {
+    
+    .address-link {
+      /* Push link to the right side */
+      margin-left: auto; 
+      justify-content: flex-end;
+    }
+
+    /* Flip order on mobile: Text first, then Icon (Better for Right Align) */
+    .address-link {
+      flex-direction: row; 
+    }
+    
+    /* Ensure truncation works inside the flex container */
+    .address-text {
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 150px; /* Safety limit for mobile address width */
+      display: block;
+    }
+  }
+}

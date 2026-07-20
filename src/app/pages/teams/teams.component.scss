@@ -1,0 +1,285 @@
+/* ============================================================
+   1. GLOBAL HOST & LAYOUT
+   ============================================================ */
+:host {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  height: 100%;
+  min-height: 0;
+}
+
+/* Make the single card fill the host */
+mat-card.cardWithShadow {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  position: relative; /* For loading, etc. */
+  z-index: 1;
+}
+
+/* Card content holding the tab group */
+mat-card-content.p-0 {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  min-height: 0;
+  padding: 0;
+  border-radius: inherit; 
+}
+
+/* Make the tab group fill the card content */
+mat-tab-group {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  min-height: 0;
+}
+
+/* Tab body sizing fixes */
+::ng-deep .mat-mdc-tab-body-wrapper { flex-grow: 1; min-height: 0; }
+::ng-deep .mat-mdc-tab-body-content { height: 100%; display: flex; flex-direction: column; }
+
+/* The .p-24 div inside each <ng-template matTabContent> */
+.p-24 {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  min-height: 0;
+  padding: 24px;
+  box-sizing: border-box;
+  position: relative; 
+}
+
+/* Scrollable Table Container */
+.table-container {
+  flex-grow: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  min-height: 0;
+}
+
+.loading-spinner {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  
+  /* CHANGE: Use flex-grow instead of height: 100% */
+  flex-grow: 1; 
+  width: 100%;
+  height: auto; 
+  
+  /* Optional: Keep min-height to prevent total collapse on very short screens */
+  min-height: 300px; 
+
+  p {
+    margin-top: 16px;
+    font-size: 16px;
+  }
+}
+
+/* Tab Label Padding */
+.label-padding .mat-mdc-tab-labels {
+  padding: 0 24px; 
+  border-bottom: 1px solid var(--mdc-text-button-outline-color, rgba(0, 0, 0, 0.12)); 
+}
+
+/* ============================================================
+   2. DESKTOP STYLES (Default) & UTILITIES
+   ============================================================ */
+.action-link {
+  text-align: right; 
+  padding-right: 24px;
+}
+
+.desktop-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  height: 100%;
+}
+
+/* FIX: Hide mobile drawer content by default on desktop */
+.mobile-drawer-content { display: none; }
+
+/* --- HOVER ACTIONS (Delete Icon) --- */
+.hover-actions {
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.2s ease-in-out;
+  transform: translateX(10px);
+  
+  display: flex;
+  align-items: center;
+  gap: 12px;          
+  margin-right: 12px;
+}
+
+/* Show actions when hovering the ROW */
+.mat-mdc-row:hover .hover-actions {
+  opacity: 1;
+  visibility: visible;
+  transform: translateX(0);
+}
+
+.mat-mdc-row { cursor: pointer; }
+
+/* Cell Padding Overrides */
+.mat-mdc-table {
+  th.mat-mdc-header-cell, td.mat-mdc-cell { padding-left: 24px; padding-right: 24px; }
+  th.mat-mdc-header-cell:first-of-type, td.mat-mdc-cell:first-of-type { padding-left: 24px; }
+  th.mat-mdc-header-cell:last-of-type, td.mat-mdc-cell:last-of-type { padding-right: 24px; }
+}
+
+/* Utilities */
+.icon-22 { width: 22px; height: 22px; font-size: 22px; }
+.m-r-8 { margin-right: 8px; }
+.text-primary { color: #635bff !important; }
+.text-accent  { color: #16cdc7 !important; } /* Cyan for Permissions */
+.text-error   { color: #fa896b !important; }
+
+/* --- Permissions Tab Styles (Kept as is) --- */
+.permissions-table .permission-row { height: 60px; &:hover { background-color: #f8f9fa; } }
+.text-center { text-align: center !important; justify-content: center !important; }
+
+.permission-toggle-group {
+  display: inline-flex; align-items: center; gap: 12px; padding: 6px 12px;
+  border-radius: 8px; background-color: #fff; border: 1px solid #e0e0e0;
+  transition: all 0.2s ease;
+  &:hover { border-color: #b0b0b0; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+}
+
+.perm-icon {
+  display: flex; align-items: center; justify-content: center;
+  color: #aebac1; cursor: pointer; transition: all 0.2s ease;
+  width: 32px; height: 32px; border-radius: 6px;
+
+  &:hover:not(.disabled):not(.active) { background-color: #f5f5f5; color: #5d87ff; }
+  &.disabled { cursor: not-allowed; opacity: 0.5; }
+
+  &.active {
+    &.view { background-color: rgba(22, 205, 199, 0.1); color: #16cdc7; }
+    &.add { background-color: rgba(54, 199, 108, 0.1); color: #36c76c; }
+    &.edit { background-color: rgba(99, 91, 255, 0.1); color: #635bff; }
+    &.delete { background-color: rgba(234, 84, 85, 0.1); color: #ea5455; }
+  }
+  &.static-icon { width: 26px; height: 26px; cursor: default; }
+}
+
+.bg-light-gray { background-color: #f8f9fa; border: 1px solid #e0e0e0; }
+.gap-8 { gap: 8px; } .gap-16 { gap: 16px; }
+
+/* ============================================================
+   3. MOBILE & TABLET VIEW (Max-width: 960px)
+   ============================================================ */
+@media (max-width: 960px) {
+
+  /* --- A. HIDE DESKTOP ELEMENTS --- */
+  .desktop-actions { display: none !important; }
+  
+  /* Hide Header */
+  .mat-mdc-table .mat-mdc-header-row { display: none !important; }
+  
+  /* Show Mobile Drawer */
+  .mobile-drawer-content { display: flex !important; }
+
+  /* --- B. ROW LAYOUT (Flexbox) --- */
+  .mat-mdc-table .mat-mdc-row {
+    display: flex !important;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between; /* Username Left, Role Right */
+    
+    padding: 12px 16px;
+    border-bottom: 1px solid #eeeeee;
+    background: #ffffff;
+    min-height: 60px;
+    max-width: 100%;
+    
+    position: relative; 
+    overflow: hidden;   
+  }
+
+  .mat-mdc-table .mat-mdc-row:active,
+  .mat-mdc-table .mat-mdc-row:focus { background-color: #f5f5f5 !important; }
+
+  /* --- C. SWIPE DRAWER (Action Column) --- */
+  .mat-mdc-table .mat-mdc-cell.mat-column-action.mobile-action-drawer {
+    display: flex !important;
+    position: absolute;
+    top: 0; bottom: 0; right: 0;
+    width: 80px; /* One Button Width */
+    
+    background-color: #f8f9fa;
+    border-left: 1px solid #e0e0e0;
+    z-index: 10;
+    padding: 0;
+    
+    transform: translateX(100%);
+    transition: transform 0.25s cubic-bezier(0.4, 0.0, 0.2, 1);
+    box-shadow: none;
+  }
+
+  .mobile-swipe-active .mobile-action-drawer {
+    transform: translateX(0);
+    box-shadow: -6px 0 12px rgba(0,0,0,0.08); 
+  }
+
+  .mobile-drawer-content {
+    width: 100%; height: 100%;
+    align-items: center; justify-content: center;
+  }
+
+  /* Button Style */
+  .mobile-action-btn {
+    background: #fff; border-radius: 50%;
+    width: 42px; height: 42px;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.08);
+    transition: transform 0.1s;
+    &:active { transform: scale(0.95); }
+    &.delete { color: #fa896b; border: 1px solid #fa896b20; } 
+  }
+
+  /* --- D. HIDE UNUSED COLUMNS --- */
+  .mat-mdc-table .mat-mdc-cell:first-of-type,
+  .mat-mdc-table .mat-mdc-cell.mat-column-\# { display: none !important; }
+
+  /* --- E. PRIMARY COLUMN: USERNAME (Left) --- */
+  .mat-mdc-table .mat-mdc-cell.mat-column-username {
+    flex: 1; width: 0; min-width: 0;
+    padding: 0; padding-right: 12px; border-bottom: none;
+    font-size: 16px; font-weight: 500; color: #333; text-align: left;
+    
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: block;
+  }
+  /* Fix inner p tag */
+  .mat-mdc-table .mat-mdc-cell.mat-column-username > * {
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: block; max-width: 100%; margin: 0;
+  }
+
+  /* --- F. SECONDARY COLUMN: ROLE (Right) --- */
+  .mat-mdc-table .mat-mdc-cell.mat-column-role {
+    flex: 0 0 auto; width: auto;
+    font-size: 14px; font-weight: 400; color: #666; text-align: right;
+    white-space: nowrap; padding: 0; border-bottom: none;
+  }
+}
+
+.inline-spinner-container {
+  position: absolute;   /* Take out of flow */
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  
+  display: flex;
+  justify-content: center; /* Horizontal Center */
+  align-items: center;     /* Vertical Center */
+  
+  background-color: rgba(255, 255, 255, 0.6); /* Optional: Slight whitish overlay to dim content */
+  z-index: 10; /* Ensure it sits on top of the table */
+  border-radius: inherit;
+}

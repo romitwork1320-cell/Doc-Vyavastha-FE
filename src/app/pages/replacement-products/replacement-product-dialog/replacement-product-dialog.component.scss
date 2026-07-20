@@ -1,0 +1,62 @@
+/* --- Dialog Header Alignment Fix --- */
+.dialog-header {
+  display: flex;
+  justify-content: space-between; /* Ensures Title is Left, InvertNo is Right */
+  align-items: center;
+  padding: 16px 24px;
+
+  .title {
+    margin: 0;
+    flex-grow: 1;    /* Forces the title to take up available space */
+    text-align: left; /* Explicitly aligns text to the left */
+    font-size: 1.25rem;
+    font-weight: 400;
+    color: #111;
+  }
+
+  .invert-no {
+    flex-shrink: 0; /* Prevents the number from wrapping or shrinking */
+    margin-left: 16px;
+    font-size: 1rem;
+  }
+}
+
+/* --- Dialog Content Wrapper --- */
+.mat-dialog-content {
+  padding: 0 24px 20px;
+  max-height: 80vh; /* Safety for very tall screens */
+}
+
+/* --- Global Utility overrides for this component --- */
+/* These ensure the "text-muted" class inside the ng-content works if not global */
+.text-muted {
+  color: #6c757d !important;
+}
+
+/* Header Colors */
+.bg-light-primary { background-color: #ecf2ff; }
+.text-primary { color: #5d87ff; }
+
+.bg-light-error { background-color: #fdeded; }
+.text-error { color: #fa5a5a; }
+
+.bg-light-warning { background-color: #fef5e5; }
+.text-warning { color: #ffae1f; }
+
+/* Dialog Header Layout */
+.dialog-header {
+  border-bottom: 1px solid rgba(0,0,0,0.08); /* Adds divider below header */
+}
+
+.title {
+  font-size: 1.1rem;
+}
+
+/* Close Button Hover */
+.close-btn:hover {
+  background-color: rgba(0,0,0,0.04);
+}
+
+::ng-deep .mat-mdc-text-field-wrapper {
+    will-change: unset !important;
+}

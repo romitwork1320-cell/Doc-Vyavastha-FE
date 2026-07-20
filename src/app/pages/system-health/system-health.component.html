@@ -1,0 +1,129 @@
+<div class="row">
+  
+  <div class="col-12 m-b-24">
+    <mat-card class="cardWithShadow bg-light-primary overflow-hidden">
+      <mat-card-content class="p-24">
+        <div class="d-flex align-items-center justify-content-between">
+          
+          <div>
+            <h4 class="mat-h4 m-b-8">System Status</h4>
+            <div class="d-flex align-items-center gap-8">
+              @if(isLoading) {
+                <mat-spinner diameter="20"></mat-spinner>
+                <span class="f-s-14">Checking...</span>
+              } @else {
+                <i-tabler name="heart-rate-monitor" class="icon-24" 
+                  [ngClass]="getStatusColor(healthData?.status || 'Unhealthy')"></i-tabler>
+                
+                <span class="f-s-24 f-w-600" [ngClass]="getStatusColor(healthData?.status || 'Unhealthy')">
+                  {{ healthData?.status || 'Unknown' }}
+                </span>
+              }
+            </div>
+            <span class="f-s-12 text-muted d-block m-t-8">
+              Last checked: {{ lastChecked | date:'mediumTime' }}
+            </span>
+          </div>
+          
+          <button mat-fab color="primary" (click)="refreshHealth()" matTooltip="Refresh Status" [disabled]="isLoading">
+            <i-tabler name="refresh" class="icon-24" [class.spin]="isLoading"></i-tabler>
+          </button>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+
+  @if (healthData && healthData.results) {
+    @for (check of healthData.results; track check.key) {
+      <div class="col-md-6 col-lg-4 m-b-24"> 
+        <mat-card class="cardWithShadow">
+          <mat-card-content class="p-24">
+            
+            <div class="d-flex align-items-center gap-12 m-b-16">
+              <div class="round-40 d-flex align-items-center justify-content-center"
+                   [ngClass]="check.status === 'Healthy' ? 'bg-light-success text-success' : 'bg-light-error text-error'">
+                <i-tabler [name]="getIcon(check.key)" class="icon-24"></i-tabler>
+              </div>
+              <div class="w-100 overflow-hidden"> 
+                <h5 class="f-s-16 f-w-600 m-0 text-truncate" [matTooltip]="check.key">
+                    {{ check.key }}
+                </h5>
+                <span class="f-s-12 text-muted text-truncate d-block">{{ check.description }}</span>
+              </div>
+            </div>
+
+            @if (check.data) {
+              <div class="d-flex align-items-center gap-12 m-b-16 bg-light-primary rounded p-8">
+                
+                <div class="d-flex align-items-center gap-8" matTooltip="Physical Database Name">
+                        <i-tabler name="server" class="icon-18 text-secondary"></i-tabler>
+                        <span class="f-s-13 f-w-600">{{ check.data.dbName }}</span>
+                    </div>
+                
+                <div class="d-flex align-items-center gap-8" matTooltip="Database Size">
+                    <i-tabler name="database" class="icon-18 text-primary"></i-tabler>
+                    <span class="f-s-13 f-w-600">{{ check.data.sizeMb | number:'1.0-2' }} MB</span>
+                </div>
+            
+                <div style="width: 1px; height: 16px; background: #cddbec;"></div>
+
+                <div class="d-flex align-items-center gap-8" 
+                    [matTooltip]="check.data.lastBackup ? ('Last Backup: ' + (check.data.lastBackup | date:'medium')) : 'No Backup Found'">
+                    
+                    @if(check.data.lastBackup) {
+                        <i-tabler name="shield-check" class="icon-18 text-success"></i-tabler>
+                        <span class="f-s-13 f-w-600">{{ check.data.lastBackup | date:'dd MMM' }}</span>
+                    } @else {
+                        <i-tabler name="alert-triangle" class="icon-18 text-error"></i-tabler>
+                        <span class="f-s-13 f-w-600 text-error">No Backup</span>
+                    }
+                </div>
+            
+                <div class="d-flex align-items-center gap-8" matTooltip="Active Connections">
+                    <i-tabler name="plug-connected" class="icon-18 text-warning"></i-tabler>
+                    <span class="f-s-13 f-w-600">{{ check.data.connections }} Conn.</span>
+                </div>
+              </div>
+            }
+
+            <div class="d-flex justify-content-between align-items-end">
+              <div>
+                <span class="f-s-12 text-muted d-block m-b-4">Status</span>
+                <span class="status-badge" 
+                      [ngClass]="check.status === 'Healthy' ? 'healthy' : 'unhealthy'">
+                  {{ check.status }}
+                </span>
+              </div>
+              @if (check.data && check.data.dbName) {
+                 <button mat-icon-button 
+                         color="primary" 
+                         matTooltip="Download Backup (.bak)"
+                         (click)="downloadDbBackup(check)"
+                         [disabled]="isDownloading[check.key]">
+                    @if (isDownloading[check.key]) {
+                        <mat-spinner diameter="18"></mat-spinner>
+                    } @else {
+                        <i-tabler name="download" class="icon-20"></i-tabler>
+                    }
+                 </button>
+              }
+              <div class="text-right">
+                <span class="f-s-12 text-muted d-block m-b-4">Latency</span>
+                <span class="f-w-600 f-s-14" [ngClass]="getDurationColor(check.duration)">
+                  {{ check.duration | number:'1.0-2' }} ms
+                </span>
+              </div>
+            </div>
+
+          </mat-card-content>
+        </mat-card>
+      </div>
+    }
+  }
+
+  @if (!isLoading && (!healthData || !healthData.results || healthData.results.length === 0)) {
+    <div class="col-12 text-center p-24">
+      <p class="text-muted">No health checks configured.</p>
+    </div>
+  }
+</div>

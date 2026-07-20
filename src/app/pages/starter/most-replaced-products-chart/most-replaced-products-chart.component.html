@@ -1,0 +1,49 @@
+<mat-card class="cardWithShadow border-0 overflow-hidden h-100">
+  <mat-card-content class="p-24 h-100 d-flex flex-column">
+    
+    <div class="d-flex justify-content-between align-items-start m-b-24">
+      <div>
+        <h5 class="mat-subtitle-1 f-s-18 f-w-600 m-b-4 text-dark">Most Replaced Products</h5>
+        <span class="f-s-13 text-muted d-block">Top 10 Products by Frequency</span>
+      </div>
+      
+      <div class="icon-48 rounded-circle bg-light-accent text-accent d-flex align-items-center justify-content-center">
+         <i-tabler name="package" class="icon-24"></i-tabler>
+      </div>
+    </div>
+    
+    <div id="chart" class="flex-grow-1 w-100 d-block" style="min-height: 350px; position: relative;">
+      
+      @if (isChartVisible) {
+        
+        @if (hasData) {
+          <apx-chart
+            class="w-100 d-block"
+            [series]="chartOptions.series"
+            [chart]="chartOptions.chart"
+            [colors]="chartOptions.colors"
+            [plotOptions]="chartOptions.plotOptions"
+            [yaxis]="chartOptions.yaxis"
+            [xaxis]="chartOptions.xaxis"
+            [grid]="chartOptions.grid"
+            [tooltip]="chartOptions.tooltip"
+            [dataLabels]="chartOptions.dataLabels"
+            [responsive]="chartOptions.responsive"
+          ></apx-chart>
+        } @else {
+          <div class="d-flex flex-column justify-content-center align-items-center text-muted w-100 h-100 position-absolute" style="top: 0; left: 0;">
+            <i-tabler name="chart-bar-off" class="icon-48 m-b-8 opacity-50"></i-tabler>
+            <span class="f-s-14">No replacement data available yet.</span>
+          </div>
+        }
+
+      } @else {
+        <div class="d-flex justify-content-center align-items-center w-100 h-100 position-absolute" style="top: 0; left: 0;">
+           <mat-spinner diameter="40"></mat-spinner>
+        </div>
+      }
+
+    </div>
+
+  </mat-card-content>
+</mat-card>

@@ -1,0 +1,170 @@
+<mat-card class="cardWithShadow common-card">
+  <mat-card-content class="table-card-content common-content">
+
+    <div class="row justify-content-between m-b-16">
+      <div class="col-lg-4">
+        <mat-form-field appearance="outline" class="w-100 hide-hint">
+          <input matInput placeholder="Search Requests" [(ngModel)]="filterValue" (keyup)="applyFilter($event)" />
+          <mat-icon matSuffix>
+            <i-tabler name="search" class="icon-20"></i-tabler>
+          </mat-icon>
+        </mat-form-field>
+      </div>
+
+      <div class="col-lg-4 d-flex align-items-center justify-content-end mt-xs-12 mt-lg-0 gap-8">
+        <button mat-stroked-button color="primary" (click)="copySupportLink()">
+            <i-tabler name="share" class="icon-18 m-r-4"></i-tabler>
+            Share Link
+        </button>
+        <button mat-flat-button color="accent" (click)="openQrCodeDialog()">
+            <i-tabler name="qrcode" class="icon-18 m-r-4"></i-tabler>
+            QR Code
+        </button>
+      </div>
+    </div>
+    
+    @if (isLoading && !serviceRequests.length) {
+      <div class="loading-spinner">
+        <mat-spinner diameter="50"></mat-spinner>
+        <p>Loading requests...</p>
+      </div>
+    } @else {
+      <div class="table-container common-table-container" #tableContainer (scroll)="onScroll($event)">
+        
+        <table mat-table [dataSource]="dataSource" class="w-100" matSort>
+
+          <ng-container matColumnDef="#">
+            <th mat-header-cell *matHeaderCellDef class="f-w-600 mobile-hide">#</th>
+            <td mat-cell *matCellDef="let element; let i = index;" class="mobile-hide">{{ i + 1 }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="RequestDate">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header="RequestDate" class="f-w-600 mobile-hide">Date</th>
+            <td mat-cell *matCellDef="let element" class="date-cell mobile-hide">
+              {{ element.createdOn | date:'dd-MM-yyyy' }}
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="TicketCode">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header="TicketCode" class="f-w-600">Ticket ID</th>
+            <td mat-cell *matCellDef="let element" class="mobile-main-col">
+              <span class="desktop-only">{{element.ticketCode}}</span>
+              
+              <div class="mobile-stack mobile-only">
+                <span class="f-w-600 text-dark truncate-text">{{element.guestName}}</span>
+                <div class="d-flex align-items-center gap-8 mt-1 text-muted">
+                  <span class="f-w-500">{{element.ticketCode}}</span>
+                  <span>|</span>
+                  <span>{{ element.createdOn | date:'dd-MM-yyyy' }}</span>
+                </div>
+                <div class="mt-1">
+                   <span class="f-s-12 bg-light rounded p-x-8">{{element.category}}</span>
+                </div>
+              </div>
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="GuestName">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header="GuestName" class="f-w-600 mobile-hide">Guest Name</th>
+            <td mat-cell *matCellDef="let element" class="mobile-hide">
+              <div class="d-flex flex-column">
+                <span class="f-w-600 truncate-cell-content" [matTooltip]="element.guestName">{{element.guestName}}</span>
+                <span class="text-muted small">{{element.guestPhone}}</span>
+              </div>
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="Category">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header="Category" class="f-w-600 mobile-hide">Category</th>
+            <td mat-cell *matCellDef="let element" class="mobile-hide">
+              {{element.category}}
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="Status">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header="Status" class="f-w-600">Status</th>
+            <td mat-cell *matCellDef="let element" class="status-cell mobile-right-col">
+              <span class="status-badge" [ngClass]="getStatusClasses(element.status)">
+                {{ element.status }}
+              </span>
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="action">
+            <th mat-header-cell *matHeaderCellDef class="f-w-600 text-right"></th>
+            <td mat-cell *matCellDef="let element" class="action-link mobile-action-drawer">
+              
+              <div class="desktop-actions">
+                
+                <span *ngIf="element.isConverted" class="text-muted small m-r-8 badge-light">
+                   Ref: {{element.linkedReplacementInvertNo}}
+                </span>
+
+                <div class="hover-actions">
+                  <a *ngIf="element.status === 'Pending'" 
+                     (click)="$event.stopPropagation(); openConvertToReplacementDialog(element)" 
+                     class="cursor-pointer text-primary" 
+                     matTooltip="Convert to Replacement">
+                     <i-tabler name="replace" class="icon-22"></i-tabler>
+                  </a>
+
+                  <a *ngIf="element.status === 'Pending'" 
+                     (click)="$event.stopPropagation(); markResolved(element)" 
+                     class="cursor-pointer text-success" 
+                     matTooltip="Mark Resolved">
+                     <i-tabler name="check" class="icon-22"></i-tabler>
+                  </a>
+                </div>
+
+                <button mat-icon-button [matMenuTriggerFor]="actionMenu" (click)="$event.stopPropagation()">
+                  <i-tabler name="dots-vertical" class="icon-18"></i-tabler>
+                </button>
+
+                <mat-menu #actionMenu="matMenu" xPosition="before">
+                   <button mat-menu-item (click)="openConvertToReplacementDialog(element)" [disabled]="element.status !== 'Pending'">
+                      <i-tabler name="replace" class="icon-18 m-r-8 text-primary"></i-tabler>
+                      <span>Convert</span>
+                   </button>
+                   <button mat-menu-item (click)="markResolved(element)" [disabled]="element.status !== 'Pending'">
+                      <i-tabler name="circle-check" class="icon-18 m-r-8 text-success"></i-tabler>
+                      <span>Resolve</span>
+                   </button>
+                </mat-menu>
+
+              </div>
+
+              <div class="mobile-drawer-content">
+                <a *ngIf="element.status === 'Pending'" (click)="openConvertToReplacementDialog(element)" class="mobile-action-btn primary">
+                   <i-tabler name="replace" class="icon-18"></i-tabler>
+                </a>
+                <a *ngIf="element.status === 'Pending'" (click)="markResolved(element)" class="mobile-action-btn success">
+                   <i-tabler name="check" class="icon-18"></i-tabler>
+                </a>
+              </div>
+
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns;" 
+              class="mobile-swipe-row cursor-pointer"
+              [class.mobile-swipe-active]="swipedRequestId === row.id"
+              (click)="viewDetails(row)"
+              appSwipeable
+              (swipeLeft)="onSwipe(row.id, 'open')"
+              (swipeRight)="onSwipe(row.id, 'close')">
+          </tr>
+
+          <tr class="mat-row" *matNoDataRow>
+            <td class="mat-cell text-center" [attr.colspan]="displayedColumns.length">
+              <div class="p-24 d-flex flex-column align-items-center justify-content-center">
+                 <p class="m-0">No requests found</p>
+              </div>
+            </td>
+          </tr>
+
+        </table>
+      </div>
+    }
+  </mat-card-content>
+</mat-card>

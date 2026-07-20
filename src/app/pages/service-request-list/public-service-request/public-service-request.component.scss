@@ -1,0 +1,262 @@
+/* --- 1. Host Config --- */
+/* Ensure the component itself behaves like a block */
+:host {
+  display: block;
+}
+
+/* --- 2. Background & Layout (Fixed Scrolling) --- */
+.public-wrapper {
+  /* ✅ FIXED: Use 'height' instead of 'min-height'. 
+     This constrains the box to the screen size so it can scroll internally. */
+  height: 100vh; 
+  width: 100%;
+  
+  display: flex;
+  flex-direction: column;
+  
+  /* ✅ ENABLE SCROLLING: This forces the scrollbar on the wrapper */
+  overflow-y: auto; 
+  overflow-x: hidden;
+  
+  padding: 40px 16px; 
+  box-sizing: border-box;
+  
+  background-color: #f4f7fa;
+  background-image: radial-gradient(#dfe3e8 1.5px, transparent 1.5px);
+  background-size: 24px 24px;
+}
+
+.public-container {
+  width: 100%;
+  max-width: 460px;
+  
+  /* ✅ MARGIN AUTO: Centers vertically/horizontally when space allows, 
+     but scrolls safely when content is tall. */
+  margin: auto; 
+  
+  /* ✅ CRITICAL: Prevents the card from shrinking/squashing on small screens */
+  flex-shrink: 0; 
+}
+
+/* --- Header Branding --- */
+.logo-circle {
+  width: 64px;
+  height: 64px;
+  background: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+}
+
+/* --- Company Title Styling --- */
+.company-title {
+  /* Use clamp for responsive sizing. 
+     Min: 18px, Ideal: 4vw, Max: 22px */
+  font-size: clamp(18px, 4vw, 22px); 
+  
+  font-weight: 800;
+  color: #2a3547;
+  letter-spacing: -0.3px;
+  margin: 12px 0 8px 0;
+  
+  /* Text Wrapping Logic */
+  line-height: 1.4; 
+  padding: 0 12px;
+  word-wrap: break-word; /* Wraps long words */
+  text-transform: uppercase; 
+}
+
+/* Sub-header Adjustment */
+.f-s-20 {
+  font-size: 16px !important; /* Smaller if Company Name exists */
+  color: #5a6a85 !important;
+  font-weight: 600 !important;
+  margin-top: 4px;
+}
+
+/* --- Card Tweaks --- */
+.cardWithShadow {
+  border-radius: 24px !important;
+  border: none !important;
+}
+.shadow-xl {
+  box-shadow: 0 20px 40px rgba(0,0,0,0.08) !important;
+}
+.overflow-visible {
+  overflow: visible !important;
+}
+
+/* --- Category Grid --- */
+.category-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+
+.category-card {
+  position: relative;
+  background: #f8f9fa;
+  border: 2px solid transparent;
+  border-radius: 16px;
+  padding: 16px 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.25, 0.8, 0.25, 1);
+  
+  .icon-box {
+    width: 40px; height: 40px;
+    background: #fff;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    margin-bottom: 8px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+    transition: transform 0.2s ease;
+    
+    .cat-icon { color: #5a6a85; width: 22px; height: 22px; }
+  }
+
+  .cat-label {
+    font-size: 11px;
+    font-weight: 600;
+    color: #5a6a85;
+    text-align: center;
+    line-height: 1.2;
+  }
+
+  &:hover {
+    background: #fff;
+    transform: translateY(-3px);
+    box-shadow: 0 8px 16px rgba(0,0,0,0.06);
+    .icon-box { transform: scale(1.1); }
+    .cat-label { color: #2a3547; }
+  }
+
+  &.selected {
+    background: #eff2ff;
+    border-color: #635bff;
+    
+    .icon-box {
+      background: #635bff;
+      .cat-icon { color: #fff; }
+    }
+    .cat-label { color: #635bff; }
+  }
+
+  .check-badge {
+    position: absolute;
+    top: -6px; right: -6px;
+    width: 20px; height: 20px;
+    background: #635bff;
+    color: white;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    border: 2px solid white;
+    animation: popIn 0.3s ease;
+  }
+}
+
+/* --- Form Expansion Animation --- */
+.form-details {
+  max-height: 0;
+  opacity: 0;
+  overflow: hidden;
+  transition: max-height 0.5s ease-in-out, opacity 0.4s ease-in-out;
+}
+
+.form-details.expanded {
+  /* Increased from 500px to 800px to ensure long forms fit */
+  max-height: 800px; 
+  opacity: 1;
+}
+
+/* --- Form Elements --- */
+.form-header {
+  display: flex; align-items: center; gap: 12px;
+  .divider { flex: 1; height: 1px; background: #e0e6ed; }
+}
+
+.custom-field {
+  ::ng-deep .mat-mdc-form-field-flex {
+    border-radius: 12px !important;
+    background-color: #fff !important;
+  }
+  ::ng-deep .mdc-notched-outline__leading,
+  ::ng-deep .mdc-notched-outline__notch,
+  ::ng-deep .mdc-notched-outline__trailing {
+    border-color: #dfe5ef !important;
+  }
+}
+
+.error-banner {
+  background: #fdeded;
+  color: #d32f2f;
+  padding: 10px;
+  border-radius: 8px;
+  font-size: 13px;
+  display: flex; align-items: center; justify-content: center;
+}
+
+/* --- Buttons & Badges --- */
+.rounded-pill { border-radius: 50px !important; }
+.py-24 { height: 48px; }
+.shadow-btn { box-shadow: 0 4px 14px rgba(99, 91, 255, 0.3) !important; }
+
+.ticket-box {
+  background: #f4f7fb;
+  border: 2px dashed #d0dbe7;
+  border-radius: 12px;
+  padding: 16px;
+}
+
+.success-ring {
+  width: 80px; height: 80px;
+  background: #ecfdf3;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  margin: 0 auto;
+}
+
+.badge-light {
+  background: rgba(255,255,255,0.6);
+  padding: 6px 16px;
+  border-radius: 20px;
+  font-size: 12px;
+  color: #6c757d;
+  font-weight: 500;
+}
+
+/* --- Animations --- */
+@keyframes popIn {
+  0% { transform: scale(0); }
+  70% { transform: scale(1.2); }
+  100% { transform: scale(1); }
+}
+
+.fade-in-down { animation: fadeInDown 0.6s ease; }
+@keyframes fadeInDown {
+  from { opacity: 0; transform: translateY(-20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.scale-in-center { animation: scaleIn 0.4s ease; }
+@keyframes scaleIn {
+  from { opacity: 0; transform: scale(0.9); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+/* Responsive */
+@media (max-width: 400px) {
+  .category-grid { grid-template-columns: repeat(2, 1fr); }
+  .public-wrapper { padding: 12px; }
+  .cardWithShadow { border-radius: 16px !important; }
+  
+  .company-title {
+    font-size: 18px; 
+  }
+}

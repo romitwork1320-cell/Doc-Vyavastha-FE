@@ -1,0 +1,23 @@
+<div class="d-flex align-items-center" 
+     [ngClass]="(settings.getOptions().sidenavCollapsed && !showToggle) ? 'justify-content-center' : 'justify-content-between'"
+     style="min-height: 64px; padding: 0 16px;">
+
+    @if(!settings.getOptions().sidenavCollapsed || showToggle) {
+        <app-branding></app-branding>
+    }
+
+    @if(settings.getOptions().sidenavCollapsed && !showToggle) {
+        <a [routerLink]="['/dashboard']" class="d-flex align-items-center justify-content-center">
+            <img src="assets/images/logos/logo-icon.svg" 
+                 alt="logo" 
+                 style="width: 40px; height: 40px; object-fit: contain;">
+        </a>
+    }
+
+    @if(showToggle) {
+        <a href="javascript:void(0)" (click)="toggleMobileNav.emit()"
+           class="d-flex justify-content-center ng-star-inserted icon-40 align-items-center mat-body-1 text-inherit">
+            <i-tabler name="x" class="icon-20 d-flex"></i-tabler>
+        </a>
+    }
+</div>

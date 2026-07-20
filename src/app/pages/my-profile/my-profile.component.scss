@@ -1,0 +1,21 @@
+/* 1. BUTTON FOOTER: Prevent buttons from shrinking or moving */
+.text-right.p-24 {
+  background: #fff;
+  border-top: 1px solid rgba(0,0,0,0.05); /* Optional separator */
+}
+
+/* 2. IMAGE STYLES */
+.rounded-circle {
+  border-radius: 50% !important;
+}
+
+.company-logo-preview {
+  width: 120px;
+  height: 120px;
+  object-fit: contain;
+  border: 1px solid #eee;
+  border-radius: 8px;
+  background-color: #f0f0f0; 
+  color: transparent; 
+  text-indent: -10000px;
+}

@@ -1,0 +1,73 @@
+<div class="leads-page common-card">
+  <!-- Stats & Search Row -->
+  <div class="stat-row">
+    <div class="stat-chip" [class.active]="filterStatus === ''" (click)="filterStatus = ''">
+      All <span class="chip-count">{{ statuses().length }}</span>
+    </div>
+    <div class="stat-chip" [class.active]="filterStatus === 'Active'" (click)="filterStatus = 'Active'">
+      Active <span class="chip-count">{{ count('Active') }}</span>
+    </div>
+    <div class="stat-chip" [class.active]="filterStatus === 'Inactive'" (click)="filterStatus = 'Inactive'">
+      Inactive <span class="chip-count">{{ count('Inactive') }}</span>
+    </div>
+    <div style="flex:1"></div>
+    <div class="search-box">
+      <i-tabler name="search" style="width:16px;height:16px;color:#94a3b8"></i-tabler>
+      <input [(ngModel)]="searchQuery" placeholder="Search statuses..." class="search-input"/>
+    </div>
+  </div>
+
+  <!-- Table Card -->
+  <div class="table-card common-content">
+    <div class="common-table-container">
+      <table class="leads-table">
+        <thead>
+          <tr>
+            <th>Order</th>
+            <th>Name</th>
+            <th>Description</th>
+            <th>Status</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          @if (isLoading) {
+            <tr><td colspan="6" class="text-center p-24">Loading...</td></tr>
+          } @else {
+            <tr *ngFor="let stat of filteredStatuses" class="table-row">
+              <td>
+                <div style="font-weight: 600; font-size: 14px; color: #64748b;">{{ stat.displayOrder }}</div>
+              </td>
+              <td>
+                <div style="font-weight: 600; font-size: 14px; color: #0f172a;">{{ stat.name }}</div>
+              </td>
+              <td>
+                <div style="color: #64748b; font-size: 13px;">{{ stat.description || '--' }}</div>
+              </td>
+              <td>
+                <span class="badge" [ngClass]="'status-' + (stat.status ? stat.status.toLowerCase() : 'inactive')">{{ stat.status || 'Inactive' }}</span>
+              </td>
+              <td>
+                <div class="action-btns">
+                  <button class="icon-btn" title="Edit" (click)="openDialog(stat)" *ngIf="authService.hasPermission('/application-statuses', 'CanEdit')">
+                    <i-tabler name="pencil" style="width:15px;height:15px"></i-tabler>
+                  </button>
+                  <button class="icon-btn" title="Delete" (click)="deleteItem(stat.id)" *ngIf="authService.hasPermission('/application-statuses', 'CanDelete')">
+                    <i-tabler name="trash" class="text-red" style="width:15px;height:15px"></i-tabler>
+                  </button>
+                </div>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+      
+      @if (!isLoading && filteredStatuses.length === 0) {
+        <div class="empty-state">
+          <i-tabler name="mood-empty" style="width:40px;height:40px;color:#cbd5e1"></i-tabler>
+          <p>No statuses found.</p>
+        </div>
+      }
+    </div>
+  </div>
+</div>

@@ -1,0 +1,161 @@
+<div class="item-dialog-container" [formGroup]="itemForm">
+
+  <!-- ─── Header ─── -->
+  <div class="item-dialog-header">
+    <div class="header-left">
+      <div class="header-icon-wrap">
+        <i-tabler name="package" class="icon-20"></i-tabler>
+      </div>
+      <div>
+        <h2 class="header-title">{{ data?.item ? 'Edit Product' : 'Add Product' }}</h2>
+        <p class="header-sub">{{ data?.item ? 'Update the product details below' : 'Search and fill product details' }}</p>
+      </div>
+    </div>
+    <button mat-icon-button mat-dialog-close tabindex="-1" class="close-btn">
+      <i-tabler name="x" class="icon-18"></i-tabler>
+    </button>
+  </div>
+
+  <!-- ─── Form Content ─── -->
+  <mat-dialog-content class="item-dialog-content">
+
+    <!-- 1. Product Search -->
+    <div class="field-group">
+      <mat-form-field appearance="outline" class="w-100" subscriptSizing="dynamic">
+        <mat-label>Product / Item Name</mat-label>
+        <input matInput type="text" formControlName="itemName"
+               [matAutocomplete]="autoProduct"
+               placeholder="Search or add product…">
+        <div matSuffix class="d-flex align-items-center p-r-8">
+          <i-tabler name="package" class="icon-18 text-muted"></i-tabler>
+        </div>
+        <mat-autocomplete #autoProduct="matAutocomplete"
+                          [displayWith]="displayProductName"
+                          (optionSelected)="onProductSelected($event)">
+          <ng-container *ngFor="let p of filteredProducts | async">
+            <mat-option *ngIf="p.id === -1" [value]="p" class="add-new-option">
+              <i-tabler name="file-import" class="icon-18 m-r-8"></i-tabler>
+              <span>{{ p.name }}</span>
+            </mat-option>
+            <mat-option *ngIf="p.id !== -1" [value]="p">
+              <div class="d-flex flex-column">
+                <span class="f-w-500">{{ p.name }}</span>
+                <span class="f-s-12 text-muted" *ngIf="p.sellingPrice">₹{{ p.sellingPrice }}</span>
+              </div>
+            </mat-option>
+          </ng-container>
+        </mat-autocomplete>
+      </mat-form-field>
+      <div class="stock-info">Stock: N/A</div>
+    </div>
+
+    <!-- 2. Tax Inclusion Toggle (Pill) -->
+    <div class="tax-inclusion-section">
+      <span class="section-label">Rate Type</span>
+      <mat-button-toggle-group formControlName="rateIncludesTax" class="tax-pill-toggle">
+        <mat-button-toggle [value]="false">Without Tax</mat-button-toggle>
+        <mat-button-toggle [value]="true">With Tax</mat-button-toggle>
+      </mat-button-toggle-group>
+    </div>
+
+    <!-- 3. Qty × Rate Calculation Row -->
+    <div class="calc-section">
+
+      <!-- Qty & Rate fields -->
+      <div class="qty-rate-row">
+        <mat-form-field appearance="outline" subscriptSizing="dynamic" class="qty-field">
+          <mat-label>Quantity</mat-label>
+          <input type="number" matInput formControlName="qty" min="1">
+        </mat-form-field>
+
+        <div class="op-badge">&times;</div>
+
+        <mat-form-field appearance="outline" subscriptSizing="dynamic" class="rate-field">
+          <mat-label>Rate (Price)</mat-label>
+          <span matPrefix class="rupee-prefix">₹</span>
+          <input type="number" matInput formControlName="rateInput" min="0" class="no-spinner">
+        </mat-form-field>
+
+        <div class="op-badge">=</div>
+
+        <div class="result-chip">
+          <span class="result-label">Gross</span>
+          <span class="result-value">₹&nbsp;{{ (itemForm.get('qty')?.value * itemForm.get('rateInput')?.value) | number:'1.2-2' }}</span>
+        </div>
+      </div>
+
+      <!-- Discount Row -->
+      <div class="discount-row">
+        <mat-form-field appearance="outline" subscriptSizing="dynamic" class="discount-field">
+          <mat-label>Discount per Unit</mat-label>
+          <input type="number" matInput formControlName="discountValue" min="0">
+        </mat-form-field>
+
+        <mat-button-toggle-group formControlName="discountType" class="unit-toggle">
+          <mat-button-toggle value="%">%</mat-button-toggle>
+          <mat-button-toggle value="Fixed">₹</mat-button-toggle>
+        </mat-button-toggle-group>
+
+        <div class="op-badge">=</div>
+
+        <div class="result-chip discount-chip">
+          <span class="result-label">Discount</span>
+          <span class="result-value discount-value">-₹&nbsp;{{ getDiscountAmount() | number:'1.2-2' }}</span>
+        </div>
+      </div>
+
+      <!-- Net Total before Tax -->
+      <div class="net-bar">
+        <span class="net-label">Net Amount (before tax)</span>
+        <span class="net-value">₹&nbsp;{{ getBaseTotal() | number:'1.2-2' }}</span>
+      </div>
+
+    </div><!-- /calc-section -->
+
+    <!-- 4. Tax Category -->
+    <div class="tax-row">
+      <mat-form-field appearance="outline" subscriptSizing="dynamic" class="tax-field">
+        <mat-label>Tax Category</mat-label>
+        <mat-select formControlName="taxPercent">
+          <mat-option *ngFor="let tax of taxCategories" [value]="tax.value">
+            {{ tax.label }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <div class="tax-amount-box">
+        <span class="tax-amount-label">Tax Amount</span>
+        <span class="tax-amount-value">₹&nbsp;{{ taxAmount | number:'1.2-2' }}</span>
+      </div>
+    </div>
+
+    <!-- 5. Line Total -->
+    <div class="line-total-card">
+      <div class="line-total-left">
+        <i-tabler name="receipt" class="icon-16"></i-tabler>
+        <span>Line Total</span>
+      </div>
+      <span class="line-total-value">₹&nbsp;{{ itemForm.get('totalAmount')?.value | number:'1.2-2' }}</span>
+    </div>
+
+    <!-- 6. Description (at the bottom) -->
+    <div class="field-group">
+      <mat-form-field appearance="outline" class="w-100" subscriptSizing="dynamic">
+        <mat-label>Description / Notes (Optional)</mat-label>
+        <textarea matInput formControlName="description" rows="2"
+                  placeholder="Internal notes, SKU, specs…"></textarea>
+      </mat-form-field>
+    </div>
+
+  </mat-dialog-content>
+
+  <!-- Footer — outside mat-dialog-content so it's always visible -->
+  <div class="item-dialog-footer">
+    <button mat-button mat-dialog-close class="cancel-btn">Cancel</button>
+    <button mat-flat-button color="primary" (click)="save()" [disabled]="itemForm.invalid" class="save-btn">
+      <i-tabler [name]="data?.item ? 'check' : 'plus'" class="icon-16"></i-tabler>
+      {{ data?.item ? 'Update Product' : 'Add Product' }}
+    </button>
+  </div>
+
+</div>

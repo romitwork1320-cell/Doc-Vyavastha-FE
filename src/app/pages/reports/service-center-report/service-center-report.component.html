@@ -1,0 +1,417 @@
+<mat-card class="cardWithShadow common-card">
+  <mat-card-content class="p-0 common-content">
+    
+    <div class="d-flex justify-content-between align-items-center filter-row">
+      <mat-tab-group class="theme-tab" mat-stretch-tabs="false" mat-align-tabs="start" (selectedTabChange)="onTabChange($event)">
+        @for (status of statuses; track status.name) {
+          <mat-tab>
+            <ng-template mat-tab-label>
+              <div class="d-flex align-items-center gap-2">
+                <i-tabler [name]="status.icon" class="icon-20"></i-tabler>
+                <span>{{ status.name }}</span>
+              </div>
+            </ng-template>
+          </mat-tab>
+        }
+      </mat-tab-group>
+      <div style="width: 300px;">
+        <mat-form-field appearance="outline" class="w-100 hide-hint">
+          <mat-label>Filter by Date Range</mat-label>
+          <mat-date-range-input [formGroup]="range" [rangePicker]="picker">
+            <input matStartDate formControlName="start" placeholder="Start date" #dateRangeStart />
+            <input matEndDate formControlName="end" placeholder="End date" (dateChange)="onDateChange()" />
+          </mat-date-range-input>
+          <mat-datepicker-toggle matIconSuffix [for]="picker" *ngIf="!range.value.start"></mat-datepicker-toggle>
+          <button mat-icon-button matSuffix *ngIf="range.value.start" (click)="clearDateRange()">
+            <i-tabler name="x" class="icon-20"></i-tabler>
+          </button>
+          <mat-date-range-picker #picker></mat-date-range-picker>
+        </mat-form-field>
+      </div>
+    </div>
+
+    @if (isLoading && !summaryReportData.length && !pendingReportData.length && !inProgressReportData.length && !readyReportData.length && !completedReportData.length) {
+      <div class="loading-spinner d-flex flex-column align-items-center justify-content-center p-y-48">
+        <mat-spinner diameter="50"></mat-spinner>
+        <p class="m-t-16  ">Loading report...</p>
+      </div>
+    } @else {
+      
+      @if (selectedStatus === 'All') {
+      <div class="table-container common-table-container" [@tabSlide]="selectedTabIndex" (scroll)="onScroll($event)">
+        <table mat-table [dataSource]="summaryDataSource" class="w-100" matSort>
+          
+          <ng-container matColumnDef="select">
+            <th mat-header-cell *matHeaderCellDef class="mobile-select-col">
+              <mat-checkbox (change)="$event ? toggleAllRows() : null" [checked]="selection.hasValue() && isAllSelected()" [indeterminate]="selection.hasValue() && !isAllSelected()"></mat-checkbox>
+            </th>
+            <td mat-cell *matCellDef="let row" class="mobile-select-col">
+              <mat-checkbox (click)="$event.stopPropagation()" (change)="$event ? selection.toggle(row) : null" [checked]="selection.isSelected(row)"></mat-checkbox>
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="#">
+            <th mat-header-cell *matHeaderCellDef class=" f-w-600 mobile-hide">#</th>
+            <td mat-cell *matCellDef="let element; let i = index" class="mobile-hide">{{ i + 1 }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="serviceCenterName">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header="ServiceCenterName" class=" f-w-600">Service Center</th>
+            <td mat-cell *matCellDef="let element" class="mobile-main-col">
+              <span class="desktop-only truncate-text" [matTooltip]="element.serviceCenterName">{{ element.serviceCenterName }}</span>
+              <div class="mobile-stack mobile-only">
+                <span class="f-w-600  text-dark truncate-text">{{ element.serviceCenterName }}</span>
+                <span class=" text-muted mt-1">Count: {{ element.totalCount }}</span>
+              </div>
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="status">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header="Status" class=" f-w-600">Status</th>
+            <td mat-cell *matCellDef="let element" class="mobile-right-col">
+               <span class="status-badge" [ngClass]="getStatusClasses(element.status)">{{ element.status || 'N/A' }}</span>
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="totalCount">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header="TotalCount" class=" f-w-600 mobile-hide">Total Count</th>
+            <td mat-cell *matCellDef="let element" class=" mobile-hide">{{ element.totalCount }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="pdf">
+            <th mat-header-cell *matHeaderCellDef class=" f-w-600 text-end"> PDF </th>
+            <td mat-cell *matCellDef="let row" class="text-end action-link mobile-action-drawer">
+              <button mat-icon-button class="desktop-only" (click)="$event.stopPropagation(); generateSinglePdf(row)"><i-tabler name="file-invoice"></i-tabler></button>
+              <div class="mobile-drawer-content mobile-only">
+                <a (click)="$event.stopPropagation(); generateSinglePdf(row)" class="mobile-action-btn primary"><i-tabler name="file-invoice" class="icon-18"></i-tabler></a>
+              </div>
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="summaryDisplayedColumns; sticky: true"></tr>
+          <tr mat-row *matRowDef="let row; columns: summaryDisplayedColumns"
+              class="cursor-pointer mobile-swipe-row"
+              [class.mobile-swipe-active]="swipedRowId === (row.serviceCenterId + '-' + row.status)"
+              (click)="openProductDetailsDialog(row)"
+              appSwipeable
+              (swipeLeft)="onSwipe((row.serviceCenterId + '-' + row.status), 'open')"
+              (swipeRight)="onSwipe((row.serviceCenterId + '-' + row.status), 'close')">
+          </tr>
+          <tr class="mat-row" *matNoDataRow>
+            <td class="mat-cell text-center" [attr.colspan]="summaryDisplayedColumns.length">
+              <div class="p-24"><p class=" m-0">No records found</p></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      
+      } @else if (selectedStatus === 'Pending') {
+      <div class="table-container common-table-container" [@tabSlide]="selectedTabIndex" (scroll)="onScroll($event)">
+        <table mat-table [dataSource]="pendingDataSource" class="w-100" matSort>
+          
+          <ng-container matColumnDef="select">
+            <th mat-header-cell *matHeaderCellDef class="mobile-select-col"><mat-checkbox (change)="$event ? toggleAllRows() : null" [checked]="selection.hasValue() && isAllSelected()" [indeterminate]="selection.hasValue() && !isAllSelected()"></mat-checkbox></th>
+            <td mat-cell *matCellDef="let row" class="mobile-select-col"><mat-checkbox (click)="$event.stopPropagation()" (change)="$event ? selection.toggle(row) : null" [checked]="selection.isSelected(row)"></mat-checkbox></td>
+          </ng-container>
+
+          <ng-container matColumnDef="#"><th mat-header-cell *matHeaderCellDef class=" f-w-600 mobile-hide">#</th><td mat-cell *matCellDef="let element; let i = index" class="mobile-hide">{{ i + 1 }}</td></ng-container>
+
+          <ng-container matColumnDef="iwNo">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header="IwNo" class=" f-w-600">I/W No</th>
+            <td mat-cell *matCellDef="let element" class="mobile-main-col">
+              <span class="desktop-only">{{ element.iwNo }}</span>
+              <div class="mobile-stack mobile-only">
+                <span class="f-w-600  text-dark truncate-text">{{ element.productName }}</span>
+                <span class=" text-muted mt-1">{{ element.iwNo }}</span>
+              </div>
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="productName">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header="ProductName" class=" f-w-600 mobile-hide">Product Name</th>
+            <td mat-cell *matCellDef="let element" class="mobile-hide">
+              <p class=" m-0 f-w-600 truncate-text" [matTooltip]="element.productName">{{ element.productName }}</p>
+              <small class="text-muted d-block truncate-text" [matTooltip]="'Serial: ' + (element.serialNo || 'N/A')">
+                Serial: {{ element.serialNo || 'N/A' }}
+              </small>
+              <small class="text-muted d-block truncate-text" [matTooltip]="'InNo: ' + (element.inNo || 'N/A')">
+                InNo: {{ element.inNo || 'N/A' }}
+              </small>
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="warranty">
+            <th mat-header-cell *matHeaderCellDef class=" f-w-600 mobile-right-col">Warranty</th>
+            <td mat-cell *matCellDef="let element" class="mobile-right-col">
+                 <div class="desktop-only">
+                    @if(element.warrantyStatus) {
+                        <p class="m-0">{{ element.warrantyMonths }} Months</p>
+                        <small class="text-muted d-block">End: {{ element.warrantyEndDate | date:'dd-MM-yyyy' }}</small>
+                        <span class="" [class.text-success]="element.warrantyStatus === 'In Warranty'" [class.text-error]="element.warrantyStatus === 'Out of Warranty'">
+                            {{ element.warrantyStatus }}
+                        </span>
+                    } @else { <span class="text-muted">N/A</span> }
+                 </div>
+
+                 <div class="mobile-only mobile-stack align-right">
+                    @if(element.warrantyStatus) {
+                        <span class="status-badge" [class.text-success]="element.warrantyStatus === 'In Warranty'" [class.text-error]="element.warrantyStatus === 'Out of Warranty'">
+                            {{ element.warrantyStatus }}
+                        </span>
+                    } @else { <span class="text-muted">N/A</span> }
+                 </div>
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="serviceCenterName">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header="ServiceCenterName" class=" f-w-600 mobile-hide">Service Center</th>
+            <td mat-cell *matCellDef="let element" class="mobile-hide">
+              <p class=" m-0 truncate-text">{{ element.serviceCenterName }}</p>
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="pdf">
+            <th mat-header-cell *matHeaderCellDef class=" f-w-600 text-end"> PDF </th>
+            <td mat-cell *matCellDef="let row" class="text-end action-link mobile-action-drawer">
+              <button mat-icon-button class="desktop-only" (click)="$event.stopPropagation(); generateSinglePdf(row)"><i-tabler name="file-invoice"></i-tabler></button>
+              <div class="mobile-drawer-content mobile-only">
+                <a (click)="$event.stopPropagation(); generateSinglePdf(row)" class="mobile-action-btn primary"><i-tabler name="file-invoice" class="icon-18"></i-tabler></a>
+              </div>
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="pendingDisplayedColumns; sticky: true"></tr>
+          <tr mat-row *matRowDef="let row; columns: pendingDisplayedColumns"
+              class="cursor-pointer mobile-swipe-row"
+              [class.mobile-swipe-active]="swipedRowId === row.iwNo"
+              appSwipeable
+              (swipeLeft)="onSwipe(row.iwNo, 'open')"
+              (swipeRight)="onSwipe(row.iwNo, 'close')">
+          </tr>
+          <tr class="mat-row" *matNoDataRow><td class="mat-cell text-center" [attr.colspan]="pendingDisplayedColumns.length"><div class="p-24"><p class=" m-0">No records found</p></div></td></tr>
+        </table>
+      </div>
+
+      } @else if (selectedStatus === 'In Progress') {
+      <div class="table-container common-table-container" [@tabSlide]="selectedTabIndex" (scroll)="onScroll($event)">
+        <table mat-table [dataSource]="inProgressDataSource" class="w-100" matSort>
+          
+          <ng-container matColumnDef="select"><th mat-header-cell *matHeaderCellDef class="mobile-select-col"><mat-checkbox (change)="$event ? toggleAllRows() : null" [checked]="selection.hasValue() && isAllSelected()" [indeterminate]="selection.hasValue() && !isAllSelected()"></mat-checkbox></th><td mat-cell *matCellDef="let row" class="mobile-select-col"><mat-checkbox (click)="$event.stopPropagation()" (change)="$event ? selection.toggle(row) : null" [checked]="selection.isSelected(row)"></mat-checkbox></td></ng-container>
+
+          <ng-container matColumnDef="#"><th mat-header-cell *matHeaderCellDef class=" f-w-600 mobile-hide">#</th><td mat-cell *matCellDef="let element; let i = index" class="mobile-hide">{{ i + 1 }}</td></ng-container>
+
+          <ng-container matColumnDef="iwNo">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header="IwNo" class=" f-w-600">I/W No</th>
+            <td mat-cell *matCellDef="let element" class="mobile-main-col">
+              <span class="desktop-only">{{ element.iwNo }}</span>
+              <div class="mobile-stack mobile-only">
+                <span class="f-w-600  text-dark truncate-text">{{ element.productName }}</span>
+                <div class="d-flex align-items-center gap-8 mt-1 text-muted ">
+                   <span>{{ element.iwNo }}</span>
+                   <span *ngIf="element.serviceInvoiceNo">| {{ element.serviceInvoiceNo }}</span>
+                </div>
+              </div>
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="productName">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header="ProductName" class=" f-w-600 mobile-hide">Product Name</th>
+            <td mat-cell *matCellDef="let element" class="mobile-hide">
+                <p class=" m-0 f-w-600 truncate-text" [matTooltip]="element.productName">{{ element.productName }}</p>
+                <small class="text-muted d-block truncate-text">Serial: {{ element.serialNo || 'N/A' }}</small>
+                <small class="text-muted d-block truncate-text">InNo: {{ element.inNo || 'N/A' }}</small>
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="serviceInvoiceNo"><th mat-header-cell *matHeaderCellDef mat-sort-header="ServiceInvoiceNo" class=" f-w-600 mobile-hide">Ser. InNo</th><td mat-cell *matCellDef="let element" class="mobile-hide">{{ element.serviceInvoiceNo || '-' }}</td></ng-container>
+
+          <ng-container matColumnDef="serviceCenterName"><th mat-header-cell *matHeaderCellDef mat-sort-header="ServiceCenterName" class=" f-w-600 mobile-hide">Service Center</th><td mat-cell *matCellDef="let element" class="mobile-hide">{{ element.serviceCenterName }}</td></ng-container>
+
+          <ng-container matColumnDef="updatedDate">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header="UpdatedDate" class=" f-w-600 mobile-right-col">Updated Date</th>
+            <td mat-cell *matCellDef="let element" class="mobile-right-col">
+                <span class=" text-muted">{{ element.updatedDate | date:'dd-MM-yyyy' }}</span>
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="pdf">
+            <th mat-header-cell *matHeaderCellDef class=" f-w-600 text-end"> PDF </th>
+            <td mat-cell *matCellDef="let row" class="text-end action-link mobile-action-drawer">
+              <button mat-icon-button class="desktop-only" (click)="$event.stopPropagation(); generateSinglePdf(row)"><i-tabler name="file-invoice"></i-tabler></button>
+              <div class="mobile-drawer-content mobile-only">
+                <a (click)="$event.stopPropagation(); generateSinglePdf(row)" class="mobile-action-btn primary"><i-tabler name="file-invoice" class="icon-18"></i-tabler></a>
+              </div>
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="inProgressDisplayedColumns; sticky: true"></tr>
+          <tr mat-row *matRowDef="let row; columns: inProgressDisplayedColumns"
+              class="cursor-pointer mobile-swipe-row"
+              [class.mobile-swipe-active]="swipedRowId === row.iwNo"
+              appSwipeable
+              (swipeLeft)="onSwipe(row.iwNo, 'open')"
+              (swipeRight)="onSwipe(row.iwNo, 'close')">
+          </tr>
+          <tr class="mat-row" *matNoDataRow><td class="mat-cell text-center" [attr.colspan]="inProgressDisplayedColumns.length"><div class="p-24"><p class=" m-0">No records found</p></div></td></tr>
+        </table>
+      </div>
+
+      } @else if (selectedStatus === 'Ready') {
+      <div class="table-container common-table-container" [@tabSlide]="selectedTabIndex" (scroll)="onScroll($event)">
+        <table mat-table [dataSource]="readyDataSource" class="w-100" matSort>
+          
+          <ng-container matColumnDef="select"><th mat-header-cell *matHeaderCellDef class="mobile-select-col"><mat-checkbox (change)="$event ? toggleAllRows() : null" [checked]="selection.hasValue() && isAllSelected()" [indeterminate]="selection.hasValue() && !isAllSelected()"></mat-checkbox></th><td mat-cell *matCellDef="let row" class="mobile-select-col"><mat-checkbox (click)="$event.stopPropagation()" (change)="$event ? selection.toggle(row) : null" [checked]="selection.isSelected(row)"></mat-checkbox></td></ng-container>
+
+          <ng-container matColumnDef="#"><th mat-header-cell *matHeaderCellDef class=" f-w-600 mobile-hide">#</th><td mat-cell *matCellDef="let element; let i = index" class="mobile-hide">{{ i + 1 }}</td></ng-container>
+
+          <ng-container matColumnDef="iwNo">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header="IwNo" class=" f-w-600">I/W No</th>
+            <td mat-cell *matCellDef="let element" class="mobile-main-col">
+              <span class="desktop-only">{{ element.iwNo }}</span>
+              <div class="mobile-stack mobile-only">
+                <span class="f-w-600  text-dark truncate-text">{{ element.productName }}</span>
+                <span class=" text-muted mt-1">{{ element.iwNo }}</span>
+              </div>
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="productName">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header="ProductName" class=" f-w-600 mobile-hide">Product Name</th>
+            <td mat-cell *matCellDef="let element" class="mobile-hide">
+               <p class=" m-0 f-w-600 truncate-text" [matTooltip]="element.productName">{{ element.productName }}</p>
+               <small class="text-muted d-block truncate-text">Serial: {{ element.serialNo || 'N/A' }}</small>
+               <small class="text-muted d-block truncate-text">InNo: {{ element.inNo || 'N/A' }}</small>
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="customer">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header="CustomerName" class=" f-w-600 mobile-hide">Customer</th>
+            <td mat-cell *matCellDef="let element" class="mobile-hide">
+                <p class=" m-0 f-w-600 truncate-text">{{ element.customerName }}</p>
+                <small class="text-muted d-block">{{ element.customerContactNo || 'N/A' }}</small>
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="productStatusName">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header="ProductStatusName" class=" f-w-600 mobile-right-col">Product Status</th>
+            <td mat-cell *matCellDef="let element" class="mobile-right-col">
+                <span class="status-badge" [ngClass]="getStatusClasses(element.productStatusName)">
+                  {{ element.productStatusName || 'N/A' }}
+                </span>
+                <div class="desktop-only">
+                    @if (element.productStatusName === 'Replace') {
+                        <small class="text-muted d-block m-t-4 truncate-text">New Serial: {{ element.newSerialNo || 'N/A' }}</small>
+                    }
+                </div>
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="serviceCenterName"><th mat-header-cell *matHeaderCellDef mat-sort-header="ServiceCenterName" class=" f-w-600 mobile-hide">Service Center</th><td mat-cell *matCellDef="let element" class="mobile-hide">{{ element.serviceCenterName }}</td></ng-container>
+
+          <ng-container matColumnDef="updatedDate"><th mat-header-cell *matHeaderCellDef mat-sort-header="UpdatedDate" class=" f-w-600 mobile-hide">Updated Date</th><td mat-cell *matCellDef="let element" class="mobile-hide">{{ element.updatedDate | date:'dd-MM-yyyy' }}</td></ng-container>
+
+          <ng-container matColumnDef="pdf">
+            <th mat-header-cell *matHeaderCellDef class=" f-w-600 text-end"> PDF </th>
+            <td mat-cell *matCellDef="let row" class="text-end action-link mobile-action-drawer">
+              <button mat-icon-button class="desktop-only" (click)="$event.stopPropagation(); generateSinglePdf(row)"><i-tabler name="file-invoice"></i-tabler></button>
+              <div class="mobile-drawer-content mobile-only">
+                <a (click)="$event.stopPropagation(); generateSinglePdf(row)" class="mobile-action-btn primary"><i-tabler name="file-invoice" class="icon-18"></i-tabler></a>
+              </div>
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="readyDisplayedColumns; sticky: true"></tr>
+          <tr mat-row *matRowDef="let row; columns: readyDisplayedColumns"
+              class="cursor-pointer mobile-swipe-row"
+              [class.mobile-swipe-active]="swipedRowId === row.iwNo"
+              appSwipeable
+              (swipeLeft)="onSwipe(row.iwNo, 'open')"
+              (swipeRight)="onSwipe(row.iwNo, 'close')">
+          </tr>
+          <tr class="mat-row" *matNoDataRow><td class="mat-cell text-center" [attr.colspan]="readyDisplayedColumns.length"><div class="p-24"><p class=" m-0">No records found</p></div></td></tr>
+        </table>
+      </div>
+
+      } @else if (selectedStatus === 'Completed') {
+      <div class="table-container common-table-container" [@tabSlide]="selectedTabIndex" (scroll)="onScroll($event)">
+        <table mat-table [dataSource]="completedDataSource" class="w-100" matSort>
+          
+          <ng-container matColumnDef="select"><th mat-header-cell *matHeaderCellDef class="mobile-select-col"><mat-checkbox (change)="$event ? toggleAllRows() : null" [checked]="selection.hasValue() && isAllSelected()" [indeterminate]="selection.hasValue() && !isAllSelected()"></mat-checkbox></th><td mat-cell *matCellDef="let row" class="mobile-select-col"><mat-checkbox (click)="$event.stopPropagation()" (change)="$event ? selection.toggle(row) : null" [checked]="selection.isSelected(row)"></mat-checkbox></td></ng-container>
+
+          <ng-container matColumnDef="#"><th mat-header-cell *matHeaderCellDef class=" f-w-600 mobile-hide">#</th><td mat-cell *matCellDef="let element; let i = index" class="mobile-hide">{{ i + 1 }}</td></ng-container>
+
+          <ng-container matColumnDef="iwNo">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header="IwNo" class=" f-w-600">I/W No</th>
+            <td mat-cell *matCellDef="let element" class="mobile-main-col">
+              <span class="desktop-only">{{ element.iwNo }}</span>
+              <div class="mobile-stack mobile-only">
+                <span class="f-w-600  text-dark truncate-text">{{ element.productName }}</span>
+                <span class=" text-muted mt-1">{{ element.iwNo }}</span>
+              </div>
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="productName">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header="ProductName" class=" f-w-600 mobile-hide">Product</th>
+            <td mat-cell *matCellDef="let element" class="mobile-hide">
+                <p class=" m-0 f-w-600 truncate-text" [matTooltip]="element.productName">{{ element.productName }}</p>
+                <small class="text-muted d-block truncate-text">Serial: {{ element.serialNo || 'N/A' }}</small>
+                <small class="text-muted d-block truncate-text">InNo: {{ element.inNo || 'N/A' }}</small>
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="customer">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header="CustomerName" class=" f-w-600 mobile-hide">Customer</th>
+            <td mat-cell *matCellDef="let element" class="mobile-hide">
+                <p class=" m-0 f-w-600 truncate-text">{{ element.customerName }}</p>
+                <small class="text-muted d-block">{{ element.customerContactNo || 'N/A' }}</small>
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="productStatusName">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header="ProductStatusName" class=" f-w-600 mobile-right-col">Product Status</th>
+            <td mat-cell *matCellDef="let element" class="mobile-right-col">
+                <span class="status-badge" [ngClass]="getStatusClasses(element.productStatusName)">
+                  {{ element.productStatusName || 'N/A' }}
+                </span>
+                <div class="desktop-only">
+                    @if (element.productStatusName === 'Replace') {
+                        <small class="text-muted d-block m-t-4 truncate-text">New Serial: {{ element.newSerialNo || 'N/A' }}</small>
+                    }
+                </div>
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="serviceInvoiceNo"><th mat-header-cell *matHeaderCellDef mat-sort-header="ServiceInvoiceNo" class=" f-w-600 mobile-hide">Ser. InNo</th><td mat-cell *matCellDef="let element" class="mobile-hide">{{ element.serviceInvoiceNo || '-' }}</td></ng-container>
+          
+          <ng-container matColumnDef="serviceCenterName"><th mat-header-cell *matHeaderCellDef mat-sort-header="ServiceCenterName" class=" f-w-600 mobile-hide">Service Center</th><td mat-cell *matCellDef="let element" class="mobile-hide">{{ element.serviceCenterName }}</td></ng-container>
+          
+          <ng-container matColumnDef="notes"><th mat-header-cell *matHeaderCellDef class=" f-w-600 mobile-hide">Notes</th><td mat-cell *matCellDef="let element" class="mobile-hide">{{ element.note || '-' }}</td></ng-container>
+
+          <ng-container matColumnDef="completedDate"><th mat-header-cell *matHeaderCellDef mat-sort-header="CompletedDate" class=" f-w-600 mobile-hide">Completed Date</th><td mat-cell *matCellDef="let element" class="mobile-hide">{{ element.completedDate | date:'dd-MM-yyyy' }}</td></ng-container>
+
+          <ng-container matColumnDef="pdf">
+            <th mat-header-cell *matHeaderCellDef class=" f-w-600 text-end"> PDF </th>
+            <td mat-cell *matCellDef="let row" class="text-end action-link mobile-action-drawer">
+              <button mat-icon-button class="desktop-only" (click)="$event.stopPropagation(); generateSinglePdf(row)"><i-tabler name="file-invoice"></i-tabler></button>
+              <div class="mobile-drawer-content mobile-only">
+                <a (click)="$event.stopPropagation(); generateSinglePdf(row)" class="mobile-action-btn primary"><i-tabler name="file-invoice" class="icon-18"></i-tabler></a>
+              </div>
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="completedDisplayedColumns; sticky: true"></tr>
+          <tr mat-row *matRowDef="let row; columns: completedDisplayedColumns"
+              class="cursor-pointer mobile-swipe-row"
+              [class.mobile-swipe-active]="swipedRowId === row.iwNo"
+              appSwipeable
+              (swipeLeft)="onSwipe(row.iwNo, 'open')"
+              (swipeRight)="onSwipe(row.iwNo, 'close')">
+          </tr>
+          <tr class="mat-row" *matNoDataRow><td class="mat-cell text-center" [attr.colspan]="completedDisplayedColumns.length"><div class="p-24"><p class=" m-0">No records found</p></div></td></tr>
+        </table>
+      </div>
+      }
+    }
+  </mat-card-content>
+</mat-card>

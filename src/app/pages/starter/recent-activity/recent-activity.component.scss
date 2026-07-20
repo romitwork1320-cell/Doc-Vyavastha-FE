@@ -1,0 +1,293 @@
+:host {
+  display: block;
+  height: 100%;
+}
+
+.h-200 { height: 200px; }
+
+/* --- Timeline Layout --- */
+.timeline-container {
+  position: relative;
+  
+  /* Make the container scrollable */
+  max-height: 400px; /* Adjust this to match the height of your Requires Action widget */
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding-right: 8px; /* Room for scrollbar */
+
+  /* Sleek modern scrollbar */
+  &::-webkit-scrollbar { width: 6px; }
+  &::-webkit-scrollbar-track { background: transparent; }
+  &::-webkit-scrollbar-thumb {
+    background: rgba(0, 0, 0, 0.15);
+    border-radius: 10px;
+  }
+  &::-webkit-scrollbar-thumb:hover { background: rgba(0, 0, 0, 0.3); }
+}
+.timeline-item {
+  position: relative;
+  display: flex; /* Ensures the columns sit side-by-side correctly */
+  
+  /* Hide the connecting line for the very last item */
+  &:last-child {
+    .timeline-line { display: none; }
+    .content-col { padding-bottom: 0; }
+  }
+}
+
+.time-col {
+  min-width: 60px;
+  flex-shrink: 0;
+  text-align: right; /* Right align time */
+  padding-right: 16px;
+}
+
+.timeline-line-wrapper {
+  width: 20px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-right: 16px;
+}
+
+.timeline-dot {
+  width: 12px;
+  height: 12px;
+  border: 2px solid #fff;
+  box-shadow: 0 0 0 2px rgba(0,0,0,0.05);
+  z-index: 1;
+  flex-shrink: 0;
+  border-radius: 50%;
+}
+
+.timeline-line {
+  width: 2px;
+  background-color: #e5eaef;
+  flex-grow: 1;
+  margin-top: 4px;
+  margin-bottom: 4px;
+}
+
+.content-col {
+  flex-grow: 1;
+  padding-bottom: 24px;
+  min-width: 0; /* CRITICAL: Allows child elements to truncate properly inside flexbox */
+}
+
+/* --- Colors mapped to LogLevel --- */
+.bg-error { background-color: #fa896b !important; }   /* Error (Red) */
+.bg-warning { background-color: #f8c20a !important; } /* Warning (Yellow) */
+.bg-primary { background-color: #5d87ff !important; } /* Info (Blue) */
+.bg-success { background-color: #13deb9 !important; } /* Success (Teal) */
+.bg-accent { background-color: #49beff !important; }  /* Default (Light Blue) */
+
+/* Utility Backgrounds & Borders */
+.bg-light-primary {
+  background-color: #ecf2ff !important;
+}
+
+.border-primary-subtle {
+  border-color: #e5eaef !important;
+}
+
+/* --- Live Pulse Animation --- */
+.pulse-dot {
+  width: 8px;
+  height: 8px;
+  background-color: #fa896b;
+  border-radius: 50%;
+  display: inline-block;
+  position: relative;
+  
+  &::before {
+    content: '';
+    position: absolute;
+    top: -4px; left: -4px;
+    right: -4px; bottom: -4px;
+    border-radius: 50%;
+    border: 2px solid #fa896b;
+    animation: pulse 1.5s infinite;
+    opacity: 0.5;
+  }
+}
+
+@keyframes pulse {
+  0% { transform: scale(0.5); opacity: 1; }
+  100% { transform: scale(2); opacity: 0; }
+}
+
+/* --- Text & Layout Utilities --- */
+.line-clamp-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.text-truncate {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: block; /* Necessary for ellipsis to trigger */
+}
+
+.icon-12 { font-size: 12px; width: 12px; height: 12px; }
+.cursor-pointer { cursor: pointer; }
+
+.cursor-pointer {
+  cursor: pointer;
+}
+
+/* --- Change Log Specifics (The New Box) --- */
+.change-row {
+  min-height: 24px; 
+  display: flex;
+  align-items: center;
+  width: 100%; /* Ensure it spans the full container */
+} 
+
+.change-label {
+  min-width: 110px; /* Increased from 90px to fit larger field names */
+  max-width: 120px;
+  flex-shrink: 0;
+  color: #2a3547;
+  font-weight: 600;
+  margin-right: 8px;
+}
+
+.product-header {
+  letter-spacing: 0.5px;
+  color: #7c8fac;
+  margin-top: 12px;
+  padding-bottom: 4px;
+  border-bottom: 1px dashed #d0dbe7; /* Subtle separator line */
+  width: 100%;
+  
+  &.m-t-0 { margin-top: 0 !important; }
+}
+
+.icon-12 {
+  font-size: 12px;
+  width: 12px;
+  height: 12px;
+}
+
+.text-truncate {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: block;
+}
+
+.cursor-pointer {
+  cursor: pointer;
+}
+
+.bg-light-primary {
+  background-color: #f4f7ff !important; /* Slightly softer blue */
+  border-radius: 8px;
+} 
+
+.border-primary-subtle {
+  border-color: #e5eaef !important;
+}
+
+/* Spacing Helpers */
+.p-24 { padding: 24px; }
+.p-12 { padding: 12px; }
+.m-b-24 { margin-bottom: 24px; }
+.m-b-4 { margin-bottom: 4px; }
+.m-t-8 { margin-top: 8px; }
+.m-r-4 { margin-right: 4px; }
+.m-r-8 { margin-right: 8px; }
+.m-r-16 { margin-right: 16px; }
+.m-l-4 { margin-left: 4px; }
+.p-t-4 { padding-top: 4px; }
+
+/* Font Size & Weight Helpers */
+.f-s-18 { font-size: 18px; }
+.f-s-14 { font-size: 14px; }
+.f-s-13 { font-size: 13px; }
+.f-s-12 { font-size: 12px; }
+.f-s-11 { font-size: 11px; }
+
+.f-w-600 { font-weight: 600; }
+.f-w-500 { font-weight: 500; }
+
+/* Text Colors */
+.text-dark { color: #2a3547 !important; }
+.text-muted { color: #7c8fac !important; }
+.text-primary { color: #5d87ff !important; }
+
+.changes-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 8px; 
+  align-items: stretch;
+}
+
+/* Force these elements to always take the full width of the grid */
+.product-header,
+.show-more-container {
+  grid-column: 1 / -1; 
+}
+
+.view-more-btn {
+  padding: 0 32px !important; /* Wider horizontal padding */
+  height: 40px !important;    /* Standard height */
+  font-weight: 600;
+  border: 1px solid #e5eaef !important; /* Subtle initial border */
+  color: #5d87ff !important;            /* Primary Text Color */
+  transition: all 0.2s ease-in-out;
+  background-color: #fff;
+
+  &:hover {
+    background-color: #ecf2ff !important; /* Light Blue Background on Hover */
+    border-color: #5d87ff !important;     /* Blue Border on Hover */
+    transform: translateY(-1px);          /* Slight "Lift" effect */
+    box-shadow: 0 4px 12px rgba(93, 135, 255, 0.15); /* Soft Shadow */
+  }
+
+  /* Ensure the icon moves slightly down/up or stays aligned */
+  i-tabler {
+    position: relative;
+    top: 1px;
+  }
+}
+
+.m-t-24 { margin-top: 24px; }
+.m-l-8 { margin-left: 8px; }
+
+.action-btn {
+  height: 42px !important;    /* Comfortable height */
+  border: 1px solid #e5eaef !important; /* Subtle border */
+  color: #5d87ff !important;            /* Primary Color */
+  background-color: #fff;
+  transition: all 0.2s ease-in-out;
+  
+  /* Hover Effect */
+  &:hover {
+    background-color: #f5f8ff !important; /* Very light blue on hover */
+    border-color: #5d87ff !important;     /* Blue border on hover */
+    color: #497bea !important;            /* Slightly darker text */
+    box-shadow: 0 2px 8px rgba(93, 135, 255, 0.1);
+  }
+
+  /* Alignment for Icon */
+  i-tabler {
+    position: relative;
+    top: 1px;
+  }
+}
+
+/* Override inline HTML max-width to allow smooth flexing in the sidebar */
+.change-row .text-decoration-line-through {
+  max-width: 40% !important; /* Allow the old value to take up to 40% of remaining space */
+  flex-shrink: 1;
+}
+
+.change-row .text-dark.f-w-500 {
+  max-width: 50% !important; /* Allow new value to take remaining space */
+  flex-shrink: 1;
+}

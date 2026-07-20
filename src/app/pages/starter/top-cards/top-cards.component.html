@@ -1,0 +1,32 @@
+<div class="row">
+  @for(topcard of topcards; track topcard.title) {
+  <div class="col-12 col-sm-6 col-lg-3">
+
+    <mat-card class="cardWithShadow h-100 {{ topcard.color }}-gt overflow-hidden position-relative border-0">
+
+      <mat-card-content class="p-24 d-flex flex-column align-items-center text-center">
+
+        <div
+          class="icon-48 rounded-circle d-flex align-items-center justify-content-center m-b-12 bg-{{ topcard.color }} text-white shadow-sm">
+          <span class="iconify icon-24" [attr.data-icon]="topcard.icon"></span>
+        </div>
+
+        <span class="f-s-13 f-w-600 text-dark m-b-4 d-block opacity-75 text-uppercase">
+          {{ topcard.title }}
+        </span>
+
+        <h3 class="f-s-24 f-w-700 m-b-12 l-h-1 text-dark">
+          {{ topcard.subtitle }}
+        </h3>
+
+        <button mat-flat-button class="w-100 bg-white text-{{ topcard.color }} btn-shadow f-s-12 f-w-600 h-32"
+          (click)="viewDetails(topcard.title)">
+          View Details
+        </button>
+
+      </mat-card-content>
+    </mat-card>
+
+  </div>
+  }
+</div>

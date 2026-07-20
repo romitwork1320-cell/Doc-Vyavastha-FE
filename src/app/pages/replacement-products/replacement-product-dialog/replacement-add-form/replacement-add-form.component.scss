@@ -1,0 +1,202 @@
+/* --- Utility Classes --- */
+.w-100 { width: 100%; }
+.m-t-4 { margin-top: 4px; }
+.m-t-20 { margin-top: 20px; }
+.m-b-12 { margin-bottom: 12px; }
+.m-b-16 { margin-bottom: 16px; }
+.m-b-24 { margin-bottom: 24px; }
+.m-r-8 { margin-right: 8px; }
+.p-r-24 { padding-right: 24px; } /* Increased from 16 to 24 */
+.p-l-24 { padding-left: 24px; }  /* Increased from 16 to 24 */
+.p-b-16 { padding-bottom: 16px; }
+.p-r-8 { padding-right: 8px; }
+.p-l-4 { padding-left: 4px; }
+.p-r-4 { padding-right: 4px; }
+
+.f-s-12 { font-size: 12px; }
+.f-s-13 { font-size: 13px; }
+.f-s-14 { font-size: 14px; }
+.f-s-15 { font-size: 15px; } /* New Size for Headers */
+.f-w-600 { font-weight: 600; }
+.f-w-700 { font-weight: 700; } /* New Weight for Headers */
+.f-w-500 { font-weight: 500; }
+
+.text-muted { color: #6c757d !important; }
+.text-dark { color: #111 !important; }
+.text-primary { color: #635bff !important; }
+.text-warn { color: #f44336 !important; }
+
+.border-bottom { border-bottom: 1px solid #e0e0e0; }
+.border-end { border-right: 1px solid #e0e0e0; }
+.border { border: 1px solid #dee2e6; }
+.rounded { border-radius: 4px; }
+.bg-light-subtle { background-color: #f8f9fa !important; }
+.bg-white { background-color: #fff !important; }
+
+.d-flex { display: flex; }
+.flex-column { flex-direction: column; }
+.align-items-center { align-items: center; }
+.justify-content-center { justify-content: center; }
+.justify-content-between { justify-content: space-between; }
+.flex-grow-1 { flex-grow: 1; }
+.gap-8 { gap: 8px; }
+
+.white-space-nowrap { white-space: nowrap; }
+.truncate-cell-content { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 250px; }
+
+/* --- Customer Card (Matches History Profile Card) --- */
+.customer-card {
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  background-color: #fff;
+  padding: 24px; /* Increased Padding */
+  box-shadow: 0 2px 6px rgba(0,0,0,0.02); /* Slight shadow to match History */
+}
+
+/* --- Grid Layout System --- */
+.edit-form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0; 
+}
+
+.edit-form-col {
+  display: flex;
+  flex-direction: column;
+}
+
+.form-grid-2-col {
+  display: grid;
+  grid-template-columns: 1fr 1fr; 
+  gap: 16px; /* Increased gap slightly */
+  width: 100%;
+}
+
+.span-2-col {
+  grid-column: span 2;
+}
+
+/* --- Product Card --- */
+.product-card {
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  margin-bottom: 16px;
+  background-color: #fff;
+  transition: all 0.2s;
+  
+  /* Lift effect on hover */
+  &:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
+  &.collapsed-card .product-header { border-bottom: none; }
+}
+
+.product-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 20px; /* Comfortable padding */
+  background-color: #fafafa;
+  border-bottom: 1px solid #e0e0e0;
+  border-radius: 8px 8px 0 0;
+  cursor: pointer;
+  min-height: 52px;
+
+  h3 { margin: 0; font-size: 14px; font-weight: 600; color: #2c3e50; }
+}
+
+.form-content { padding: 24px; } /* Increased form padding */
+
+/* --- Add Button (Dashed - Aligned) --- */
+.btn-dashed {
+  border: 1px dashed #bdbdbd !important;
+  background-color: #fafafa !important;
+  color: #635bff !important;
+  width: 100%; 
+  padding: 12px 0;
+  border-radius: 8px;
+  transition: all 0.2s;
+  font-weight: 500;
+  font-size: 14px;
+  
+  display: inline-flex !important; 
+  align-items: center !important;
+  justify-content: center !important;
+
+  &:hover {
+    background-color: #f0f4ff !important; 
+    border-color: #635bff !important;
+  }
+
+  ::ng-deep .mdc-button__label {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 8px; 
+    line-height: 1; 
+  }
+  
+  i-tabler {
+    display: flex; align-items: center; justify-content: center;
+    height: 18px; width: 18px;
+    svg { width: 100%; height: 100%; }
+  }
+
+  span { display: inline-block; position: relative; top: 1px; }
+}
+
+/* --- Action Buttons --- */
+.action-btn {
+  width: 32px; height: 32px;
+  display: flex; align-items: center; justify-content: center;
+  padding: 0;
+  ::ng-deep i-tabler { display: flex; align-items: center; justify-content: center; }
+}
+
+/* --- Warranty Styling --- */
+.warranty-combined-row {
+  display: flex; align-items: flex-start; gap: 8px; width: 100%;
+  .duration-field { width: 90px; flex-shrink: 0; }
+  .unit-toggle-container { margin-top: 0; flex-shrink: 0; height: 45px; display: flex; align-items: center; }
+  .end-date-field { flex-grow: 1; }
+}
+
+::ng-deep .warranty-toggle-group {
+  height: 45px; border: 1px solid #e0e0e0; border-radius: 4px; overflow: hidden; display: flex;
+  .mat-button-toggle {
+    height: 100%; display: flex; align-items: center; background: #fff; color: #666; font-size: 13px; padding: 0 12px; border-left: 1px solid #e0e0e0;
+    &:first-child { border-left: none; }
+    &.mat-button-toggle-checked { background: #e3f2fd; color: #635bff; font-weight: 600; }
+    .mat-button-toggle-label-content { line-height: 45px; padding: 0 8px; }
+  }
+}
+
+/* Material Fixes */
+::ng-deep {
+  .product-edit-form, app-replacement-add-form {
+    .mat-mdc-form-field-subscript-wrapper { display: none; }
+  }
+  .mat-mdc-form-field { margin-bottom: 12px; }
+  .mat-mdc-form-field.mat-form-field-disabled .mat-mdc-text-field-wrapper { background-color: #fafafa !important; }
+}
+
+.warranty-warning { display: flex; align-items: center; gap: 4px; color: #f44336; font-size: 12px; font-weight: 500; }
+.header-warning { background-color: #ffebee; padding: 4px 8px; border-radius: 4px; }
+
+/* Responsive */
+@media (max-width: 992px) {
+  .edit-form-row { grid-template-columns: 1fr; gap: 16px; }
+  .border-end { border-right: none; border-bottom: 1px solid #e0e0e0; padding-right: 0 !important; padding-bottom: 16px; margin-bottom: 16px; }
+  .p-l-24 { padding-left: 0 !important; }
+}
+
+/* --- Autocomplete Dropdown Wrapping Fix --- */
+::ng-deep .mat-mdc-autocomplete-panel .mat-mdc-option {
+  height: auto !important; 
+  min-height: 48px;       
+  padding-top: 8px;
+  padding-bottom: 8px;
+
+  .mdc-list-item__primary-text {
+    white-space: normal;   
+    line-height: 1.4;     
+  }
+}

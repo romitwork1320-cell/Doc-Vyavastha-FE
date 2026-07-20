@@ -1,0 +1,150 @@
+<mat-card class="cardWithShadow common-card" style="border-radius: 12px; overflow: hidden;">
+  <mat-card-content class="common-content p-0"> 
+    <div class="row m-0 h-100" *ngIf="ticketData; else loading">
+      
+      <div class="col-xl-3 col-lg-4 col-md-5 d-flex flex-column border-end p-0 bg-white left-panel">
+        
+        <div class="p-24 border-bottom bg-light-primary">
+  <div class="d-flex justify-content-between align-items-center m-b-16">
+    <button mat-icon-button (click)="goBack()" matTooltip="Back to list" class="bg-white shadow-sm" style="border: 1px solid #eef2f6;">
+      <i-tabler name="arrow-left" class="icon-20 text-muted"></i-tabler>
+    </button>
+    
+    @if(ticketData.header.status !== 'Closed') {
+      <button mat-stroked-button class="btn-danger-outline shadow-sm" (click)="closeTicket()" [disabled]="isClosing">
+        <div class="d-flex align-items-center">
+          <mat-spinner *ngIf="isClosing" diameter="16" class="m-r-8" color="warn"></mat-spinner>
+          <i-tabler *ngIf="!isClosing" name="circle-check" class="icon-18 m-r-4"></i-tabler>
+          {{ isClosing ? 'Closing...' : 'Close Ticket' }}
+        </div>
+      </button>
+    }
+  </div>
+
+  <div style="overflow: hidden;">
+    <h4 class="f-s-18 f-w-600 m-b-4 text-primary text-truncate">#{{ticketData.header.ticketNo}}</h4>
+    <span class="f-s-13 text-muted text-truncate d-flex align-items-center">
+      <i-tabler name="user" class="icon-16 m-r-4"></i-tabler>
+      {{ticketData.header.createdByName}}
+    </span>
+  </div>
+  </div>
+
+        <div class="p-24 overflow-auto h-100 custom-scrollbar">
+          
+          <h5 class="f-w-600 m-b-24 text-break lh-sm">{{ticketData.header.subject}}</h5>
+
+          <div class="d-flex align-items-center justify-content-between m-b-20">
+            <span class="text-muted f-s-14 d-flex align-items-center"><i-tabler name="activity" class="icon-16 m-r-8"></i-tabler>Status</span>
+            <span class="status-badge" [ngClass]="ticketData.header.status | lowercase | replaceSpaces">
+              {{ticketData.header.status}}
+            </span>
+          </div>
+
+          <div class="d-flex align-items-center justify-content-between m-b-20">
+            <span class="text-muted f-s-14 d-flex align-items-center"><i-tabler name="alert-circle" class="icon-16 m-r-8"></i-tabler>Priority</span>
+            <span class="priority-badge" [ngClass]="ticketData.header.priority | lowercase">
+              {{ticketData.header.priority}}
+            </span>
+          </div>
+
+          <div class="d-flex align-items-center justify-content-between m-b-20">
+            <span class="text-muted f-s-14 d-flex align-items-center"><i-tabler name="category" class="icon-16 m-r-8"></i-tabler>Category</span>
+            <span class="category-tag">{{ticketData.header.category}}</span>
+          </div>
+
+          <mat-divider class="m-y-24 border-light"></mat-divider>
+
+          <div class="d-flex flex-column bg-light rounded p-16">
+            <span class="text-muted f-s-12 m-b-4 text-uppercase fw-semibold tracking-wide">Last Updated</span>
+            <span class="f-w-600 f-s-14 text-dark d-flex align-items-center">
+              <i-tabler name="clock" class="icon-16 m-r-8 text-muted"></i-tabler>
+              {{ticketData.header.updatedOn | date:'dd/MM/yyyy hh:mm a'}}
+            </span>
+          </div>
+
+        </div>
+      </div>
+
+      <div class="col-xl-9 col-lg-8 col-md-7 d-flex flex-column p-0 h-100 bg-chat-area">
+        
+        <div class="p-x-24 p-y-16 border-bottom d-flex align-items-center bg-white header-fixed shadow-sm z-1">
+           <div class="avatar-circle m-r-16 header-avatar">
+              <i-tabler name="headset" class="icon-24"></i-tabler>
+           </div>
+           <div>
+              <h5 class="f-w-600 m-0 f-s-16">Support Conversation</h5>
+              <span class="f-s-12 text-success d-flex align-items-center fw-medium mt-1">
+                <span class="status-dot bg-success m-r-4"></span> Active
+              </span>
+           </div>
+        </div>
+
+        <div class="chat-history flex-grow-1 p-24 custom-scrollbar" #scrollContainer>
+          
+          <ng-container *ngFor="let msg of ticketData.history">
+            <div class="chat-message-row" 
+                 [ngClass]="{'my-message': isMyMessage(msg.isAdminReply), 'their-message': !isMyMessage(msg.isAdminReply)}">
+              
+              <div class="avatar-circle m-r-12 shadow-sm" *ngIf="!isMyMessage(msg.isAdminReply)">
+                 {{ msg.isAdminReply ? 'S' : 'U' }}
+              </div>
+
+              <div class="bubble-container">
+                <div class="message-bubble">
+                  <span class="message-text">{{msg.message}}</span>
+                </div>
+                <div class="message-meta">
+                  <span>{{msg.createdOn | date:'dd/MM/yyyy hh:mm a'}}</span>
+                  <span *ngIf="msg.isAdminReply && !isMyMessage(msg.isAdminReply)" class="fw-medium text-primary"> • Support</span>
+                </div>
+              </div>
+            </div>
+          </ng-container>
+          
+          <div *ngIf="ticketData.history.length === 0" class="empty-state">
+            <div class="empty-icon-bg shadow-sm">
+              <i-tabler name="message-dots" class="icon-40 text-primary"></i-tabler>
+            </div>
+            <h4 class="f-w-600 m-b-8 text-dark">No messages yet</h4>
+            <p class="text-muted f-s-14 m-0">Type your message below to start the conversation.</p>
+          </div>
+
+        </div>
+
+        <div class="input-area bg-white p-x-24 p-y-16 border-top shadow-sm-top">
+          <form [formGroup]="replyForm" class="w-100 d-flex align-items-end gap-16">
+            
+            <mat-form-field appearance="outline" class="w-100 m-b-0 modern-chat-input flex-grow-1">
+              <textarea matInput 
+                        formControlName="message" 
+                        placeholder="Type your reply here..."
+                        rows="1" 
+                        style="resize: none; overflow: hidden; min-height: 24px; max-height: 120px; padding-top: 12px; padding-bottom: 12px;"
+                        oninput="this.style.height = ''; this.style.height = this.scrollHeight + 'px'"
+                        (keydown.enter)="$event.preventDefault(); submitReply()"></textarea>
+            </mat-form-field>
+            
+            <button mat-fab color="primary" class="send-btn shadow-md" (click)="submitReply()" 
+                    [disabled]="isSubmitting || replyForm.invalid || !replyForm.value.message?.trim()">
+              <mat-spinner *ngIf="isSubmitting" diameter="24" style="filter: brightness(0) invert(1);"></mat-spinner>
+              <i-tabler *ngIf="!isSubmitting" name="send" class="icon-20"></i-tabler>
+            </button>
+          </form>
+        </div>
+
+      </div>
+
+    </div>
+
+    <ng-template #loading>
+      <div class="d-flex justify-content-center align-items-center h-100 w-100 bg-chat-area">
+        <div class="text-center p-40 bg-white rounded shadow-sm">
+          <mat-spinner diameter="40" color="primary" class="m-b-16 mx-auto"></mat-spinner>
+          <p class="text-muted f-w-500 m-0">Loading ticket details...</p>
+        </div>
+      </div>
+    </ng-template>
+
+  </mat-card-content>
+</mat-card>

@@ -1,0 +1,155 @@
+<div class="leads-page common-card">
+  <!-- Stats & Search Row -->
+  <div class="stat-row">
+    <div class="stat-chip" [class.active]="filterStatus === ''" (click)="filterStatus = ''">
+      All <span class="chip-count">{{ students().length }}</span>
+    </div>
+    <div class="stat-chip" [class.active]="filterStatus === 'Active'" (click)="filterStatus = 'Active'">
+      Active <span class="chip-count">{{ count('Active') }}</span>
+    </div>
+    <div class="stat-chip" [class.active]="filterStatus === 'Inactive'" (click)="filterStatus = 'Inactive'">
+      Inactive <span class="chip-count">{{ count('Inactive') }}</span>
+    </div>
+    <div style="flex:1"></div>
+    <div class="search-box" style="padding: 4px 8px; min-width: 150px;">
+      <select [(ngModel)]="filterAppType" (change)="onSearch()" class="search-input" style="border: none; background: transparent; padding: 4px; outline: none; color: #334155; font-size: 14px; width: 100%;">
+        <option value="">All App Types</option>
+        <option *ngFor="let type of applicationTypes()" [value]="type.id">{{ type.name }}</option>
+      </select>
+    </div>
+    <div class="search-box">
+      <i-tabler name="search" style="width:16px;height:16px;color:#94a3b8"></i-tabler>
+      <input [(ngModel)]="searchQuery" (keyup.enter)="onSearch()" placeholder="Search students..." class="search-input"/>
+    </div>
+    <button mat-flat-button color="primary" (click)="exportCSV()" [disabled]="isExporting" style="border-radius: 8px; height: 36px; margin-left: 8px;">
+      {{ isExporting ? 'Exporting...' : 'Export CSV' }}
+    </button>
+  </div>
+
+  <!-- Table Card -->
+  <div class="table-card common-content">
+    <div class="common-table-container">
+      <table class="leads-table">
+        <thead>
+          <tr>
+            <th>Student</th>
+            <th>Student Code</th>
+            <th>Category</th>
+            <th>Contact</th>
+            <th class="text-center">Pending Apps</th>
+            <th>Status</th>
+            <th *ngIf="filterAppType">App User ID</th>
+            <th *ngIf="filterAppType">App Password</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          @if (isLoading) {
+            <tr><td colspan="6" class="text-center p-24">Loading...</td></tr>
+          } @else {
+            <tr *ngFor="let std of filteredStudents" class="table-row">
+              <td>
+                <div class="lead-cell" style="cursor: pointer;" (click)="viewDetails(std.id)">
+                  <div class="lead-avatar" [style.background]="avatarColor(std.fullName)">{{ std.fullName ? std.fullName[0] : 'S' }}</div>
+                  <div>
+                    <div style="font-weight: 600; font-size: 14px; color: #0f172a;">{{ std.fullName }}</div>
+                    <div style="color: #64748b; font-size: 12px;">{{ std.email || '--' }}</div>
+                  </div>
+                </div>
+              </td>
+              <td>
+                <div class="d-flex flex-wrap" style="gap: 4px; font-family: monospace; font-size: 12px; max-width: 140px;">
+                  <span style="color: #2e7d32; font-weight: 600; background: #e8f5e9; padding: 2px 4px; border-radius: 4px; border: 1px solid #c8e6c9;">
+                    {{ std.studentCode }}
+                  </span>
+                  @if (std.assignedCodes && std.assignedCodes.length > 1) {
+                    @for (code of std.assignedCodes; track code) {
+                      @if (code !== std.studentCode) {
+                        <span style="color: #c62828; font-weight: 500; background: #ffebee; padding: 2px 4px; border-radius: 4px; border: 1px solid #ffcdd2;">
+                          {{ code }}
+                        </span>
+                      }
+                    }
+                  }
+                </div>
+              </td>
+              <td><div style="color: #64748b; font-size: 13px;">{{ std.categoryName }}</div></td>
+              <td><div style="color: #64748b; font-size: 13px;">{{ std.primaryMobile }}</div></td>
+              <td class="text-center">
+                <span *ngIf="std.pendingApplications > 0" class="badge bg-light-warning text-warning" style="font-size: 13px; padding: 4px 10px;">
+                  {{ std.pendingApplications }}
+                </span>
+                <span *ngIf="std.pendingApplications === 0" style="color: #cbd5e1; font-weight: 500;">
+                  -
+                </span>
+              </td>
+              <td>
+                <span class="badge" [ngClass]="'status-' + std.status.toLowerCase()">{{ std.status }}</span>
+              </td>
+              <td *ngIf="filterAppType">
+                <div style="font-family: monospace; color: #475569; font-size: 13px;">{{ std.appPortalId || '--' }}</div>
+              </td>
+              <td *ngIf="filterAppType">
+                <div style="font-family: monospace; color: #475569; font-size: 13px;">{{ std.appPortalPassword || '--' }}</div>
+              </td>
+              <td>
+                <div class="action-btns">
+                  <button class="icon-btn" title="View Details" (click)="viewDetails(std.id)">
+                    <i-tabler name="eye" style="width:15px;height:15px"></i-tabler>
+                  </button>
+                  <button class="icon-btn" title="Edit" (click)="openDialog(std)" *ngIf="authService.hasPermission('/students', 'CanEdit')">
+                    <i-tabler name="pencil" style="width:15px;height:15px"></i-tabler>
+                  </button>
+                  <button class="icon-btn" title="Delete" (click)="deleteItem(std.id)" *ngIf="authService.hasPermission('/students', 'CanDelete')">
+                    <i-tabler name="trash" class="text-red" style="width:15px;height:15px"></i-tabler>
+                  </button>
+                </div>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+      
+      @if (!isLoading && filteredStudents.length === 0) {
+        <div class="empty-state">
+          <i-tabler name="mood-empty" style="width:40px;height:40px;color:#cbd5e1"></i-tabler>
+          <p>No students found.</p>
+        </div>
+      }
+    </div>
+    
+    <div class="custom-paginator">
+      <div class="paginator-left">
+        <div>
+          Showing <span class="font-semibold">{{ totalCount === 0 ? 0 : (pageIndex * pageSize) + 1 }}-{{ Math.min((pageIndex + 1) * pageSize, totalCount) }}</span> of <span class="font-semibold">{{ totalCount }}</span> students
+        </div>
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <span>Show:</span>
+          <select [value]="pageSize" (change)="onPageSizeChange($event)" class="page-size-select">
+            <option [value]="10">10</option>
+            <option [value]="20">20</option>
+            <option [value]="50">50</option>
+            <option [value]="100">100</option>
+          </select>
+        </div>
+      </div>
+      <div class="paginator-right">
+        <button class="page-btn" [disabled]="pageIndex === 0" (click)="prevPage()">
+          <i-tabler name="chevron-left" style="width:16px;height:16px"></i-tabler>
+        </button>
+        
+        <button *ngFor="let p of pages" 
+                class="page-btn" 
+                [class.active]="p === pageIndex + 1"
+                [class.dots]="p === '...'"
+                (click)="goToPage(p)">
+          {{ p }}
+        </button>
+        
+        <button class="page-btn" [disabled]="pageIndex >= totalPages - 1" (click)="nextPage()">
+          <i-tabler name="chevron-right" style="width:16px;height:16px"></i-tabler>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

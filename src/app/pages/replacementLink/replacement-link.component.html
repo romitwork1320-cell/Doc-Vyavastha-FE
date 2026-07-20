@@ -1,0 +1,134 @@
+<body>
+  <header class="header">
+    <div class="header-content">
+      <a href="https://replezy.com/" target="_blank" rel="noopener noreferrer" class="logo-link">
+        <img [src]="companyLogoUrl || defaultLogoUrl" 
+             (error)="$any($event.target).src = defaultLogoUrl"
+             alt="Replezy Logo" class="logo-img">
+      </a>
+    </div>
+  </header>
+
+  <main class="main-content">
+    
+    <div *ngIf="isLoading" class="loading-state">
+      <mat-spinner diameter="40" color="primary"></mat-spinner>
+      <p>Fetching status...</p>
+    </div>
+
+    <section class="publicity-section" *ngIf="!isLoading && publicityImages && publicityImages.length > 0">
+      <div class="fade-overlay left"></div>
+      
+      <div class="banner-scroll-container hover-pause">
+        <div class="banner-track">
+          
+          <ng-container *ngFor="let repeat of [1, 2, 3, 4]">
+            <ng-container *ngFor="let image of publicityImages">
+              
+              <a *ngIf="image.link" [href]="image.link" target="_blank" class="banner-item">
+                <img [src]="'./assets/images/publicity/' + image.filePath" [alt]="image.title">
+              </a>
+              
+              <div *ngIf="!image.link" class="banner-item">
+                <img [src]="'./assets/images/publicity/' + image.filePath" [alt]="image.title">
+              </div>
+
+            </ng-container>
+          </ng-container>
+
+        </div>
+      </div>
+
+      <div class="fade-overlay right"></div>
+    </section>
+
+    <div *ngIf="!isLoading && groupedReplacement.length > 0" class="content-wrapper">
+      <div *ngFor="let invoiceGroup of groupedReplacement" class="status-group">
+        
+        <div class="card main-status-card">
+          <div class="card-header">
+            <div>
+              <h2 class="title">Service Status</h2>
+              <span class="status-badge" [ngClass]="invoiceGroup.groupStatus | lowercase">
+                {{ invoiceGroup.groupStatus }}
+              </span>
+            </div>
+            <div class="meta-info">
+              <div class="meta-item">
+                <span class="label">I/W NO</span>
+                <span class="value">{{ invoiceGroup.invertNo }}</span>
+              </div>
+              <div class="meta-item">
+                <span class="label">DATE</span>
+                <span class="value">{{ invoiceGroup?.createdOn ? (invoiceGroup.createdOn | date:'mediumDate') : 'N/A' }}</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="tracker-wrapper">
+            <div class="timeline">
+              <div class="step" [class.active]="isStatusActive(invoiceGroup.groupStatus, 'Pending')">
+                <div class="icon-circle"><i class="material-icons">inventory_2</i></div>
+                <span class="step-label">Received</span>
+              </div>
+              <div class="line" [class.filled]="isStatusActive(invoiceGroup.groupStatus, 'In Progress')"></div>
+              
+              <div class="step" [class.active]="isStatusActive(invoiceGroup.groupStatus, 'In Progress')">
+                <div class="icon-circle"><i class="material-icons">build</i></div>
+                <span class="step-label">In Progress</span>
+              </div>
+              <div class="line" [class.filled]="isStatusActive(invoiceGroup.groupStatus, 'Ready')"></div>
+              
+              <div class="step" [class.active]="isStatusActive(invoiceGroup.groupStatus, 'Ready')">
+                <div class="icon-circle"><i class="material-icons">thumb_up</i></div>
+                <span class="step-label">Ready</span>
+              </div>
+              <div class="line" [class.filled]="isStatusActive(invoiceGroup.groupStatus, 'Completed')"></div>
+              
+              <div class="step" [class.active]="isStatusActive(invoiceGroup.groupStatus, 'Completed')">
+                <div class="icon-circle"><i class="material-icons">check_circle</i></div>
+                <span class="step-label">Delivered</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="details-grid">
+          <div class="card product-card">
+            <h3 class="card-title"><i class="material-icons text-primary">devices</i> Product Details</h3>
+            <div class="product-list">
+              <div class="product-row" *ngFor="let product of invoiceGroup.products">
+                <div class="product-icon">
+                  <i class="material-icons">dns</i>
+                </div>
+                <div class="product-text">
+                  <div class="p-name">{{ product.productName }}</div>
+                  <div class="p-status">Current Stage: <strong>{{ product.statusName }}</strong></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <div *ngIf="!isLoading && groupedReplacement.length === 0" class="no-data">
+      <i class="material-icons icon-large">search_off</i>
+      <h2>No Records Found</h2>
+      <p>We couldn't locate any service details for this link.</p>
+    </div>
+
+  </main>
+
+  <footer class="footer">
+    <div class="footer-content">
+      <p>
+        &copy; {{ currentYear }} 
+        <!-- <a href="https://www.skylaketech.com/" target="_blank" class="footer-link">SKYLAKE TECHNOLOGIES</a>. 
+        Powered by  -->
+        <a href="https://replezy.com/" target="_blank" class="footer-link">Replezy</a>
+      </p>
+    </div>
+  </footer>
+</body>

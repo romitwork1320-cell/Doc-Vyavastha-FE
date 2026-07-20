@@ -1,0 +1,259 @@
+/* =========================================
+   1. SHARED THEME (Dark Navy + Arrows)
+   ========================================= */
+
+.auth-bg {
+  /* Dark Navy Gradient */
+  background: radial-gradient(circle at center, #1e293b 0%, #0f172a 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 20px;
+  position: relative;
+  overflow: hidden; 
+  z-index: 1;
+
+  @media (max-width: 576px) {
+    padding: 15px;
+  }
+}
+
+/* Background Grid */
+.bg-effects {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -2;
+  pointer-events: none;
+  background-image: 
+    linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+  background-size: 40px 40px;
+}
+
+/* Giant Brand Arrows */
+.brand-arrows {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+  pointer-events: none;
+  display: flex;
+  justify-content: space-between;
+  padding: 0 5%;
+}
+
+.arrow {
+  width: 160px;
+  height: 600px;
+  position: absolute;
+  opacity: 0.15;
+  background-image: radial-gradient(#635bff 3px, transparent 3px);
+  background-size: 20px 20px;
+
+  @media (max-width: 992px) {
+    width: 120px;
+    height: 450px;
+    opacity: 0.1;
+  }
+
+  /* ✨ MOBILE: Make short and narrow so they look like triangles, not lines */
+  @media (max-width: 576px) {
+    width: 80px;   
+    height: 300px; 
+    opacity: 0.08; 
+  }
+}
+
+.arrow-up {
+  left: 10%;
+  top: 50%;
+  clip-path: polygon(50% 0%, 0% 20%, 20% 20%, 20% 100%, 80% 100%, 80% 20%, 100% 20%);
+  animation: floatUp 20s linear infinite;
+
+  @media (max-width: 576px) {
+    top: 60%;
+    left: -5px;
+  }
+}
+
+.arrow-down {
+  right: 10%;
+  top: -20%;
+  clip-path: polygon(20% 0%, 80% 0%, 80% 80%, 100% 80%, 50% 100%, 0% 80%, 20% 80%);
+  animation: floatDown 20s linear infinite;
+
+  @media (max-width: 576px) {
+    top: -10%;
+    right: -5px;
+  }
+}
+
+@keyframes floatUp {
+  0% { transform: translateY(100px); }
+  50% { transform: translateY(-50px); }
+  100% { transform: translateY(100px); }
+}
+
+@keyframes floatDown {
+  0% { transform: translateY(-100px); }
+  50% { transform: translateY(50px); }
+  100% { transform: translateY(-100px); }
+}
+
+/* =========================================
+   2. CARD STYLING (Specific to Selection)
+   ========================================= */
+
+.workspace-card {
+  background-color: #ffffff;
+  border-radius: 36px;
+  box-shadow: 0px 30px 60px -15px rgba(0, 0, 0, 0.5);
+  width: 550px; /* Slightly narrower than login for focus */
+  max-width: 100%;
+  padding: 50px;
+  position: relative;
+  z-index: 10;
+  text-align: center;
+
+  @media (max-width: 768px) {
+    padding: 40px;
+  }
+
+  /* ✨ MOBILE: Adjust padding and radius */
+  @media (max-width: 480px) {
+    padding: 30px 24px; /* Consistent with login page */
+    border-radius: 24px;
+  }
+}
+
+.logo-img {
+  max-width: 160px;
+  margin-bottom: 24px;
+
+  @media (max-width: 480px) {
+    max-width: 130px; /* Smaller logo on mobile */
+    margin-bottom: 16px;
+  }
+}
+
+.auth-title {
+  font-size: 28px;
+  font-weight: 700;
+  color: #111c2d;
+  margin-bottom: 8px;
+
+  @media (max-width: 480px) {
+    font-size: 24px;
+  }
+}
+
+.auth-subtitle {
+  font-size: 15px;
+  color: #5a6a85;
+  line-height: 1.5;
+  margin-bottom: 30px;
+
+  @media (max-width: 480px) {
+    font-size: 14px;
+    margin-bottom: 24px;
+    br { display: none; } /* Remove break tag on mobile to save space */
+  }
+}
+
+/* =========================================
+   3. TENANT LIST ITEMS
+   ========================================= */
+
+/* Use ::ng-deep to penetrate Material's strict encapsulation for list items */
+:host ::ng-deep .workspace-item {
+  height: auto !important;
+  min-height: 72px;
+  border: 1px solid #e5eaef;
+  border-radius: 12px !important;
+  margin-bottom: 12px;
+  padding: 12px 20px !important;
+  transition: all 0.2s ease-in-out;
+  background: #fff;
+
+  @media (max-width: 480px) {
+     padding: 12px 16px !important;
+  }
+
+  &:hover {
+    border-color: #5d87ff;
+    background-color: #f4f7ff;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(93, 135, 255, 0.15);
+    
+    .arrow-icon {
+        color: #5d87ff;
+        transform: translateX(4px);
+    }
+  }
+
+  &.disabled-item {
+    opacity: 0.6;
+    pointer-events: none;
+    background-color: #f8f9fa;
+  }
+
+  .mat-mdc-list-item-unscoped-content {
+     width: 100%;
+     padding: 0 !important;
+  }
+}
+
+.workspace-info {
+  min-width: 0;
+  padding-right: 12px;
+}
+
+.tenant-name {
+  font-size: 16px;
+  font-weight: 600;
+  color: #2A3547;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.tenant-role {
+  font-size: 13px;
+  color: #5A6A85;
+  margin-top: 2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Icons & Badges */
+.arrow-icon {
+    color: #cbd5e1;
+    transition: all 0.2s ease;
+}
+
+.inactive-badge {
+    font-size: 12px;
+    background: #fa896b1a;
+    color: #fa896b;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-weight: 600;
+}
+
+.alert-error {
+    color: #FA896B;
+    background: #fa896b1a;
+    padding: 10px;
+    border-radius: 8px;
+    font-size: 14px;
+}
+
+/* Helpers */
+.m-t-24 { margin-top: 24px; }

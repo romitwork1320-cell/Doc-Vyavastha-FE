@@ -1,0 +1,116 @@
+.dialog-header {
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+  background: #fff;
+  z-index: 200; /* Ensure header stays above everything */
+}
+
+.bg-light-error {
+  background-color: #fdeded;
+}
+
+.text-error {
+  color: #fa5a5a;
+}
+
+/* Scrollable Container */
+.content-wrapper {
+  max-height: 70vh;
+  overflow-y: auto;
+  position: relative; /* Context for sticky */
+  padding-bottom: 24px !important;
+}
+
+table {
+  width: 100%;
+
+  th.mat-header-cell {
+    /* STICKY HEADER STYLES START */
+    position: sticky;
+    top: 0;
+    z-index: 100; /* Must be higher than rows */
+    background-color: #fff; /* Opaque background is mandatory */
+    /* STICKY HEADER STYLES END */
+
+    font-size: 13px;
+    color: #5a6a85;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+    padding-top: 16px;
+    padding-bottom: 16px;
+  }
+
+  td.mat-cell {
+    font-size: 14px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    padding-top: 12px;
+    padding-bottom: 12px;
+  }
+
+  tr.mat-row:hover {
+    background-color: #f8f9fa;
+  }
+}
+
+.restore-btn {
+  line-height: 32px;
+  height: 32px;
+  padding: 0 16px;
+}
+
+.text-muted-light {
+  color: #98a6ad;
+}
+
+.d-flex {
+  display: flex !important;
+}
+
+.justify-content-end {
+  justify-content: flex-end !important;
+}
+
+.w-100 {
+  width: 100% !important;
+}
+
+/* ... existing styles ... */
+
+.restore-btn {
+  /* Dimensions & Layout */
+  height: 28px !important;
+  line-height: 28px !important;
+  padding: 0 12px !important;
+  font-size: 12px !important;
+  min-width: auto !important;
+  
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  
+  /* Button Effect & Transition */
+  transition: all 0.2s ease-in-out;
+  border: 1px solid rgba(0, 0, 0, 0.12); /* Default subtle border */
+
+  /* Hover State - Makes it pop */
+  &:hover {
+    background-color: rgba(93, 135, 255, 0.08); /* Light blue tint matching your primary */
+    border-color: #5d87ff; /* Highlight border on hover */
+    cursor: pointer;
+  }
+
+  /* Active/Click State */
+  &:active {
+    background-color: rgba(93, 135, 255, 0.15);
+    transform: translateY(1px); /* Subtle press effect */
+  }
+}
+
+.icon-16 {
+  width: 16px;
+  height: 16px;
+  font-size: 16px;
+}
+
+.gap-8 {
+  gap: 6px !important;
+}

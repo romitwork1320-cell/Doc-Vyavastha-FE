@@ -1,0 +1,24 @@
+<div class="dialog-header p-24 d-flex align-items-center justify-content-between border-bottom" style="overflow-x: hidden;">
+  <h4 class="mat-headline-6 m-0">{{ isEditMode ? 'Edit College' : 'Create College' }}</h4>
+  <button class="close-btn" mat-dialog-close>
+    <i-tabler name="x" class="icon-20"></i-tabler>
+  </button>
+</div>
+
+<mat-dialog-content class="mat-typography" style="padding-top: 16px; overflow-x: hidden;">
+  <form [formGroup]="form" class="crm-form">
+    <div class="form-group">
+      <label>Name <span class="required">*</span></label>
+      <input type="text" formControlName="name" class="crm-input" placeholder="e.g. Stanford University">
+      <div *ngIf="f['name'].errors?.['required'] && f['name'].touched" style="color: #ef4444; font-size: 12px; margin-top: 4px;">Name is required</div>
+      <div *ngIf="f['name'].errors?.['maxlength'] && f['name'].touched" style="color: #ef4444; font-size: 12px; margin-top: 4px;">Max 255 characters allowed</div>
+    </div>
+  </form>
+</mat-dialog-content>
+
+<div class="dialog-footer">
+  <button class="cancel-btn" mat-dialog-close>Cancel</button>
+  <button class="save-btn" (click)="onSubmit()" [disabled]="form.invalid || isSubmitting">
+    {{ isSubmitting ? 'Saving...' : 'Save' }}
+  </button>
+</div>

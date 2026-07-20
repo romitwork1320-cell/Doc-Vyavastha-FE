@@ -1,0 +1,32 @@
+<div class="restriction-dialog text-center p-32">
+  
+  <div class="m-b-24 d-inline-block position-relative">
+    <div class="icon-circle mx-auto d-flex align-items-center justify-content-center">
+      <i-tabler name="lock" class="icon-40"></i-tabler>
+    </div>
+  </div>
+
+  <h3 class="dialog-title m-b-12">Trial Expired</h3>
+  
+  <p class="dialog-message m-b-32">
+    Your free trial has ended. <br>
+    You can view and edit existing data, but 
+    <span class="highlight-error">new entries are restricted.</span><br>
+    Unlock full access by upgrading today.
+  </p>
+
+  <div class="d-flex gap-16 justify-content-center action-buttons">
+    
+    <button mat-stroked-button class="dialog-btn btn-cancel" (click)="onCancel()">
+      Cancel
+    </button>
+    
+    <button mat-flat-button class="dialog-btn btn-upgrade" (click)="onBuyNow()">
+      <div class="d-flex align-items-center justify-content-center gap-8">
+        <i-tabler name="premium-rights" class="icon-20"></i-tabler>
+        Upgrade Plan
+      </div>
+    </button>
+    
+  </div>
+</div>

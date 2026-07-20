@@ -1,0 +1,106 @@
+/* Theme Colors */
+$theme-color: #ffae1f; 
+$theme-light: #fef5e5; 
+
+.bg-light-warning { background-color: $theme-light !important; }
+.text-warning { color: $theme-color !important; }
+
+.history-dialog-container {
+    display: flex;
+    flex-direction: column;
+    max-height: 90vh;
+}
+
+.dialog-header {
+    border-bottom: 1px solid #e5eaef;
+    background: #fff;
+    .header-icon { width: 40px; height: 40px; }
+}
+
+.content-scroll {
+    overflow-y: auto;
+    background-color: #f8f9fa;
+}
+
+.profile-card {
+    border: 1px solid #e5eaef;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.02) !important;
+    
+    .edit-fab {
+        position: absolute;
+        top: 16px; right: 16px;
+        box-shadow: 0 4px 8px rgba(255, 174, 31, 0.2);
+        z-index: 2;
+    }
+}
+
+.center-avatar-lg {
+    width: 64px; height: 64px;
+    font-size: 28px;
+    border: 2px solid $theme-light;
+}
+
+/* Updated Stat Box Style */
+.stat-box {
+    border-color: #ecf2ff !important;
+    min-width: 180px;
+    transition: transform 0.2s ease;
+    
+    &:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.05) !important;
+    }
+}
+
+.tracking-wide {
+    letter-spacing: 0.5px;
+}
+
+.l-h-1 {
+    line-height: 1;
+}
+
+/* Status Badges */
+.status-badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    &.active { background: #e6fffa; color: #13deb9; border: 1px solid #13deb9; }
+    &.inactive { background: #fdede8; color: #fa896b; border: 1px solid #fa896b; }
+}
+
+.status-pill {
+    padding: 4px 10px;
+    border-radius: 30px;
+    font-size: 11px;
+    font-weight: 600;
+    display: inline-block;
+}
+
+/* Table Styles */
+.history-table {
+    tr.mat-mdc-header-row { height: 48px; background-color: #f5f7fa; }
+    
+    tr.mat-mdc-row {
+        height: 52px;
+        transition: background 0.2s ease;
+        &.hover-row:hover { background-color: #f8faff; }
+    }
+    
+    .font-monospace { font-family: 'Roboto Mono', monospace; }
+}
+
+.hover-link {
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border-bottom: 1px dashed transparent;
+    &:hover {
+        color: #635bff !important; 
+        border-bottom-color: #635bff;
+    }
+}
+
+.bg-light-subtle { background-color: #f8f9fa !important; }

@@ -1,0 +1,61 @@
+<h2 class="f-w-500" mat-dialog-title><strong>{{action}} Service Center</strong></h2>
+
+@if(action !== 'Delete') {
+<mat-dialog-content class="p-t-10" style="max-width: 600px;">
+  <form #serviceCenterForm="ngForm">
+    <div class="row">
+      
+      <div class="col-lg-12">
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Service Center Name</mat-label>
+          <input type="text" matInput required id="name" name="name" [(ngModel)]="local_data.name" placeholder="Service Center Name" />
+          @if (serviceCenterForm.controls['name']?.hasError('required') && serviceCenterForm.controls['name']?.touched) {
+            <mat-error>Name is required.</mat-error>
+          }
+        </mat-form-field>
+      </div>
+
+      <div class="col-lg-12">
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Google Map Location URL</mat-label>
+          <input type="text" matInput id="mapLocationUrl" name="mapLocationUrl" 
+                 [(ngModel)]="local_data.mapLocationUrl" 
+                 placeholder="Paste Google Maps Link (e.g. https://maps.app.goo.gl/...)" />
+          <mat-icon matSuffix class="text-muted">link</mat-icon>
+        </mat-form-field>
+      </div>
+
+      <div class="col-lg-12">
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Address</mat-label>
+          <textarea matInput required id="address" name="address" [(ngModel)]="local_data.address"
+            placeholder="Service Center Address" rows="3"></textarea>
+          @if (serviceCenterForm.controls['address']?.hasError('required') && serviceCenterForm.controls['address']?.touched) {
+            <mat-error>Address is required.</mat-error>
+          }
+        </mat-form-field>
+      </div>
+
+    </div>
+
+    <div mat-dialog-actions class="d-flex justify-content-end p-0 m-t-16">
+      <button mat-flat-button color="primary" [disabled]="!serviceCenterForm.valid" (click)="doAction()">
+        {{action}}
+      </button>
+      <button mat-stroked-button color="warn" class="m-l-8" (click)="closeDialog()">
+        Cancel
+      </button>
+    </div>
+  </form>
+</mat-dialog-content>
+} @else {
+<div class="p-x-24">
+  <p>Are you sure you want to delete service center <span class="f-w-600">{{local_data.name}}</span> ?</p>
+</div>
+<div mat-dialog-actions class="p-x-24 p-b-24 d-flex justify-content-end">
+  <button mat-flat-button color="warn" (click)="doAction()">
+    {{action}}
+  </button>
+  <button mat-button (click)="closeDialog()" class="m-l-8">Cancel</button>
+</div>
+}

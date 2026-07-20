@@ -1,0 +1,185 @@
+<mat-card class="cardWithShadow">
+  <mat-card-content class="p-0">
+    <mat-tab-group mat-stretch-tabs="false" animationDuration="0ms" class="theme-tab">
+      
+      <mat-tab>
+        <ng-template mat-tab-label>
+          <mat-icon class="m-r-8"><i-tabler name="user-circle"></i-tabler></mat-icon>
+          Personal Details
+        </ng-template>
+        <div class="p-24" [formGroup]="userProfileForm">
+           <mat-card-title>Personal Information</mat-card-title>
+          <mat-card-subtitle class="mat-body-1">Update your personal contact details.</mat-card-subtitle>
+           <div class="row m-t-24">
+            <div class="col-md-6">
+              <mat-label class="f-w-600 m-b-8 d-block">First Name*</mat-label>
+              <mat-form-field appearance="outline" class="w-100">
+                <input matInput formControlName="firstName" />
+                @if(userProfileForm.get('firstName')?.hasError('required')) {
+                  <mat-error>First name is required.</mat-error>
+                }
+              </mat-form-field>
+            </div>
+            <div class="col-md-6">
+              <mat-label class="f-w-600 m-b-8 d-block">Last Name*</mat-label>
+              <mat-form-field appearance="outline" class="w-100">
+                <input matInput formControlName="lastName" />
+                @if(userProfileForm.get('lastName')?.hasError('required')) {
+                  <mat-error>Last name is required.</mat-error>
+                }
+              </mat-form-field>
+            </div>
+             <div class="col-md-6">
+              <mat-label class="f-w-600 m-b-8 d-block">Job Title</mat-label>
+              <mat-form-field appearance="outline" class="w-100"><input matInput formControlName="jobTitle" /></mat-form-field>
+            </div>
+            <div class="col-md-6">
+              <mat-label class="f-w-600 m-b-8 d-block">Your Contact Number</mat-label>
+              <mat-form-field appearance="outline" class="w-100"><input matInput formControlName="contactNumber" /></mat-form-field>
+            </div>
+          </div>
+        </div>
+      </mat-tab>
+
+      <mat-tab>
+        <ng-template mat-tab-label>
+          <mat-icon class="m-r-8"><i-tabler name="building-community"></i-tabler></mat-icon>
+          Company Details
+        </ng-template>
+        <div class="p-24">
+          <div [formGroup]="companyProfileForm">
+            <div class="row">
+              
+              <div class="col-md-4">
+                <div class="b-1 rounded p-24 text-center d-flex flex-column align-items-center h-100">
+                  <mat-card-title class="m-b-8">Company Logo</mat-card-title>
+
+                  @if(canEditCompany) {
+                    <mat-card-subtitle class="mat-body-1">Update your company logo</mat-card-subtitle>
+                  }
+                  
+                  <img
+                    [src]="logoPreview || (companyLogoUrl$ | async) || '/assets/images/profile/default-logo.png'"
+                    (error)="$any($event.target).src = '/assets/images/profile/default-logo.png'"
+                    alt="Company Logo"
+                    class="company-logo-preview"
+                  />
+                  
+                  @if(canEditCompany) {
+                    <input
+                      type="file"
+                      class="d-none"
+                      #logoFileInput
+                      (change)="onFileSelected($event)"
+                      accept="image/png, image/jpeg, image/gif"
+                    />
+
+                    <div class="m-t-24">
+                      <button mat-flat-button color="primary" class="m-r-8" (click)="logoFileInput.click()">
+                        Upload
+                      </button>
+                      <button mat-stroked-button color="warn" (click)="resetLogo()">Reset</button>
+                    </div>
+                    <span class="f-s-12 m-t-16 d-block">Allowed PNG, JPG, GIF. Max size of 2MB.</span>
+                  }
+                </div>
+              </div>
+              <div class="col-md-8">
+                <div class="b-1 rounded p-24 h-100">
+                  <mat-card-title>Company Information</mat-card-title>
+                  <mat-card-subtitle class="mat-body-1 m-b-16">Update your company's legal and contact details.</mat-card-subtitle>
+                  
+                  <div class="row">
+                    <div class="col-md-6">
+                      <mat-label class="f-w-600 m-b-8 d-block">Company Name*</mat-label>
+                      <mat-form-field appearance="outline" class="w-100">
+                        <input matInput formControlName="companyName" />
+                        @if(companyProfileForm.get('companyName')?.hasError('required')) {
+                          <mat-error>Company name is required.</mat-error>
+                        }
+                      </mat-form-field>
+                    </div>
+                    <div class="col-md-6">
+                      <mat-label class="f-w-600 m-b-8 d-block">Contact Email</mat-label>
+                      <mat-form-field appearance="outline" class="w-100">
+                        <input matInput formControlName="contactEmail" />
+                        @if(companyProfileForm.get('contactEmail')?.hasError('email')) {
+                          <mat-error>Please enter a valid email.</mat-error>
+                        }
+                      </mat-form-field>
+                    </div>
+                    <div class="col-md-6">
+                      <mat-label class="f-w-600 m-b-8 d-block">Contact Phone</mat-label>
+                      <mat-form-field appearance="outline" class="w-100"><input matInput formControlName="contactPhone" /></mat-form-field>
+                    </div>
+                    <div class="col-md-6">
+                      <mat-label class="f-w-600 m-b-8 d-block">Support Phone</mat-label>
+                      <mat-form-field appearance="outline" class="w-100">
+                        <input matInput formControlName="supportPhone" />
+                      </mat-form-field>
+                    </div>
+                    <div class="col-md-6">
+                      <mat-label class="f-w-600 m-b-8 d-block">Website</mat-label>
+                      <mat-form-field appearance="outline" class="w-100"><input matInput formControlName="website" placeholder="https://..." /></mat-form-field>
+                    </div>
+                    <div class="col-12">
+                      <mat-label class="f-w-600 m-b-8 d-block">Address Line 1</mat-label>
+                      <mat-form-field appearance="outline" class="w-100"><input matInput formControlName="addressLine1" /></mat-form-field>
+                    </div>
+                    <div class="col-12">
+                      <mat-label class="f-w-600 m-b-8 d-block">Address Line 2 (Optional)</mat-label>
+                      <mat-form-field appearance="outline" class="w-100"><input matInput formControlName="addressLine2" /></mat-form-field>
+                    </div>
+                    <div class="col-md-6 col-lg-3">
+                      <mat-label class="f-w-600 m-b-8 d-block">City</mat-label>
+                      <mat-form-field appearance="outline" class="w-100"><input matInput formControlName="city" /></mat-form-field>
+                    </div>
+                    <div class="col-md-6 col-lg-3">
+                      <mat-label class="f-w-600 m-b-8 d-block">State / Province</mat-label>
+                      <mat-form-field appearance="outline" class="w-100"><input matInput formControlName="state" /></mat-form-field>
+                    </div>
+                    <div class="col-md-6 col-lg-3">
+                      <mat-label class="f-w-600 m-b-8 d-block">Postal Code</mat-label>
+                      <mat-form-field appearance="outline" class="w-100"><input matInput formControlName="postalCode" /></mat-form-field>
+                    </div>
+                    <div class="col-md-6 col-lg-3">
+                      <mat-label class="f-w-600 m-b-8 d-block">Country</mat-label>
+                      <mat-form-field appearance="outline" class="w-100"><input matInput formControlName="country" /></mat-form-field>
+                    </div>
+                    <div class="col-md-6">
+                      <mat-label class="f-w-600 m-b-8 d-block">GSTIN</mat-label>
+                      <mat-form-field appearance="outline" class="w-100"><input matInput formControlName="gstin" /></mat-form-field>
+                    </div>
+                    <div class="col-md-6">
+                      <mat-label class="f-w-600 m-b-8 d-block">PAN</mat-label>
+                      <mat-form-field appearance="outline" class="w-100"><input matInput formControlName="pan" /></mat-form-field>
+                    </div>
+                    <div class="col-md-6">
+                      <mat-label class="f-w-600 m-b-8 d-block">CIN No.</mat-label>
+                      <mat-form-field appearance="outline" class="w-100"><input matInput formControlName="ciN_NO" /></mat-form-field>
+                    </div>
+                    <div class="col-md-6">
+                      <mat-label class="f-w-600 m-b-8 d-block">MSME No.</mat-label>
+                      <mat-form-field appearance="outline" class="w-100"><input matInput formControlName="msmE_NO" /></mat-form-field>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              </div>
+          </div>
+        </div>
+      </mat-tab>
+    </mat-tab-group>
+
+    <div class="text-right p-24 p-t-20">
+      <button mat-flat-button color="primary" (click)="onSaveChanges()" [disabled]="isLoading || !profileForm.dirty">
+        <span *ngIf="isLoading" class="d-flex align-items-center">
+          <mat-progress-spinner [diameter]="20" mode="indeterminate" class="m-r-8"></mat-progress-spinner>
+          Saving...
+        </span>
+        <span *ngIf="!isLoading">Save Changes</span>
+      </button>
+      <button mat-stroked-button color="warn" class="m-l-8" [disabled]="isLoading">Cancel</button>
+    </div>
+  </mat-card-content>
+</mat-card>

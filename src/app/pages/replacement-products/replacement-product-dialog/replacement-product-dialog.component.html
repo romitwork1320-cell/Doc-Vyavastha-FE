@@ -1,0 +1,105 @@
+@if(action === 'Restore') {
+  <div class="dialog-header p-24 d-flex align-items-center justify-content-between border-bottom">
+    <div class="d-flex align-items-center gap-12">
+      <div class="bg-light-primary text-primary rounded p-8 d-flex align-items-center justify-content-center">
+        <i-tabler name="rotate-2" class="icon-24"></i-tabler>
+      </div>
+      <h4 class="mat-headline-6 m-0">Restore Replacement</h4>
+    </div>
+    <button mat-icon-button (click)="closeDialog()" class="close-btn text-muted">
+      <i-tabler name="x" class="icon-20"></i-tabler>
+    </button>
+  </div>
+} @else if (action === 'Delete') {
+  <div class="dialog-header p-24 d-flex align-items-center justify-content-between border-bottom">
+    <div class="d-flex align-items-center gap-12">
+      <div class="bg-light-error text-error rounded p-8 d-flex align-items-center justify-content-center">
+        <i-tabler name="trash" class="icon-24"></i-tabler>
+      </div>
+      <h4 class="mat-headline-6 m-0">Delete Replacement</h4>
+    </div>
+    <button mat-icon-button (click)="closeDialog()" class="close-btn text-muted">
+      <i-tabler name="x" class="icon-20"></i-tabler>
+    </button>
+  </div>
+} @else {
+  <div mat-dialog-title class="dialog-header d-flex align-items-center justify-content-between">
+    <h2 class="title m-0"><strong>{{ action }} Replacement</strong></h2>
+    @if (invertNo) { <span class="invert-no"><strong class="text-muted">{{ invertNo }}</strong></span> }
+  </div>
+}
+
+@if(action !== 'Delete' && action !== 'Restore') {
+  <mat-dialog-content class="p-t-10">
+    @if (action === 'Add') {
+      <app-replacement-add-form 
+          [parentForm]="replacementForm"
+          [filteredContacts]="filteredContacts"
+          [datePipe]="datePipe"
+          (requestAddItem)="onAddReplacementItem()"
+          (requestRemoveItem)="onRemoveReplacementItem($event)"
+          (requestDuplicateItem)="onDuplicateItemInAdd($event)">
+      </app-replacement-add-form>
+    }
+
+    @if (action === 'Update') {
+      <app-replacement-update-table
+          [parentForm]="replacementForm"
+          [filteredContacts]="filteredContacts"
+          [canAddNewProductsInUpdateMode]="canAddNewProductsInUpdateMode"
+          [tenantUsers]="tenantUsers"
+          [datePipe]="datePipe"
+          [productStatuses]="productStatuses"
+          [nonProductStatuses]="nonProductStatuses"
+          [statusOrder]="statusOrder"
+          (requestAddNewItem)="onAddNewProductItemInUpdate()"
+          (requestRemoveNewItem)="onRemoveNewReplacementItemInUpdate($event)"
+          (requestRemoveExistingItem)="onRemoveExistingItemInUpdate($event)"
+          (requestDuplicateNewItem)="onDuplicateNewItemInUpdate($event)"
+          (requestDuplicateExistingItem)="onDuplicateExistingItemInUpdate($event)"> 
+      </app-replacement-update-table>
+    }
+
+    <div mat-dialog-actions class="d-flex justify-content-end p-0 mt-3">
+      <button mat-flat-button color="primary" [disabled]="replacementForm.invalid" (click)="doAction()">
+        {{ action }}
+      </button>
+      <button mat-stroked-button color="warn" class="m-l-8" (click)="closeDialog()">Cancel</button>
+    </div>
+  </mat-dialog-content>
+} 
+
+@else if (action === 'Delete') {
+  <div class="p-24">
+    <p class="f-s-16 m-b-8">Are you sure you want to delete replacement <span class="f-w-600">{{local_data}}</span>?</p>
+    <div class="d-flex align-items-center gap-8 p-12 bg-light-warning rounded text-warning">
+       <i-tabler name="info-circle" class="icon-20"></i-tabler>
+       <span class="f-s-12">You can restore this item from the Recycle Bin later.</span>
+    </div>
+  </div>
+  <div mat-dialog-actions class="p-x-24 p-b-24 d-flex justify-content-end">
+    <button mat-flat-button color="warn" (click)="doAction()">Delete</button>
+    <button mat-button (click)="closeDialog()" class="m-l-8">Cancel</button>
+  </div>
+}
+
+@else if (action === 'Restore') {
+  <div class="p-24">
+    <h6 class="f-s-14 f-w-500 m-b-16 m-t-0 lh-base">
+      Are you sure you want to restore replacement <span class="f-w-700">{{local_data}}</span>?
+    </h6>
+
+    <div class="bg-light-primary rounded p-16 d-flex align-items-center gap-12">
+       <i-tabler name="info-circle" class="icon-24 text-primary flex-shrink-0"></i-tabler>
+       
+       <div class="text-primary f-s-14 lh-sm">
+         This item will be moved back to the active replacements list.
+       </div>
+    </div>
+  </div>
+
+  <div mat-dialog-actions class="p-x-24 p-b-24 d-flex justify-content-end">
+    <button mat-flat-button color="primary" (click)="doAction()">Restore</button>
+    <button mat-button (click)="closeDialog()" class="m-l-8">Cancel</button>
+  </div>
+}

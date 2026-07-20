@@ -1,0 +1,60 @@
+<h2 class="f-w-500" mat-dialog-title><strong>Import Replacements</strong></h2>
+
+<mat-dialog-content class="p-t-10">
+
+  <div class="step-container">
+    <h3 class="mat-subheading-2 f-w-500 m-b-8">Step 1: Download Template</h3>
+    <p class="mat-body-1 text-muted">Download our template to ensure your replacement data is in the correct format.</p>
+    <button mat-stroked-button color="primary" (click)="downloadTemplate()" class="m-t-20">
+      <div class="d-flex align-items-center">
+        <i-tabler name="file-download" class="icon-20 m-r-8"></i-tabler>
+        <span>Download Template</span>
+      </div>
+    </button>
+  </div>
+
+  <div class="step-container m-t-24">
+    <h3 class="mat-subheading-2 f-w-500 m-b-8">Step 2: Upload Your File</h3>
+    
+    <input hidden type="file" #fileInput (change)="onFileSelected($event)" accept=".xlsx, .xls" />
+
+    <div 
+      class="drop-zone" 
+      (click)="fileInput.click()"
+      (dragover)="onDragOver($event)"
+      (dragleave)="onDragLeave($event)"
+      (drop)="onDrop($event)"
+      [class.is-active]="isDragging">
+
+      @if (!selectedFile) {
+        <div class="drop-zone-prompt">
+          <i-tabler name="upload" class="icon-48 text-muted"></i-tabler>
+          <p class="mat-body-1 f-w-500 m-t-16">Drag & drop your file here, or click to select.</p>
+        </div>
+      } @else {
+        <div class="drop-zone-preview">
+            <i-tabler name="file-spreadsheet" class="icon-48 text-success"></i-tabler>
+            <p class="mat-body-1 f-w-500 m-t-16">{{ selectedFile.name }}</p>
+            <button mat-icon-button color="warn" (click)="clearSelection($event)" matTooltip="Remove file">
+                <i-tabler name="x" class="icon-18"></i-tabler>
+            </button>
+        </div>
+      }
+    </div>
+  </div>
+
+</mat-dialog-content>
+
+<mat-dialog-actions align="end" class="p-x-24 p-b-24">
+    <button mat-flat-button color="primary" class="m-l-8" (click)="onUpload()" [disabled]="isProcessing || !selectedFile">
+        @if (!isProcessing) {
+            <span>Upload and Import</span>
+        } @else {
+            <div class="d-flex align-items-center">
+                <mat-progress-spinner [diameter]="20" mode="indeterminate" class="m-r-8"></mat-progress-spinner>
+                <span>Processing...</span>
+            </div>
+        }
+    </button>
+    <button mat-stroked-button color="warn" (click)="closeDialog()">Cancel</button>
+</mat-dialog-actions>

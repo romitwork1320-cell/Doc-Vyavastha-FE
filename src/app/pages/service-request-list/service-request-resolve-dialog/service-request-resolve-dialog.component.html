@@ -1,0 +1,27 @@
+<div class="resolve-dialog-container">
+  <div class="dialog-header">
+    <div class="icon-circle">
+      <i-tabler name="circle-check" class="icon-24 text-success"></i-tabler>
+    </div>
+    <h2 class="title">Mark as Resolved</h2>
+  </div>
+
+  <div class="dialog-body">
+    <p class="message">
+      Are you sure you want to resolve ticket <span class="ticket-id">{{data.ticketCode}}</span>?
+    </p>
+    <p class="sub-message">This will close the ticket and notify the user.</p>
+
+    <mat-form-field appearance="outline" class="w-100 m-t-16">
+      <mat-label>Resolution Remarks</mat-label>
+      <textarea matInput [(ngModel)]="remarks" rows="3" placeholder="E.g. Fixed the loose cable connection..."></textarea>
+    </mat-form-field>
+  </div>
+
+  <div class="dialog-footer">
+    <button mat-button (click)="onCancel()">Cancel</button>
+    <button mat-flat-button color="primary" (click)="onConfirm()" [disabled]="!remarks">
+      Resolve Ticket
+    </button>
+  </div>
+</div>

@@ -1,0 +1,167 @@
+@if (isLoading && !plans.length) {
+  <div class="loading-spinner">
+    <mat-spinner diameter="50"></mat-spinner>
+    <p class="m-t-16 ">Loading plans...</p>
+  </div>
+} @else {
+  
+  <div class="row">
+    <div class="col-12 m-b-32">
+      <mat-card class="cardWithShadow header-card bg-light-primary position-relative overflow-hidden">
+        <mat-card-content>
+        <div class="row align-items-center m-b-16">
+          <div class="col-md-8">
+            <span class=" f-w-700 text-muted text-uppercase letter-spacing-1 d-block m-b-8">
+              Current Subscription
+            </span>
+            
+            <div class="d-flex align-items-center flex-wrap gap-12 m-b-16">
+              <h1 class="mat-h1 m-0 f-w-800 text-dark" style="font-size: 28px; line-height: 1;">
+                {{ currentSub?.status === 'Active' ? 'Standard Plan' : 'Free Trial' }}
+              </h1>
+              
+              <span class="plan-badge" 
+                    [ngClass]="currentSub?.status === 'Active' ? 'bg-success' : 'bg-warning'">
+                {{ currentSub?.status || 'No Active Plan' }}
+              </span>
+            </div>
+
+            @if (currentSub) {
+              <div class="d-flex align-items-center gap-24">
+                  
+                  <div class="d-flex align-items-center gap-8">
+                    <i-tabler name="calendar-event" class="text-primary icon-20"></i-tabler>
+                    <span class=" f-w-600">Expires: {{ currentSub.endDate | date:'mediumDate' }}</span>
+                  </div>
+                  
+                  <div class="d-flex align-items-center gap-8">
+                    <i-tabler name="clock" 
+                              [class.text-warning]="getDaysRemaining() > 0"
+                              [class.text-error]="getDaysRemaining() <= 0"
+                              class="icon-20"></i-tabler>
+                    
+                    <span class=" f-w-600" [class.text-error]="getDaysRemaining() <= 0">
+                      @if(getDaysRemaining() > 0) {
+                          {{ getDaysRemaining() }} Days Remaining
+                      } @else if (getDaysRemaining() === 0) {
+                          Expires Today
+                      } @else {
+                          Expired {{ getDaysRemaining() * -1 }} Days ago
+                      }
+                    </span>
+                  </div>
+              </div>
+            } @else {
+                <div class="warning-text">
+                  <i-tabler name="alert-circle" class="icon-20"></i-tabler>
+                  <span class=" f-w-600">Your subscription has expired. Please choose a plan below.</span>
+                </div>
+            }
+          </div>
+          
+          <div class="col-md-4 text-end d-none d-md-block">
+              <i-tabler name="shield-check" class="icon-150 text-primary op-10"></i-tabler>
+          </div>
+        </div>
+
+        @if (currentSub) {
+          <div class="m-t-8">
+              <mat-progress-bar mode="determinate" 
+                                [value]="getProgressValue()" 
+                                [color]="getDaysRemaining() > 0 ? 'primary' : 'warn'" 
+                                class="rounded-pill sub-progress w-100">
+              </mat-progress-bar>
+          </div>
+        }
+      </mat-card-content>
+      </mat-card>
+    </div>
+  </div>
+
+  @if (currentSub?.status !== 'Active' || getDaysRemaining() <= 2) {
+    
+    <div class="row justify-content-center m-b-32">
+        <div class="col-lg-8 text-center">
+        <h4 class="f-s-30 f-w-600 mat-subtitle-1 lh-lg m-b-8">
+            Flexible Plans Tailored to Your Needs
+        </h4>
+        <p class="text-muted ">Upgrade your account to unlock full potential.</p>
+        </div>
+    </div>
+
+    <div class="row justify-content-center">
+        @for(plan of plans; track plan.planId) {
+        <div class="col-sm-6 col-lg-4 d-flex align-items-stretch m-b-24">
+            <mat-card class="cardWithShadow w-100 position-relative plan-card">
+            <mat-card-content class="p-y-24 p-x-24 d-flex flex-column">
+                
+                @if(!plan.isTrial) {
+                <span class="popular-badge text-uppercase bg-light-warning text-warning p-x-8 p-y-4  f-w-500 rounded">
+                    Popular
+                </span>
+                } @else {
+                <span class="popular-badge text-uppercase bg-light-primary text-primary p-x-8 p-y-4  f-w-500 rounded">
+                    Trial
+                </span>
+                }
+
+                <span class="d-block text-uppercase  f-w-600 m-b-16 letter-spacing-2 text-primary">
+                {{ plan.planName }}
+                </span>
+
+                <div class="m-b-16">
+                @if(plan.isTrial) {
+                    <i-tabler name="plant" class="icon-60 text-success"></i-tabler>
+                } @else {
+                    <i-tabler name="diamond" class="icon-60 text-warning"></i-tabler>
+                }
+                </div>
+
+                @if(plan.price === 0) {
+                <h2 class="plan-title m-b-24">Free</h2>
+                } @else {
+                <div class="d-flex align-items-baseline">
+                    <span class="f-s-24 dollar-sign">$</span>
+                    <h2 class="plan-title m-b-24">
+                    {{ plan.price | number:'1.0-0' }}
+                    </h2>
+                    <span class=" per-month text-muted">/ yr</span>
+                </div>
+                }
+
+                <div class="flex-grow-1">
+                    <div class="d-flex align-items-center p-y-12">
+                    <i-tabler name="check" class="icon-16 m-r-12 text-primary d-flex"></i-tabler>
+                    <span class=" f-w-500">{{ plan.whatsAppCredits }} WhatsApp Credits</span>
+                    </div>
+                    <div class="d-flex align-items-center p-y-12">
+                    <i-tabler name="check" class="icon-16 m-r-12 text-primary d-flex"></i-tabler>
+                    <span class=" f-w-500">Full System Access</span>
+                    </div>
+                    <div class="d-flex align-items-center p-y-12">
+                    <i-tabler name="check" class="icon-16 m-r-12 text-primary d-flex"></i-tabler>
+                    <span class=" f-w-500">Priority Support</span>
+                    </div>
+                    <div class="d-flex align-items-center p-y-12">
+                        <i-tabler name="clock" class="icon-16 m-r-12 text-primary d-flex"></i-tabler>
+                        <span class=" f-w-500">
+                            Duration: {{ plan.durationMonths > 0 ? plan.durationMonths + ' Months' : plan.durationDays + ' Days' }}
+                        </span>
+                    </div>
+                </div>
+
+                <button mat-flat-button color="primary" class="w-100 m-t-24 py-8" (click)="selectPlan(plan)">
+                  @if(plan.isTrial) {
+                    {{ currentSub ? 'Extend Trial' : 'Start Free Trial' }}
+                  } @else {
+                    Choose Plan
+                  }
+                </button>
+
+            </mat-card-content>
+            </mat-card>
+        </div>
+        }
+    </div>
+  }
+}

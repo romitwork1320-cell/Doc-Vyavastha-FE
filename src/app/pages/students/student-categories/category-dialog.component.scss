@@ -1,0 +1,12 @@
+// Shared dialog styles for the student-category and fee-type dialogs.
+// (Previously referenced by fee-type-dialog.component.ts but never created,
+// which broke the build.) Layout lives inline in the templates; these are
+// light shared helpers.
+
+.dialog-header {
+  background: var(--mdc-theme-surface, #fff);
+}
+
+mat-dialog-content {
+  min-width: 320px;
+}

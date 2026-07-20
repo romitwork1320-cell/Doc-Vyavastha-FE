@@ -1,0 +1,203 @@
+<div class="row align-items-center justify-content-between m-b-16">
+  <div class="col-md-8">
+    <div class="d-flex align-items-center gap-3">
+      
+      <mat-card class="cardWithShadow m-0 bg-light-primary">
+  <mat-card-content>
+    <div class="bg-primary rounded-circle text-white">
+      <i-tabler name="building-skyscraper" class="icon-24"></i-tabler>
+    </div>
+    <div class="m-l-16"> <h4 class="m-0 f-w-600">{{ stats?.totalTenants || 0 }}</h4>
+      <span class="">Total Tenants</span>
+    </div>
+  </mat-card-content>
+</mat-card>
+
+<mat-card class="cardWithShadow m-0 bg-light-accent">
+  <mat-card-content>
+    <div class="bg-accent rounded-circle text-white">
+      <i-tabler name="user-check" class="icon-24"></i-tabler>
+    </div>
+    <div class="m-l-16">
+      <h4 class="m-0 f-w-600">{{ stats?.activeTenants || 0 }}</h4>
+      <span class="">Active Tenants</span>
+    </div>
+  </mat-card-content>
+</mat-card>
+
+<mat-card class="cardWithShadow m-0 bg-light-success">
+  <mat-card-content>
+    <div class="bg-success rounded-circle text-white">
+      <i-tabler name="message-circle" class="icon-24"></i-tabler>
+    </div>
+    <div class="m-l-16">
+      <h4 class="m-0 f-w-600">{{ stats?.totalBalance | number }}</h4>
+      <span class="">Total Msg Balance</span>
+    </div>
+  </mat-card-content>
+</mat-card>
+
+    </div>
+  </div>
+
+  <div class="col-md-4 text-right d-flex justify-content-end gap-2">
+    <button mat-stroked-button color="accent" (click)="openGeneratePromoDialog()">
+      <i-tabler name="ticket" class="icon-20 m-r-8"></i-tabler>
+      Generate Promo
+    </button>
+    
+    <button mat-flat-button color="primary" (click)="openCreateDialog()">
+      <i-tabler name="plus" class="icon-20 m-r-8"></i-tabler>
+      Create Tenant
+    </button>
+  </div>
+</div>
+
+<mat-card class="cardWithShadow common-card">
+  <mat-card-content class="table-card-content common-content">
+    
+    @if (isLoading && !tenants.length) {
+      <div class="loading-spinner">
+        <mat-spinner diameter="50"></mat-spinner>
+        <p>Loading tenants...</p>
+      </div>
+    } @else {
+      <div class="table-container" #tableContainer (scroll)="onScroll($event)">
+        <table mat-table [dataSource]="dataSource" class="w-100" matSort>
+
+          <ng-container matColumnDef="#">
+            <th mat-header-cell *matHeaderCellDef class="f-s-14  f-w-600">#</th>
+            <td mat-cell *matCellDef="let element; let i = index;">{{ i + 1 }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="companyName">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header="companyName" class="f-s-14  f-w-600">Company / Tenant</th>
+            <td mat-cell *matCellDef="let element">
+              <p class="f-s-14  m-0 truncate-cell-content" [matTooltip]="element.companyName || element.tenantName">
+                {{ element.companyName || element.tenantName }}
+              </p>
+              @if(element.companyName && element.companyName !== element.tenantName) {
+                <small class="text-muted">{{element.tenantName}}</small>
+              }
+              <small class="text-muted d-block">
+                Created: {{ element?.createdDate  ? (element.createdDate  | date:'dd-MM-yyyy') : 'N/A' }}
+              </small>
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="contactPhone">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header="contactPhone" class="f-s-14  f-w-600">Contact Phone</th>
+            <td mat-cell *matCellDef="let element" class="f-s-14">
+              {{ element.contactPhone || '-' }}
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="whatsAppSentCount">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header="whatsAppSentCount" class="f-s-14 f-w-600">Msg Sent</th>
+            <td mat-cell *matCellDef="let element" class="f-s-14">
+              {{ element.whatsAppSentCount | number }}
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="whatsAppBalance">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header="whatsAppBalance" class="f-s-14  f-w-600">Balance</th>
+            <td mat-cell *matCellDef="let element" class="f-s-14">
+              {{ (element.whatsAppBalance ?? 0) | number }}
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="subscriptionStatus">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header="SubscriptionStatus" class="f-s-14 f-w-600">Sub. Status</th>
+            <td mat-cell *matCellDef="let element">
+              @if (element.subscriptionStatus === 'Active') {
+                <span class="bg-light-success text-success rounded px-2 py-1 f-s-12 f-w-600">Active</span>
+              } @else if (element.subscriptionStatus === 'Expired') {
+                <span class="bg-light-error text-error rounded px-2 py-1 f-s-12 f-w-600">Expired</span>
+              } @else if (element.subscriptionStatus) {
+                <span class="bg-light-primary text-primary rounded px-2 py-1 f-s-12 f-w-600">{{ element.subscriptionStatus }}</span>
+              } @else {
+                <span class="text-muted f-s-12">No Plan</span>
+              }
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="subscriptionEndDate">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header="SubscriptionEndDate" class="f-s-14 f-w-600">Sub. End Date</th>
+            <td mat-cell *matCellDef="let element" class="f-s-14">
+              {{ element.subscriptionEndDate ? (element.subscriptionEndDate | date:'dd-MM-yyyy') : '-' }}
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="addBalance">
+             <th mat-header-cell *matHeaderCellDef class="f-s-14  f-w-600">Add Balance</th>
+             <td mat-cell *matCellDef="let element">
+               <mat-form-field appearance="outline" class="w-100 hide-hint tiny-input">
+                 <input
+                    matInput
+                    type="number"
+                    min="1"
+                    step="1"
+                    [(ngModel)]="balanceAmounts[element.tenantId]"
+                    placeholder="Amt"
+                    [disabled]="isUpdatingBalance[element.tenantId]"
+                  />
+               </mat-form-field>
+             </td>
+           </ng-container>
+
+          <ng-container matColumnDef="action">
+            <th mat-header-cell *matHeaderCellDef class="f-s-14  f-w-600">Action</th>
+            <td mat-cell *matCellDef="let element" class="action-link">
+               <button
+                  mat-icon-button
+                  color="primary"
+                  aria-label="Add Balance"
+                  (click)="$event.stopPropagation(); addBalance(element.tenantId)"
+                  [disabled]="isLoading || isUpdatingBalance[element.tenantId] || !balanceAmounts[element.tenantId] || balanceAmounts[element.tenantId]! <= 0"
+                  matTooltip="Add specified balance">
+                  @if(isUpdatingBalance[element.tenantId]) {
+                    <mat-spinner diameter="20"></mat-spinner>
+                  } @else {
+                    <i-tabler name="plus" class="icon-18"></i-tabler>
+                  }
+               </button>
+             </td>
+          </ng-container>
+
+          <ng-container matColumnDef="isActive">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header="isActive" class="f-s-14  f-w-600">Active/Inactive</th>
+            <td mat-cell *matCellDef="let element" class="action-link">
+              <mat-slide-toggle
+                [checked]="element.isActive"
+                (change)="toggleActiveStatus(element)"
+                [disabled]="isTogglingActive[element.tenantId]"
+                matTooltip="{{ element.isActive ? 'Set Inactive' : 'Set Active' }}">
+                </mat-slide-toggle>
+              @if(isTogglingActive[element.tenantId]) {
+                 <mat-spinner diameter="15" class="ml-2"></mat-spinner>
+              }
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+          
+          <tr class="mat-row" *matNoDataRow>
+            <td class="mat-cell text-center p-24" [attr.colspan]="displayedColumns.length">
+              No tenants found
+               <ng-container *ngIf="filterValue">
+                 matching "<strong>{{ filterValue }}</strong>"
+               </ng-container>
+            </td>
+          </tr>
+        </table>
+        
+        @if (isLoading && tenants.length > 0) {
+          <div class="text-center p-24">
+            <mat-spinner diameter="30"></mat-spinner>
+          </div>
+        }
+      </div>
+    }
+  </mat-card-content>
+</mat-card>

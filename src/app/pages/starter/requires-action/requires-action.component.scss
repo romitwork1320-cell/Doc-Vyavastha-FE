@@ -1,0 +1,80 @@
+:host {
+  display: block;
+  height: 100%;
+}
+
+.table-container {
+  max-height: 400px; /* Adjust this height based on how tall you want the card */
+  overflow-y: auto;
+  overflow-x: auto;
+  
+  @media (max-width: 991px) {
+    .mat-mdc-cell, .mat-mdc-header-cell {
+      padding-left: 8px !important;
+      padding-right: 8px !important;
+    }
+    .time-pending-badge {
+      font-size: 10px !important;
+      padding: 2px 6px !important;
+      
+      .icon-14 {
+        width: 12px !important;
+        height: 12px !important;
+        margin-right: 2px !important;
+      }
+    }
+    
+    .process-btn {
+      font-size: 11px !important;
+      padding: 0 10px !important;
+      height: 28px !important;
+      line-height: 28px !important;
+      min-width: unset !important;
+    }
+    
+    ::ng-deep .process-btn .mdc-button__label {
+      font-size: 11px !important;
+    }
+    .hide-on-mobile {
+      display: none !important;
+    }
+    .show-on-mobile {
+      display: block !important;
+    }
+  }
+
+  @media (min-width: 992px) {
+    .show-on-mobile {
+      display: none !important;
+    }
+  }
+  
+  /* Sleek, modern scrollbar styling */
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+  
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  
+  &::-webkit-scrollbar-thumb {
+    background: rgba(0, 0, 0, 0.15);
+    border-radius: 10px;
+  }
+  
+  &::-webkit-scrollbar-thumb:hover {
+    background: rgba(0, 0, 0, 0.3);
+  }
+}
+
+/* Ensure the sticky header looks good and has a solid background over the scrolling rows */
+.mat-mdc-header-row, .mat-mdc-header-cell {
+  background-color: #ffffff !important;
+  z-index: 100 !important;
+}
+
+.m-x-auto {
+  margin-left: auto;
+  margin-right: auto;
+}

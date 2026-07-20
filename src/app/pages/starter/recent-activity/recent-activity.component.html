@@ -1,0 +1,126 @@
+<mat-card class="cardWithShadow border-0 h-100">
+  <mat-card-content class="p-24 d-flex flex-column h-100">
+    
+    <div class="d-flex justify-content-between align-items-center m-b-24 flex-shrink-0">
+      <div>
+        <h5 class="mat-subtitle-1 f-s-18 f-w-600 m-b-4 text-dark">Recent Activity</h5>
+        <span class="f-s-13 text-muted d-block">Real-time updates</span>
+      </div>
+      <div class="text-error d-flex align-items-center">
+        <span class="pulse-dot m-r-8"></span>
+        <span class="f-s-12 f-w-600">Live</span>
+      </div>
+    </div>
+
+    @if(isLoading && activities.length === 0) {
+      <div class="d-flex justify-content-center align-items-center flex-grow-1" style="min-height: 250px;">
+        <mat-spinner diameter="30"></mat-spinner>
+      </div>
+    } @else if (activities.length === 0) {
+      <div class="text-center text-muted p-24 m-t-24">
+        <i-tabler name="list-details" class="icon-40 m-b-8 opacity-50"></i-tabler>
+        <p>No recent activity found.</p>
+      </div>
+    } @else {
+      
+      <!-- ADDED: #timelineContainer and (scroll) event -->
+      <div class="timeline-container flex-grow-1" #timelineContainer (scroll)="onScroll($event)">
+        
+        <!-- REMOVED: .slice() -->
+        @for(log of activities; track log.id) {
+          
+          <div class="timeline-item d-flex">
+            
+            <div class="time-col text-end m-r-16">
+              <span class="f-s-12 f-w-600 text-dark d-block">{{ log.createdOn | date:'hh:mm a':'+0530' }}</span>
+              <span class="f-s-11 text-muted">{{ log.createdOn | date:'dd-MM-yyyy':'+0530' }}</span>
+            </div>
+
+            <div class="timeline-line-wrapper d-flex flex-column align-items-center m-r-16">
+              <div class="timeline-dot rounded-circle" [ngClass]="getDotColor(log.method)"></div>
+              <div class="timeline-line flex-grow-1"></div>
+            </div>
+
+            <div class="content-col p-b-24 w-100">
+              <div class="f-s-14 text-dark m-b-4">
+                <span class="f-w-600">{{ formatAction(log.method) }}</span> 
+                <span class="text-primary m-l-4">{{ formatMessage(log) }}</span>
+              </div>
+              <p class="f-s-13 text-muted m-0">
+                {{ log.userName ? log.userName : 'User #' + log.userId }} 
+              </p>
+
+              @if(log.changesList && log.changesList.length > 0) {
+                <div class="changes-grid m-t-8 p-12 bg-light-primary rounded f-s-12 border-start border-primary border-4">
+                  
+                  @for(change of log.changesList; track change.fullKey; let i = $index) {
+                    
+                    @if(i < 4 || isExpanded(log.id)) {
+                      
+                      @if(change.productName && (i === 0 || log.changesList[i-1].productName !== change.productName)) {
+                        <div class="product-header f-s-11 f-w-600 text-muted text-uppercase m-t-8 m-b-4 d-flex align-items-center text-truncate"
+                             [class.m-t-0]="i === 0">
+                          <i-tabler name="box" class="icon-12 m-r-4"></i-tabler> 
+                          <span [title]="change.productName">
+                            {{ formatProductName(change.productName) }}
+                          </span>
+                        </div>
+                      }
+
+                      <div class="change-row">
+                        <span class="change-label text-truncate" [title]="formatFieldName(change.fieldName)">
+                          {{ formatFieldName(change.fieldName) }}:
+                        </span>
+                        
+                        <div class="d-flex align-items-center text-truncate flex-grow-1">
+                          <span class="text-muted text-decoration-line-through m-r-4 text-truncate" 
+                                style="max-width: 80px;" 
+                                [title]="change.old">
+                            {{ formatValue(change.old, change.fieldName) }}
+                          </span>
+                          <i-tabler name="arrow-right" class="icon-12 m-r-4 text-primary flex-shrink-0"></i-tabler>
+                          <span class="text-dark f-w-500 text-truncate" [title]="change.new">
+                            {{ formatValue(change.new, change.fieldName) }}
+                          </span>
+                        </div>
+                      </div>
+                    }
+                  }
+
+                  @if(log.changesList.length > 4) {
+                    <div class="show-more-container m-t-8 p-t-4 border-top border-primary-subtle">
+                      <a href="javascript:void(0)" 
+                         (click)="toggleExpand(log.id)"
+                         class="text-primary f-w-600 f-s-11 text-decoration-none d-flex align-items-center cursor-pointer">
+                         @if(isExpanded(log.id)) {
+                           Show Less <i-tabler name="chevron-up" class="icon-14 m-l-4"></i-tabler>
+                         } @else {
+                           View {{ log.changesList.length - 4 }} more changes <i-tabler name="chevron-down" class="icon-14 m-l-4"></i-tabler>
+                         }
+                      </a>
+                    </div>
+                  }
+                </div>
+              }
+            </div>
+          </div>
+        }
+
+        <!-- Bottom Spinner for Infinite Scroll -->
+        @if (isLoadingMore) {
+          <div class="p-16 d-flex justify-content-center align-items-center">
+            <mat-spinner diameter="24"></mat-spinner>
+          </div>
+        }
+
+        @if (!hasMoreData && activities.length > 0) {
+          <div class="text-center text-muted p-16 f-s-12 m-t-8">
+            <i-tabler name="circle-check" class="icon-20 m-b-4 text-success opacity-50 d-block m-x-auto"></i-tabler>
+            No older activity.
+          </div>
+        }
+
+      </div>
+    }
+  </mat-card-content>
+</mat-card>

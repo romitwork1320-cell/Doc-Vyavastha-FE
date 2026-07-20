@@ -1,0 +1,598 @@
+/* ============================================================
+   PURCHASE INVOICE DIALOG — STYLES
+   ============================================================ */
+
+// ─── Variables ───────────────────────────────────────────────
+$primary:    #5d87ff;
+$primary-bg: #ecf2ff;
+$border:     #e4e9f2;
+$text-dark:  #2a3547;
+$text-muted: #7c8fac;
+$success:    #13deb9;
+$error:      #fa896b;
+$surface:    #f7f9fc;
+$radius-lg:  14px;
+$radius-md:  10px;
+$radius-sm:  6px;
+
+:host {
+  display: block;
+}
+
+// Strip Angular Material MDC dialog's default inner padding
+::ng-deep .mat-mdc-dialog-container {
+  .mdc-dialog__surface {
+    padding: 0 !important;
+  }
+  // Remove the extra bottom space Angular Material adds to the actions bar
+  .mat-mdc-dialog-actions {
+    margin-bottom: 0 !important;
+    min-height: unset !important;
+  }
+}
+
+// ─── 1. Container ─────────────────────────────────────────────
+.dialog-container {
+  display: flex;
+  flex-direction: column;
+  background: #ffffff;
+}
+
+// ─── 2. Header ────────────────────────────────────────────────
+.dialog-header {
+  flex-shrink: 0;
+  padding: 12px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid $border;
+
+  .header-content {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+
+    .header-icon {
+      width: 38px;
+      height: 38px;
+      background: $primary-bg;
+      color: $primary;
+      border-radius: $radius-md;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    h2 {
+      margin: 0;
+      font-size: 16px;
+      font-weight: 700;
+      color: $text-dark;
+      line-height: 1.25;
+    }
+
+    p {
+      margin: 2px 0 0;
+      font-size: 12px;
+      color: $text-muted;
+    }
+  }
+  .header-right {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .invoice-no-badge {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    background: $primary-bg;
+    color: $primary;
+    font-size: 12px;
+    font-weight: 700;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .close-btn {
+    color: $text-muted;
+    &:hover { color: $text-dark; }
+  }
+}
+
+// ─── 3. Alert Banner ──────────────────────────────────────────
+.alert-banner {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 24px;
+  font-size: 12.5px;
+  font-weight: 500;
+
+  &.info {
+    background: $primary-bg;
+    color: $primary;
+    border-bottom: 1px solid rgba($primary, 0.12);
+  }
+}
+
+// ─── 4. Scrollable Content ────────────────────────────────────────────
+// Footer is INSIDE this scroll area (same as Replacement dialog pattern)
+.dialog-content-scroll {
+  padding: 14px 20px !important;
+  margin: 0 !important;
+  max-height: 80vh; // Safety cap — scrolls when content exceeds viewport
+
+  &::-webkit-scrollbar { width: 5px; }
+  &::-webkit-scrollbar-track { background: transparent; }
+  &::-webkit-scrollbar-thumb { background: $border; border-radius: 10px; }
+}
+
+// ─── 5. Loading Overlay ───────────────────────────────────────
+.loading-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(255,255,255,0.75);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 20;
+}
+
+// ─── 6. Section Cards ─────────────────────────────────────────
+.form-card {
+  background: $surface;
+  border: 1px solid $border;
+  border-radius: $radius-lg;
+  padding: 10px 14px;
+  margin-bottom: 10px;
+
+  .form-card-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    color: $text-muted;
+    margin-bottom: 14px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid $border;
+  }
+}
+
+// ─── 7. Form Row Layout ───────────────────────────────────────
+.form-row {
+  display: flex;
+  gap: 14px;
+  flex-wrap: nowrap;
+  align-items: flex-start;
+
+  // Invoice No — fixed narrow width
+  .field-sm  { flex: 0 0 140px; }
+  // Dates, Ref No — equal share
+  .field-md  { flex: 1 1 0; min-width: 140px; }
+  // Vendor name — wider
+  .field-lg  { flex: 2 1 0; min-width: 180px; }
+}
+
+// ─── 7. Document Info Layout ──────────────────────────────────
+// Outer flex: left = 2x2 field grid, right = vendor info panel
+.doc-main-layout {
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+}
+
+// 2×2 grid for the 4 form fields
+.doc-fields-grid {
+  flex: 1;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  min-width: 0;
+}
+
+// Vendor info panel (right side)
+.vendor-info-panel {
+  flex: 0 0 240px;
+  min-height: 120px;
+  border: 1px solid $border;
+  border-radius: $radius-md;
+  overflow: hidden;
+  background: $surface;
+}
+
+// Empty state inside vendor panel
+.vendor-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 120px;
+  color: $text-muted;
+  opacity: 0.5;
+
+  p { font-size: 12px; margin: 6px 0 0; }
+}
+
+// Filled vendor card
+.vendor-card {
+  padding: 14px;
+
+  .vendor-card-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 12px;
+
+    .vendor-avatar {
+      width: 36px;
+      height: 36px;
+      background: $primary-bg;
+      color: $primary;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+
+    .vendor-card-name {
+      font-size: 14px;
+      font-weight: 700;
+      color: $text-dark;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .vendor-card-status {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 11px;
+      color: $text-muted;
+      margin-top: 2px;
+
+      .status-dot {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        &.active { background: $success; }
+      }
+    }
+  }
+
+  .vendor-card-details {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+  }
+
+  .vendor-detail-row {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    font-size: 12.5px;
+    color: $text-dark;
+
+    i-tabler { color: $text-muted; flex-shrink: 0; }
+    span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  }
+}
+
+// Suppress subscript hint space inside cards
+.form-card {
+  ::ng-deep .mat-mdc-form-field-subscript-wrapper {
+    display: none;
+  }
+}
+
+// ─── Disabled / Read-only field (Invoice No) ─────────────────
+::ng-deep .field-readonly {
+  .mat-mdc-text-field-wrapper {
+    background: #f3f6fb !important;
+  }
+  .mdc-text-field--outlined .mdc-notched-outline__leading,
+  .mdc-text-field--outlined .mdc-notched-outline__notch,
+  .mdc-text-field--outlined .mdc-notched-outline__trailing {
+    border-color: #dde3ee !important;
+  }
+  input {
+    color: #9aa6bc !important;
+    cursor: not-allowed;
+    font-style: italic;
+  }
+  mat-label {
+    color: #9aa6bc;
+  }
+}
+
+// Suffix icon sizing
+.field-suffix-icon {
+  width: 16px;
+  height: 16px;
+  color: $text-muted;
+}
+
+// required star
+.required-star {
+  color: $error;
+  font-size: 14px;
+}
+
+// Vendor linked indicator
+.vendor-suffix {
+  display: flex;
+  align-items: center;
+
+  .text-success { color: $success; }
+}
+
+// Contact autocomplete option
+.contact-option {
+  display: flex;
+  flex-direction: column;
+
+  .contact-name { font-size: 14px; font-weight: 600; color: $text-dark; }
+  .contact-meta { font-size: 12px; color: $text-muted; }
+}
+
+// ─── 8. Items Section ─────────────────────────────────────────
+.items-section {
+  margin-bottom: 10px;
+}
+
+.items-header-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+
+  .items-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    font-weight: 700;
+    color: $text-dark;
+
+    &::before {
+      content: '';
+      display: inline-block;
+      width: 3px;
+      height: 16px;
+      background: $primary;
+      border-radius: 2px;
+    }
+
+    .item-count-badge {
+      background: $primary-bg;
+      color: $primary;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: 20px;
+    }
+  }
+
+  .add-item-btn {
+    height: 34px;
+    padding: 0 14px;
+    font-size: 13px;
+    font-weight: 600;
+    border-radius: $radius-sm;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+}
+
+.table-wrapper {
+  border: 1px solid $border;
+  border-radius: $radius-md;
+  overflow: hidden;
+}
+
+.items-table {
+  width: 100%;
+  border-collapse: collapse;
+
+  // Header
+  thead tr {
+    background: $surface;
+
+    th {
+      padding: 8px 12px;
+      font-size: 11px;
+      font-weight: 700;
+      color: $text-muted;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      border-bottom: 1px solid $border;
+      white-space: nowrap;
+    }
+  }
+
+  // Body
+  tbody tr.item-row {
+    transition: background 0.15s;
+
+    &:hover { background: $primary-bg; }
+    &:not(:last-child) td { border-bottom: 1px solid $border; }
+
+    td {
+      padding: 6px 10px;
+      font-size: 13.5px;
+      color: $text-dark;
+      vertical-align: middle;
+    }
+  }
+
+  .col-num     { width: 44px; }
+  .col-product { }
+  .col-money   { width: 110px; }
+  .col-actions {
+    width: 80px;
+    white-space: nowrap;
+
+    // Keep edit + delete icons side by side
+    .action-btns {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0;
+    }
+  }
+
+  .item-name { font-weight: 600; }
+  .item-desc { font-size: 12px; color: $text-muted; margin-top: 2px; }
+
+  .discount-badge {
+    font-size: 12px;
+    font-weight: 600;
+    color: $error;
+  }
+
+  .amount-cell {
+    font-weight: 700;
+  }
+
+  // Empty state row
+  .empty-state-cell {
+    padding: 20px 0 !important;
+    border-bottom: none !important;
+  }
+
+  .empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    color: $text-muted;
+    opacity: 0.6;
+
+    .empty-title { font-size: 13px; font-weight: 600; margin: 8px 0 2px; }
+    .empty-sub   { font-size: 11px; margin: 0; }
+  }
+}
+
+// ─── 9. Summary Area ──────────────────────────────────────────
+.summary-area {
+  display: flex;
+  gap: 14px;
+  margin-top: 4px;
+  align-items: flex-start;
+
+  .notes-col   { flex: 6; }
+  .summary-col { flex: 5; min-width: 240px; }
+}
+
+// Suppress subscript on notes textarea
+.notes-col ::ng-deep .mat-mdc-form-field-subscript-wrapper { display: none; }
+
+.summary-card {
+  background: $surface;
+  border: 1px solid $border;
+  border-radius: $radius-lg;
+  padding: 12px 16px;
+}
+
+.summary-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 5px 0;
+
+  &:not(:last-child) {
+    border-bottom: 1px solid $border;
+    margin-bottom: 4px;
+    padding-bottom: 8px;
+  }
+}
+
+.summary-label { font-size: 13px; color: $text-muted; }
+.summary-value { font-size: 13px; font-weight: 600; color: $text-dark; }
+
+.round-off-input {
+  border: 1px solid $border;
+  border-radius: $radius-sm;
+  padding: 4px 8px;
+  font-size: 13px;
+  font-weight: 600;
+  color: $text-dark;
+  width: 80px;
+  text-align: right;
+  outline: none;
+  background: #fff;
+
+  &:focus {
+    border-color: $primary;
+    box-shadow: 0 0 0 2px rgba($primary, 0.1);
+  }
+}
+
+.total-row {
+  padding-top: 10px;
+  margin-top: 6px;
+  border-top: 2px solid $border !important;
+  border-bottom: none !important;
+  margin-bottom: 0;
+}
+
+.total-label {
+  font-size: 14px;
+  font-weight: 700;
+  color: $text-dark;
+}
+
+.total-value {
+  font-size: 20px;
+  font-weight: 800;
+  color: $primary;
+  font-family: 'Courier New', monospace;
+  letter-spacing: -0.5px;
+}
+
+// ─── 10. Footer ───────────────────────────────────────────────
+.dialog-footer {
+  flex-shrink: 0;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 20px;
+  border-top: 1px solid $border;
+  background: #fff;
+}
+
+.discard-btn {
+  border-radius: $radius-sm;
+  font-weight: 600;
+  color: $text-muted;
+}
+
+.save-btn {
+  border-radius: $radius-sm;
+  height: 36px;
+  padding: 0 24px;
+  font-weight: 700;
+  font-size: 14px;
+
+  .btn-inner {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+}
+
+.white-spinner ::ng-deep circle {
+  stroke: white !important;
+}

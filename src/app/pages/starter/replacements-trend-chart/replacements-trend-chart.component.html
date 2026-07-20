@@ -1,0 +1,43 @@
+<mat-card class="cardWithShadow border-0 overflow-hidden">
+  <mat-card-content class="p-24">
+    
+    <div class="d-flex justify-content-between align-items-start m-b-24">
+      <div>
+        <h5 class="mat-subtitle-1 f-s-18 f-w-600 m-b-4 text-dark">Replacement Trends</h5>
+        <span class="f-s-13 text-muted d-block">Monthly Volume (Current Year)</span>
+      </div>
+      
+      <div class="d-flex align-items-center">
+        <div class="d-flex flex-column align-items-end m-r-12">
+           <h3 class="m-0 f-s-24 f-w-700 text-dark">{{ totalYearly }}</h3>
+           <span class="f-s-12 text-muted">Total</span>
+        </div>
+        <div class="icon-48 rounded-circle bg-light-primary text-primary d-flex align-items-center justify-content-center">
+           <i-tabler name="trending-up" class="icon-24"></i-tabler>
+        </div>
+      </div>
+    </div>
+    
+    <div id="chart" style="min-height: 300px;">
+      @if (isChartVisible) {
+        <apx-chart
+          [series]="chartOptions.series"
+          [chart]="chartOptions.chart"
+          [colors]="chartOptions.colors"
+          [stroke]="chartOptions.stroke"
+          [fill]="chartOptions.fill"
+          [xaxis]="chartOptions.xaxis"
+          [yaxis]="chartOptions.yaxis"
+          [grid]="chartOptions.grid"
+          [tooltip]="chartOptions.tooltip"
+          [dataLabels]="chartOptions.dataLabels"
+        ></apx-chart>
+      } @else {
+        <div class="d-flex justify-content-center align-items-center" style="height: 300px;">
+           <mat-spinner diameter="40"></mat-spinner>
+        </div>
+      }
+    </div>
+
+  </mat-card-content>
+</mat-card>

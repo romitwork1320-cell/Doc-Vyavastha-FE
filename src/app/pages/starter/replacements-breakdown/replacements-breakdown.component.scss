@@ -1,0 +1,31 @@
+:host {
+  display: block;
+  width: 100%;
+}
+
+.cardWithShadow {
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+/* Default Padding (Desktop) */
+.chart-card-content {
+  padding: 24px;
+}
+
+/* Chart Container */
+.chart-container {
+  display: flex;
+  justify-content: center;
+  margin-top: 24px;
+}
+
+/* Mobile Optimizations */
+@media (max-width: 767px) {
+  .chart-card-content {
+    padding: 16px; /* Reduce padding to save space */
+  }
+
+  .chart-container {
+    margin-top: 16px;
+  }
+}

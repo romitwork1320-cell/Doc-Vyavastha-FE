@@ -1,0 +1,55 @@
+.resolve-dialog-container {
+  padding: 24px;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  max-width: 450px;
+}
+
+.dialog-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  margin-bottom: 16px;
+
+  .icon-circle {
+    width: 48px;
+    height: 48px;
+    background-color: #ecfdf5; /* Light Green */
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 16px;
+
+    .icon-24 { width: 24px; height: 24px; }
+    .text-success { color: #12b76a; }
+  }
+
+  .title {
+    font-size: 20px;
+    font-weight: 700;
+    margin: 0;
+    color: #2a3547;
+  }
+}
+
+.dialog-body {
+  text-align: center;
+  
+  .message {
+    font-size: 16px;
+    color: #2a3547;
+    margin-bottom: 4px;
+  }
+  .ticket-id { font-weight: 700; color: #635bff; }
+  .sub-message { font-size: 14px; color: #5a6a85; margin-bottom: 0; }
+}
+
+.dialog-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 24px;
+}
+.w-100 { width: 100%; }
+.m-t-16 { margin-top: 16px; }

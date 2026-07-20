@@ -1,0 +1,309 @@
+/* ============================================================
+   1. GLOBAL HOST & LAYOUT (FLEX ARCHITECTURE)
+   ============================================================ */
+:host {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  height: 100%;
+  min-height: 0;
+}
+
+mat-card.cardWithShadow {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  padding: 0 !important;
+  overflow: hidden; 
+}
+
+mat-card-content.table-card-content {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  padding: 0; 
+  overflow: hidden; /* Prevents card from expanding, forces inner scroll */
+}
+
+.table-container {
+  flex-grow: 1;
+  overflow-y: auto; /* THIS is the only thing that scrolls */
+  overflow-x: hidden;
+  min-height: 0;
+}
+
+.mat-mdc-header-row {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background-color: white;
+}
+
+.flex-shrink-0 {
+  flex-shrink: 0;
+}
+
+.loading-spinner {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  min-height: 300px;
+  p { margin-top: 16px; font-size: 16px; }
+}
+
+/* ============================================================
+   2. DESKTOP STYLES
+   ============================================================ */
+.action-link {
+  text-align: right; 
+}
+
+.desktop-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.mat-mdc-row {
+  cursor: pointer;
+  &:hover { background-color: #f8f9fa; }
+}
+
+/* Badges */
+.status-badge {
+  padding: 5px 12px;
+  border-radius: 6px; /* Match the replacement page square-ish look */
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+  display: inline-block;
+  text-align: center;
+  min-width: 95px;
+  border: 1px solid transparent;
+
+  /* Primary Theme (#635bff) */
+  &.open { 
+    background: rgba(99, 91, 255, 0.12); 
+    color: #635bff; 
+  }
+  
+  /* Info Theme (#00cfe8) */
+  &.inprogress { 
+    background: rgba(0, 207, 232, 0.12); 
+    color: #00cfe8; 
+  }
+  
+  /* Warning Theme (#f8c20a) */
+  &.awaitingreply { 
+    background: rgba(234, 179, 8, 0.12); 
+    color: #eab308; 
+  }
+  
+  /* Neutral/Muted Theme (#82868b) */
+  &.closed { 
+    background: rgba(130, 134, 139, 0.12); 
+    color: #82868b; 
+  }
+}
+
+.priority-badge {
+  padding: 4px 10px; 
+  border-radius: 4px; 
+  font-size: 12px; 
+  font-weight: 700; 
+  text-transform: capitalize;
+  border: 1px solid transparent; 
+
+  /* Dark Crimson */
+  &.critical { 
+    background: rgba(159, 18, 57, 0.12); 
+    color: #9f1239; 
+    border-color: rgba(159, 18, 57, 0.3);
+  } 
+  
+  /* Vibrant Red */
+  &.high { 
+    background: rgba(234, 84, 85, 0.12); 
+    color: #ea5455; 
+    border-color: rgba(234, 84, 85, 0.3);
+  }
+  
+  /* Deep Amber */
+  &.medium { 
+    background: rgba(217, 119, 6, 0.12); 
+    color: #d97706; 
+    border-color: rgba(217, 119, 6, 0.3);
+  }
+  
+  /* Success Green */
+  &.low { 
+    background: rgba(54, 199, 108, 0.12); 
+    color: #36c76c; 
+    border-color: rgba(54, 199, 108, 0.3);
+  }
+}
+
+.category-badge {
+  background: #f8f9fa;
+  padding: 4px 10px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 500;
+  color: #5e5873;
+  border: 1px solid #ebe9f1;
+}
+
+.text-primary {
+  color: #635bff !important;
+}
+
+.text-truncate-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  max-width: 300px;
+}
+
+/* Utilities */
+.gap-8 { gap: 8px; }
+.mt-1 { margin-top: 4px; }
+.mobile-stack { display: none; }
+.desktop-only { display: block; }
+.mobile-drawer-content { display: none; } 
+
+/* ============================================================
+   3. MOBILE VIEW (Max-width: 960px)
+   ============================================================ */
+@media (max-width: 960px) {
+  /* Visibility Toggles */
+  .mobile-hide { display: none !important; }
+  .desktop-only { display: none !important; }
+  .mobile-stack { display: flex !important; }
+  
+  /* Header: Hide */
+  .mat-mdc-table .mat-mdc-header-row { display: none !important; }
+
+  /* Row Layout */
+  .mat-mdc-table .mat-mdc-row {
+    display: flex !important;
+    flex-direction: row;
+    align-items: center; 
+    justify-content: space-between;
+    padding: 12px 16px;
+    border-bottom: 1px solid #eeeeee;
+    background: #ffffff;
+    min-height: 72px; 
+    max-width: 100%;
+    position: relative;
+    overflow: hidden;
+  }
+  
+  /* Selected State */
+  .mat-mdc-table .mat-mdc-row:active,
+  .mat-mdc-table .mat-mdc-row:focus {
+    background-color: #f5f5f5 !important;
+  }
+
+  /* Main Left Column (Stacks details vertically) */
+  .mat-mdc-table .mat-mdc-cell.mobile-main-col {
+    flex: 1; 
+    width: 0; 
+    min-width: 0;
+    padding: 0;
+    padding-right: 12px;
+    border-bottom: none;
+    text-align: left;
+    
+    .mobile-stack {
+      flex-direction: column;
+      align-items: flex-start;
+      width: 100%;
+      
+      .truncate-text {
+         width: 100%;
+         white-space: nowrap;
+         overflow: hidden;
+         text-overflow: ellipsis;
+         display: block;
+      }
+
+      .text-dark {
+        font-size: 15px !important; 
+        font-weight: 600 !important;
+        line-height: 1.4;
+        margin-bottom: 2px;
+      }
+    }
+  }
+
+  /* Main Right Column (Status Badge) */
+  .mat-mdc-table .mat-mdc-cell.mobile-right-col {
+    flex: 0 0 auto; 
+    width: auto;
+    padding: 0;
+    border-bottom: none;
+    display: flex !important;
+    justify-content: flex-end;
+    align-items: center;
+  }
+
+  /* Swipe Drawer Configuration */
+  .mat-mdc-table .mat-mdc-cell.mat-column-actions.mobile-action-drawer {
+    display: flex !important;
+    position: absolute;
+    top: 0; bottom: 0; right: 0;
+    width: 80px; 
+    background-color: #f1f1f1;
+    border-left: 1px solid #ddd;
+    z-index: 10;
+    padding: 0;
+    transform: translateX(100%);
+    transition: transform 0.2s ease-out;
+    
+    .desktop-actions { display: none !important; }
+    
+    .mobile-drawer-content {
+       display: flex !important;
+       width: 100%; height: 100%;
+       align-items: center; justify-content: center;
+    }
+  }
+
+  /* Trigger */
+  .mobile-swipe-active .mobile-action-drawer {
+    transform: translateX(0);
+    box-shadow: -4px 0 8px rgba(0,0,0,0.1);
+  }
+
+  /* Drawer Buttons */
+  .mobile-action-btn {
+    background: #fff;
+    border-radius: 50%;
+    width: 40px; height: 40px;
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    &.primary { color: #635bff; }
+  }
+}
+
+/* ============================================================
+   4. TYPOGRAPHY
+   ============================================================ */
+.mat-mdc-header-cell {
+  font-size: 14px !important; 
+  font-weight: 600 !important;
+  letter-spacing: 0.5px;
+}
+
+.mat-mdc-cell {
+  font-size: 14px !important;
+  font-weight: 400; 
+}
+
+.f-w-600 { font-weight: 600 !important; }
+.f-w-500 { font-weight: 500 !important; }

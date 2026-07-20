@@ -1,0 +1,66 @@
+<div class="leads-page common-card">
+  <!-- Stats & Search Row -->
+  <div class="stat-row">
+    <div style="flex:1"></div>
+    <div class="search-box">
+      <i-tabler name="search" style="width:16px;height:16px;color:#94a3b8"></i-tabler>
+      <input [(ngModel)]="searchQuery" placeholder="Search sequences..." class="search-input"/>
+    </div>
+  </div>
+
+  <!-- Table Card -->
+  <div class="table-card common-content">
+    <div class="common-table-container">
+      <table class="leads-table">
+        <thead>
+          <tr>
+            <th>Category</th>
+            <th>Year</th>
+            <th>Current Counter</th>
+            <th>Last Generated</th>
+            <th>Updated At</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          @if (isLoading) {
+            <tr><td colspan="6" class="text-center p-24">Loading...</td></tr>
+          } @else {
+            <tr *ngFor="let seq of filteredSequences" class="table-row">
+              <td>
+                <div style="font-weight: 600; font-size: 14px; color: #0f172a;">{{ seq.categoryName }}</div>
+              </td>
+              <td><div style="color: #64748b; font-size: 13px;">{{ seq.businessYear }}</div></td>
+              <td>
+                <div style="font-size: 14px; font-weight: 600; color: #0f172a;">{{ seq.currentNumber }}</div>
+              </td>
+              <td>
+                <div style="font-family: monospace; font-size: 13px; color: #64748b; background: #f1f5f9; padding: 2px 6px; border-radius: 4px; display: inline-block;">
+                  {{ seq.lastGeneratedCode || 'N/A' }}
+                </div>
+              </td>
+              <td><div style="color: #64748b; font-size: 13px;">{{ seq.updatedAt | date:'dd-MM-yyyy HH:mm' }}</div></td>
+              <td>
+                <div class="action-btns">
+                  <button class="icon-btn" title="Edit" (click)="openDialog(seq)" *ngIf="authService.hasPermission('/student-code-sequences', 'CanEdit')">
+                    <i-tabler name="pencil" style="width:15px;height:15px"></i-tabler>
+                  </button>
+                  <button class="icon-btn" title="Delete" (click)="deleteItem(seq.id)" *ngIf="authService.hasPermission('/student-code-sequences', 'CanDelete')">
+                    <i-tabler name="trash" class="text-red" style="width:15px;height:15px"></i-tabler>
+                  </button>
+                </div>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+      
+      @if (!isLoading && filteredSequences.length === 0) {
+        <div class="empty-state">
+          <i-tabler name="mood-empty" style="width:40px;height:40px;color:#cbd5e1"></i-tabler>
+          <p>No sequences found.</p>
+        </div>
+      }
+    </div>
+  </div>
+</div>

@@ -1,0 +1,61 @@
+<div class="dialog-container">
+  
+  <div class="dialog-header">
+    <h2 class="title">Request Details</h2>
+    <span class="status-badge" [ngClass]="getStatusClass(data.status)">
+      {{data.status}}
+    </span>
+  </div>
+
+  <div class="dialog-body">
+    
+    <div class="info-grid">
+      
+      <div class="info-col">
+        <span class="label">Guest Details</span>
+        
+        <div class="info-item">
+          <i-tabler name="user" class="icon-18 text-primary"></i-tabler>
+          <span class="value f-w-600">{{data.guestName}}</span>
+        </div>
+        
+        <div class="info-item">
+          <i-tabler name="phone" class="icon-18 text-muted"></i-tabler>
+          <span class="value">{{data.guestPhone}}</span>
+        </div>
+      </div>
+
+      <div class="info-col">
+        <span class="label">Ticket Info</span>
+        
+        <div class="ticket-id">{{data.ticketCode}}</div>
+        <div class="ticket-date">{{data.createdOn | date:'mediumDate'}}, {{data.createdOn | date:'mediumTime'}}</div>
+        
+        <span class="category-badge">{{data.category}}</span>
+      </div>
+
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="description-section">
+      <span class="label">Issue Description</span>
+      <div class="description-box">
+        {{data.description || 'No description provided.'}}
+      </div>
+    </div>
+
+    <div class="description-section" *ngIf="data.adminRemarks">
+      <span class="label">Admin Remarks</span>
+      <div class="description-box admin-remarks">
+        {{data.adminRemarks}}
+      </div>
+    </div>
+
+  </div>
+
+  <div class="dialog-footer">
+    <button mat-flat-button color="primary" [mat-dialog-close]="true">Close</button>
+  </div>
+
+</div>

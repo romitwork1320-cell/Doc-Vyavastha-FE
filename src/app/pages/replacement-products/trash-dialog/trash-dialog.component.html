@@ -1,0 +1,102 @@
+<div class="dialog-header p-24 d-flex align-items-center justify-content-between">
+  <div class="d-flex align-items-center gap-12">
+    <div class="bg-light-error text-error rounded p-8 d-flex align-items-center justify-content-center">
+      <i-tabler name="trash" class="icon-24"></i-tabler>
+    </div>
+    <h4 class="mat-headline-6 m-0">Recycle Bin</h4>
+  </div>
+  <button mat-icon-button (click)="closeDialog()" class="close-btn text-muted" aria-label="Close dialog">
+    <i-tabler name="x" class="icon-20"></i-tabler>
+  </button>
+</div>
+
+<mat-dialog-content class="p-0 content-wrapper" (scroll)="onScroll($event)">
+  
+  @if(isLoading) {
+    <div class="d-flex justify-content-center align-items-center" style="height: 300px;">
+      <mat-spinner diameter="40"></mat-spinner>
+    </div>
+  } @else if (trashList.length === 0) {
+    <div class="d-flex flex-column align-items-center justify-content-center" style="height: 300px;">
+      <div class="bg-light-subtle rounded-circle p-24 mb-3">
+         <i-tabler name="trash-off" class="icon-48 text-muted"></i-tabler>
+      </div>
+      <h6 class="f-s-16 f-w-600 m-0">Trash is empty</h6>
+      <p class="text-muted f-s-14 mt-1">No deleted items found.</p>
+    </div>
+  } @else {
+    
+    <table mat-table [dataSource]="trashList" [trackBy]="trackById" class="w-100">
+      
+      <ng-container matColumnDef="invertNo">
+        <th mat-header-cell *matHeaderCellDef class="p-l-24 f-w-600"> I/W No </th>
+        <td mat-cell *matCellDef="let element" class="p-l-24"> 
+          <span class="f-w-400 ">{{element.invertNo}}</span>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="product">
+        <th mat-header-cell *matHeaderCellDef class="f-w-600"> Product Details </th>
+        <td mat-cell *matCellDef="let element"> 
+          <div class="py-2">
+            <span class="f-s-14 text-dark f-w-600 d-block" style="line-height: 1.2;">
+              {{element.productName}}
+            </span>
+            <span class="f-s-12 text-muted d-block mt-1">
+              S/N: {{element.serialNo}}
+            </span>
+          </div>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="customer">
+        <th mat-header-cell *matHeaderCellDef class="f-w-600"> Customer </th>
+        <td mat-cell *matCellDef="let element"> 
+          <div class="py-2">
+            <span class="f-s-14  f-w-400 d-block" style="line-height: 1.2;">
+              {{element.contactName}}
+            </span>
+            <span class="f-s-12 text-muted d-block mt-1">
+              {{element.contactNo}}
+            </span>
+          </div>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="deletedDate">
+        <th mat-header-cell *matHeaderCellDef class="f-w-600"> Deleted On </th>
+        <td mat-cell *matCellDef="let element" class="text-muted f-s-14"> 
+          <span class="d-block  f-w-400">
+            {{element.deletedDate | date:'dd-MM-yyyy'}}
+          </span>
+          <span class="f-s-12 text-muted-light d-block">
+            {{element.deletedDate | date:'shortTime'}}
+          </span>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="actions">
+        <th mat-header-cell *matHeaderCellDef class="p-r-24 f-w-600"> 
+           <div class="d-flex justify-content-end w-100">Action</div>
+        </th>
+        
+        <td mat-cell *matCellDef="let element" class="p-r-24">
+          <div class="d-flex justify-content-end w-100">
+            <button mat-icon-button color="primary" (click)="restore(element.id)" matTooltip="Restore">
+              <i-tabler name="rotate-2" class="icon-20"></i-tabler>
+            </button>
+          </div>
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+    </table>
+
+    @if(isLoadingMore) {
+      <div class="d-flex justify-content-center p-16">
+        <mat-spinner diameter="24"></mat-spinner>
+      </div>
+    }
+  }
+</mat-dialog-content>

@@ -1,0 +1,443 @@
+/* ============================================================
+   1. GLOBAL RESET & AUTH BACKGROUND
+   ============================================================ */
+.auth-bg {
+  /* Dark Navy Gradient */
+  background: radial-gradient(circle at center, #1e293b 0%, #0f172a 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 20px;
+  position: relative;
+  overflow: hidden; 
+  z-index: 1;
+
+  @media (max-width: 576px) {
+    padding: 24px 16px; /* Outer padding to create the 'boxed' look */
+    align-items: center; /* Vertically centered */
+  }
+}
+
+/* ============================================================
+   2. BACKGROUND EFFECTS (Grid & Arrows)
+   ============================================================ */
+.bg-effects {
+  position: absolute;
+  top: 0; 
+  left: 0; 
+  width: 100%; 
+  height: 100%;
+  z-index: -2;
+  pointer-events: none;
+  background-image: 
+    linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+  background-size: 40px 40px;
+}
+
+.brand-arrows {
+  position: absolute; 
+  top: 0; 
+  left: 0; 
+  width: 100%; 
+  height: 100%;
+  z-index: -1; 
+  pointer-events: none;
+  display: flex; 
+  justify-content: space-between; 
+  padding: 0 5%;
+}
+
+.arrow {
+  width: 160px; 
+  height: 600px;
+  position: absolute; 
+  opacity: 0.15;
+  background-image: radial-gradient(#ffffff 3px, transparent 3px);
+  background-size: 20px 20px;
+
+  @media (max-width: 992px) { 
+    width: 120px; 
+    height: 450px; 
+    opacity: 0.1; 
+  }
+  
+  /* Mobile Fix: Make arrows subtle so they don't overlay text */
+  @media (max-width: 576px) { 
+    width: 80px; 
+    height: 300px; 
+    opacity: 0.05; 
+  }
+}
+
+.arrow-up {
+  left: 10%; 
+  top: 50%;
+  clip-path: polygon(50% 0%, 0% 20%, 20% 20%, 20% 100%, 80% 100%, 80% 20%, 100% 20%);
+  animation: floatUp 15s ease-in-out infinite;
+  @media (max-width: 576px) { 
+    top: 60%;
+    left: -10px; 
+  }
+}
+
+.arrow-down {
+  right: 10%; 
+  top: -20%;
+  clip-path: polygon(20% 0%, 80% 0%, 80% 80%, 100% 80%, 50% 100%, 0% 80%, 20% 80%);
+  animation: floatDown 15s ease-in-out infinite;
+  @media (max-width: 576px) { 
+    top: -10%;
+    right: -10px; 
+  }
+}
+
+@keyframes floatUp { 
+  0% { transform: translateY(0px); } 
+  50% { transform: translateY(-50px); } 
+  100% { transform: translateY(0px); } 
+}
+
+@keyframes floatDown { 
+  0% { transform: translateY(0px); } 
+  50% { transform: translateY(50px); } 
+  100% { transform: translateY(0px); } 
+}
+
+/* ============================================================
+   3. MAIN LOGIN CARD
+   ============================================================ */
+.login-card {
+  background-color: #ffffff; 
+  display: flex;
+  border-radius: 36px;
+  overflow: hidden;
+  box-shadow: 0px 30px 60px -15px rgba(0, 0, 0, 0.5);
+  
+  width: 1016px;
+  min-height: 653px; 
+  height: auto;
+  max-width: 100%; 
+  flex-shrink: 0; 
+  z-index: 10;
+
+  @media (max-width: 992px) {
+    flex-direction: column;
+    width: 100%; 
+    max-width: 500px; 
+    min-height: auto;
+    border-radius: 24px;
+  }
+
+  @media (max-width: 576px) {
+    width: 100%;
+    max-width: 100%;
+    min-height: auto;
+    border-radius: 24px;
+    box-shadow: 0px 10px 30px rgba(0, 0, 0, 0.2);
+  }
+}
+
+/* --- Left Column (Form) --- */
+.left-panel {
+  flex: 1; 
+  display: flex;
+  flex-direction: column;
+  justify-content: center; 
+  padding: 40px 70px;
+  position: relative;
+
+  @media (max-width: 768px) { 
+    padding: 40px 50px; 
+  }
+  
+  /* Mobile: Ensure proper inner spacing for the boxed form */
+  @media (max-width: 480px) { 
+    padding: 40px 24px; 
+    justify-content: center;
+    min-height: auto;
+  }
+}
+
+/* --- Right Column (Slider - Hidden on Mobile) --- */
+.right-panel {
+  flex: 1.25; 
+  background-color: #f4f7ff; 
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-top-right-radius: 36px;
+  border-bottom-right-radius: 36px;
+}
+
+/* ============================================================
+   4. TYPOGRAPHY & LOGO
+   ============================================================ */
+.logo-img {
+  max-width: 180px; 
+  height: auto;
+  margin: 0px auto 24px auto; 
+  display: block;
+
+  @media (max-width: 480px) {
+    max-width: 140px; /* Smaller on mobile */
+    margin-bottom: 20px;
+  }
+}
+
+.auth-title {
+  font-size: 32px; 
+  font-weight: 700;
+  color: #111c2d;
+  margin-bottom: 8px; 
+  text-align: center; /* Ensure centered on mobile */
+
+  @media (max-width: 480px) { 
+    font-size: 26px; 
+  }
+}
+
+.auth-subtitle {
+  font-size: 15px;
+  color: #5a6a85;
+  margin-bottom: 32px; 
+  line-height: 1.5;
+  text-align: center;
+
+  @media (max-width: 480px) { 
+    font-size: 14px; 
+    margin-bottom: 24px; 
+  }
+}
+
+/* ============================================================
+   5. FORM ELEMENTS
+   ============================================================ */
+.m-t-24 { margin-top: 24px; }
+.w-100 { width: 100%; }
+
+.or-divider {
+  display: flex;
+  align-items: center;
+  text-align: center;
+  color: #9ca3af;
+  font-size: 14px;
+  margin: 32px 0; 
+  
+  &::before, &::after {
+    content: ''; flex: 1; border-bottom: 1px solid #e5e7eb;
+  }
+  &::before { margin-right: 10px; }
+  &::after { margin-left: 10px; }
+}
+
+/* --- Google Button Wrapper --- */
+.google-btn-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  margin-top: 8px;
+}
+
+#google-btn {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  
+  /* Ensure iframe centers itself */
+  & > div { margin: 0 auto !important; }
+}
+
+.terms-text {
+  font-size: 12px;
+  color: #6b7280;
+  text-align: center;
+  margin-top: 24px;
+  line-height: 1.4;
+  
+  a { 
+    color: #111c2d; 
+    text-decoration: underline; 
+    cursor: pointer; 
+  }
+}
+
+/* ============================================================
+   6. OTP INPUTS (Mobile Optimized)
+   ============================================================ */
+.otp-container {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 20px;
+  margin-bottom: 32px;
+
+  /* Reduce gap on small screens */
+  @media (max-width: 480px) { gap: 8px; }
+}
+
+.otp-box {
+  width: 48px !important; 
+  height: 48px !important;
+  border: 1px solid #dfe5ef;
+  border-radius: 8px;
+  background-color: #f8f9fa;
+  color: #111c2d;
+  font-size: 20px;
+  font-weight: 600;
+  text-align: center;
+  padding: 0; 
+  transition: all 0.2s ease;
+  
+  &:focus {
+    border-color: #5D87FF;
+    background-color: #fff;
+    box-shadow: 0 0 0 3px rgba(93, 135, 255, 0.15);
+    outline: none;
+  }
+
+  /* Tablet/Small Desktop */
+  @media (max-width: 400px) {
+    width: 42px !important;
+    height: 42px !important;
+    font-size: 18px;
+  }
+
+  /* Very Small Devices (iPhone SE, Fold) */
+  @media (max-width: 350px) {
+    width: 36px !important;
+    height: 36px !important;
+    font-size: 16px;
+  }
+}
+
+.auth-subtitle strong {
+  color: #111c2d;
+  display: block; 
+  margin-top: 4px;
+}
+
+/* ============================================================
+   7. SLIDER (Hidden on Mobile)
+   ============================================================ */
+.slider-wrapper { 
+  width: 100%; 
+  height: 100%; 
+  position: relative; 
+}
+
+.slides-track {
+  display: flex; 
+  height: 100%; 
+  width: 100%;
+  transition: transform 0.6s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+.single-slide {
+  min-width: 100%; 
+  height: 100%;
+  display: flex; 
+  flex-direction: column; 
+  justify-content: center; 
+  align-items: center;
+  text-align: center; 
+  padding: 80px 50px; 
+  box-sizing: border-box;
+}
+
+.slide-title { 
+  font-size: 26px; 
+  font-weight: 700; 
+  margin-bottom: 20px; 
+  color: #111c2d; 
+}
+.slide-desc { 
+  font-size: 16px; 
+  color: #5a6a85; 
+  max-width: 340px; 
+  margin-bottom: 60px; 
+  line-height: 1.6; 
+}
+
+.floating-img {
+  max-width: 90%; 
+  max-height: 300px;
+  filter: drop-shadow(0 15px 30px rgba(0,0,0,0.1));
+  animation: float 6s ease-in-out infinite;
+}
+
+@keyframes float { 
+  0% { transform: translateY(0px); } 
+  50% { transform: translateY(-15px); } 
+  100% { transform: translateY(0px); } 
+}
+
+/* Dots Navigation */
+.dots-container {
+  position: absolute; 
+  bottom: 40px; 
+  left: 50%; 
+  transform: translateX(-50%);
+  display: flex; 
+  justify-content: center; 
+  align-items: center; 
+  gap: 8px; 
+  z-index: 10;
+}
+
+.dot {
+  width: 8px; 
+  height: 8px; 
+  background-color: #cecece; 
+  border-radius: 50px;
+  cursor: pointer; 
+  transition: width 0.3s ease, 
+  background-color 0.3s ease;
+  position: relative; 
+  overflow: hidden;
+
+  .progress-fill {
+    position: absolute; 
+    top: 0; 
+    left: 0; 
+    height: 100%; 
+    width: 0%;
+    background-color: #635bff; 
+    opacity: 0;
+  }
+
+  &.active {
+    width: 32px; 
+    background-color: #cecece;
+    .progress-fill { 
+      opacity: 1; 
+      width: 100%; 
+      animation: fillProgress 5000ms linear forwards; }
+  }
+  &:hover:not(.active) { 
+    background-color: #dadada; 
+  }
+}
+
+@keyframes fillProgress { from { width: 0%; } to { width: 100%; } }
+
+/* ============================================================
+   8. UTILITIES & OVERRIDES
+   ============================================================ */
+.d-none { display: none; }
+@media (min-width: 992px) { .d-lg-block { display: block; } }
+
+/* Material Form Field Override to hide extra spacing */
+::ng-deep .mat-mdc-form-field-subscript-wrapper { display: none; }
+::ng-deep .mat-form-field.mat-form-field-invalid .mat-mdc-form-field-subscript-wrapper { display: block !important; }
+
+.change-email-btn {
+  color: #5a6a85 !important;
+  font-weight: 600; font-size: 14px;
+  &:hover { color: #5D87FF !important; background-color: #f4f7ff; }
+}

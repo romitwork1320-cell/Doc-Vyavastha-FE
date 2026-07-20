@@ -1,0 +1,271 @@
+<div class="row align-items-center justify-content-between m-b-24">
+  <div class="col-md-8">
+    <h3 class="m-0 f-w-600 text-dark">Student Profile</h3>
+  </div>
+  <div class="col-md-4 text-right">
+    <button mat-stroked-button routerLink="/students" class="m-r-8" style="height: 36px; border-color: #cbd5e1; color: #475569;">
+      <span class="d-flex align-items-center">
+        <i-tabler name="arrow-left" class="icon-18 m-r-4"></i-tabler> Back
+      </span>
+    </button>
+    <button mat-flat-button color="primary" class="edit-btn" style="height: 36px;" (click)="editStudent()" [disabled]="isLoading" *ngIf="authService.hasPermission('/students', 'CanEdit')">
+      <span class="d-flex align-items-center">
+        <i-tabler name="pencil" class="icon-18 m-r-4"></i-tabler> Edit Profile
+      </span>
+    </button>
+  </div>
+</div>
+
+@if (isLoading) {
+  <mat-card class="cardWithShadow"><mat-card-content class="p-24 text-center">Loading...</mat-card-content></mat-card>
+} @else if (!student) {
+  <mat-card class="cardWithShadow"><mat-card-content class="p-24 text-center text-muted">Student not found.</mat-card-content></mat-card>
+} @else {
+  
+  <div class="row">
+    <!-- Main Content Tabs -->
+    <div class="col-md-12">
+      <mat-card class="cardWithShadow main-tabs-card overflow-hidden">
+        <mat-tab-group animationDuration="0ms" class="custom-tab-group" (selectedTabChange)="onTabChange($event)">
+          
+          <!-- Profile Tab -->
+          <mat-tab label="Profile Details">
+            <div class="p-24 bg-light-gray tab-content-bg">
+              
+              <!-- Personal Info Card -->
+              <div class="info-card">
+                <div class="info-header d-flex justify-content-between align-items-center">
+                  <div class="d-flex align-items-center">
+                    <div class="header-icon bg-light-primary text-primary"><i-tabler name="user" class="icon-20"></i-tabler></div>
+                    <h5 class="m-0 f-w-600 text-dark">Personal Information</h5>
+                  </div>
+                  <div>
+                    @if (student.status === 'Active') {
+                      <span class="status-badge active-badge">Active</span>
+                    } @else {
+                      <span class="status-badge inactive-badge">Inactive</span>
+                    }
+                  </div>
+                </div>
+                <div class="info-body">
+                  <div class="row m-b-16">
+                    <div class="col-md-3">
+                      <div class="detail-label">Student Name</div>
+                      <div class="detail-value m-b-0">{{ student.fullName }}</div>
+                    </div>
+                    <div class="col-md-3">
+                      <div class="detail-label">Student Code(s)</div>
+                      <div class="detail-value m-b-0 font-monospace d-flex flex-wrap" style="gap: 8px;">
+                        <span style="color: #2e7d32; font-weight: 600; background: #e8f5e9; padding: 2px 6px; border-radius: 4px; border: 1px solid #c8e6c9;">
+                          {{ student.studentCode }}
+                        </span>
+                        @if (student.assignedCodes && student.assignedCodes.length > 1) {
+                          @for (code of student.assignedCodes; track code) {
+                            @if (code !== student.studentCode) {
+                              <span style="color: #c62828; font-weight: 500; background: #ffebee; padding: 2px 6px; border-radius: 4px; border: 1px solid #ffcdd2;">
+                                {{ code }}
+                              </span>
+                            }
+                          }
+                        }
+                      </div>
+                    </div>
+                    <div class="col-md-3">
+                      <div class="detail-label">Gender</div>
+                      <div class="detail-value m-b-0">{{ student.gender }}</div>
+                    </div>
+                    <div class="col-md-3">
+                      <div class="detail-label">Caste</div>
+                      <div class="detail-value m-b-0">{{ student.casteName || '-' }}</div>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-md-3">
+                      <div class="detail-label">Father's Name</div>
+                      <div class="detail-value m-b-0">{{ student.fatherName || '-' }}</div>
+                    </div>
+                    <div class="col-md-3">
+                      <div class="detail-label">Mother's Name</div>
+                      <div class="detail-value m-b-0">{{ student.motherName || '-' }}</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Contact Info Card -->
+              <div class="info-card">
+                <div class="info-header">
+                  <div class="header-icon bg-light-info text-info"><i-tabler name="address-book" class="icon-20"></i-tabler></div>
+                  <h5 class="m-0 f-w-600 text-dark">Contact Information</h5>
+                </div>
+                <div class="info-body">
+                  <div class="row">
+                    <div class="col-md-4">
+                      <div class="detail-label">Email Address</div>
+                      <div class="detail-value m-b-0">{{ student.email || 'N/A' }}</div>
+                    </div>
+                    <div class="col-md-4">
+                      <div class="detail-label">Mobile Number 1</div>
+                      <div class="detail-value m-b-0">{{ student.primaryMobile }}</div>
+                    </div>
+                    <div class="col-md-4">
+                      <div class="detail-label">Address</div>
+                      <div class="detail-value m-b-0">
+                        @if (student.homeAddress) { <div>{{ student.homeAddress }}</div> }
+                        <div>
+                          {{ student.city || 'N/A' }}{{ student.state ? ', ' + student.state : '' }}
+                          @if (student.pincode) { <span> - {{ student.pincode }}</span> }
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Academic Info Card -->
+              <div class="info-card">
+                <div class="info-header">
+                  <div class="header-icon bg-light-success text-success"><i-tabler name="school" class="icon-20"></i-tabler></div>
+                  <h5 class="m-0 f-w-600 text-dark">Academic Information</h5>
+                </div>
+                <div class="info-body">
+                  <div class="row m-b-16">
+                    <div class="col-md-6">
+                      <div class="detail-label">School Name</div>
+                      <div class="detail-value m-b-0">{{ student.schoolName || '-' }}</div>
+                    </div>
+                    <div class="col-md-6">
+                      <div class="detail-label">Passing Board</div>
+                      <div class="detail-value m-b-0">{{ student.passingBoard || '-' }}</div>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-md-6">
+                      <div class="detail-label">10th Passing Year</div>
+                      <div class="detail-value m-b-0">{{ student.tenthPassingYear || '-' }}</div>
+                    </div>
+                    <div class="col-md-6">
+                      <div class="detail-label">12th Passing Year</div>
+                      <div class="detail-value m-b-0">{{ student.twelfthPassingYear || '-' }}</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Scholarship Details Card -->
+              <div class="info-card">
+                <div class="info-header">
+                  <div class="header-icon bg-light-success text-success"><i-tabler name="certificate" class="icon-20"></i-tabler></div>
+                  <h5 class="m-0 f-w-600 text-dark">Scholarship Details</h5>
+                </div>
+                <div class="info-body scholarship-section">
+                  <div class="row">
+                    <div class="col-md-6">
+                      <div class="detail-label">Scholarship UID</div>
+                      <div class="detail-value m-b-0">{{ student.scholarshipUid || '-' }}</div>
+                    </div>
+                    <div class="col-md-6">
+                      <div class="detail-label">Scholarship Password</div>
+                      <div class="detail-value m-b-0 font-monospace">{{ student.scholarshipPassword || '-' }}</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Other Details Card -->
+              <div class="info-card m-b-0">
+                <div class="info-header">
+                  <div class="header-icon bg-light-warning text-warning"><i-tabler name="file-info" class="icon-20"></i-tabler></div>
+                  <h5 class="m-0 f-w-600 text-dark">Other Details</h5>
+                </div>
+                <div class="info-body">
+                  <div class="row">
+                    <div class="col-md-12">
+                      <div class="detail-label">Home Address</div>
+                      <div class="detail-value">
+                        {{ student.homeAddress ? student.homeAddress + ', ' : '' }}
+                        {{ student.city ? student.city : '' }}{{ student.state ? ', ' + student.state : '' }}{{ student.pincode ? ' - ' + student.pincode : '' }}
+                        <span *ngIf="!student.homeAddress && !student.city && !student.state && !student.pincode">-</span>
+                      </div>
+                    </div>
+                    <div class="col-md-12">
+                      <div class="detail-label">Administrative Remarks</div>
+                      <div class="detail-value text-muted m-b-0" [class.fst-italic]="!student.remarks">{{ student.remarks || 'No remarks added.' }}</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </mat-tab>
+
+          <!-- Applications Tab -->
+          <mat-tab label="Applications">
+            <div class="p-24">
+              <div class="d-flex justify-content-between align-items-center m-b-16">
+                <h4 class="m-0 f-w-600 text-dark">Applications</h4>
+                <button mat-flat-button color="primary" class="edit-btn" style="height: 36px; padding: 0 16px;" (click)="openApplicationDialog()">
+                  <span class="d-flex align-items-center">
+                    <i-tabler name="plus" class="icon-18 m-r-4"></i-tabler> Add Application
+                  </span>
+                </button>
+              </div>
+
+              @if (applications.length === 0) {
+                <div class="empty-state p-y-48">
+                  <div class="empty-icon-wrapper bg-light-primary text-primary m-auto m-b-16">
+                    <i-tabler name="file-description" class="icon-48"></i-tabler>
+                  </div>
+                  <h4 class="m-0 text-dark f-w-600 text-center">No Applications Found</h4>
+                  <p class="text-muted text-center m-t-8">This student hasn't submitted any applications yet.</p>
+                </div>
+              } @else {
+                <div class="table-responsive rounded border">
+                  <table mat-table [dataSource]="applications" class="w-100 modern-table">
+                    <ng-container matColumnDef="applicationNumber">
+                      <th mat-header-cell *matHeaderCellDef class="f-w-600 text-muted text-uppercase f-s-12">Application No.</th>
+                      <td mat-cell *matCellDef="let app" class="f-w-600 text-dark font-monospace">{{ app.applicationNumber || 'N/A' }}</td>
+                    </ng-container>
+                    <ng-container matColumnDef="type">
+                      <th mat-header-cell *matHeaderCellDef class="f-w-600 text-muted text-uppercase f-s-12">Type</th>
+                      <td mat-cell *matCellDef="let app" class="text-muted">{{ app.typeName }}</td>
+                    </ng-container>
+                    <ng-container matColumnDef="status">
+                      <th mat-header-cell *matHeaderCellDef class="f-w-600 text-muted text-uppercase f-s-12">Status</th>
+                      <td mat-cell *matCellDef="let app">
+                        <span class="status-chip">{{ app.statusName }}</span>
+                      </td>
+                    </ng-container>
+                    <ng-container matColumnDef="appliedDate">
+                      <th mat-header-cell *matHeaderCellDef class="f-w-600 text-muted text-uppercase f-s-12">Applied Date</th>
+                      <td mat-cell *matCellDef="let app" class="text-muted">{{ (app.appliedDate | date:'dd MMM yyyy') || '-' }}</td>
+                    </ng-container>
+                    <ng-container matColumnDef="lastDate">
+                      <th mat-header-cell *matHeaderCellDef class="f-w-600 text-muted text-uppercase f-s-12 text-right">Deadline</th>
+                      <td mat-cell *matCellDef="let app" class="text-error f-w-500 text-right">{{ (app.lastDate | date:'dd MMM yyyy') || '-' }}</td>
+                    </ng-container>
+
+                    <tr mat-header-row *matHeaderRowDef="appColumns" class="bg-light"></tr>
+                    <tr mat-row *matRowDef="let row; columns: appColumns;" class="hover-row" (click)="viewApplication(row.id)"></tr>
+                  </table>
+                </div>
+              }
+            </div>
+          </mat-tab>
+
+          <!-- Fee Management Tab -->
+          <mat-tab label="Fee Management">
+            <app-student-fee-management *ngIf="studentId" [studentId]="studentId"></app-student-fee-management>
+          </mat-tab>
+
+          <!-- Activity Log Tab -->
+          <mat-tab label="Activity Log">
+            <app-recent-activity *ngIf="studentId" [entityId]="studentId"></app-recent-activity>
+          </mat-tab>
+
+        </mat-tab-group>
+      </mat-card>
+    </div>
+  </div>
+
+}

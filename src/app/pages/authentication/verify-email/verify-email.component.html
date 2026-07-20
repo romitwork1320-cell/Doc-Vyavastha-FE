@@ -1,0 +1,62 @@
+<div class="blank-layout-container justify-content-center">
+  <div class="position-relative row w-100 h-100">
+
+    <div class="col-lg-4">
+      <div class="d-flex align-items-start align-items-lg-center justify-content-center h-100">
+        <div class="row justify-content-center w-100 h-100 align-items-center">
+          <div class="col-lg-9 max-width-form text-center">
+
+            <div [ngSwitch]="status">
+
+              <div *ngSwitchCase="'verifying'">
+                <mat-spinner [diameter]="50" class="mx-auto"></mat-spinner>
+                <h4 class="f-w-700 f-s-24 m-t-24">Verifying your account...</h4>
+              </div>
+
+              <div *ngSwitchCase="'success'">
+                <mat-icon color="primary" style="font-size: 50px; height: 50px; width: 50px;">
+                  check_circle
+                </mat-icon>
+                <h4 class="f-w-700 f-s-24 m-t-24">Verification Successful!</h4>
+                <p class="f-s-14 d-block mat-body-1 m-t-8">{{ message }}</p>
+                <a mat-flat-button color="primary" class="m-t-16" routerLink="/login">Proceed to Sign In</a>
+              </div>
+
+              <div *ngSwitchCase="'error'">
+                <mat-icon color="warn" style="font-size: 50px; height: 50px; width: 50px;">
+                  error
+                </mat-icon>
+                <h4 class="f-w-700 f-s-24 m-t-24">Verification Failed</h4>
+                <p class="f-s-14 d-block mat-body-1 m-t-8">{{ message }}</p>
+                <a mat-stroked-button color="primary" class="m-t-16" routerLink="/register">Try Signing Up Again</a>
+              </div>
+
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-lg-8 position-relative overflow-hidden bg-dark-200 d-none d-lg-block">
+      <div class="circle-top"></div>
+      <div>
+        <img src="assets/images/logos/logo-icon-dream.png" class="circle-bottom" alt="Logo-Dark" />
+      </div>
+      <div class="d-flex align-items-center z-1 position-relative h-n80">
+        <div class="row justify-content-center w-100">
+          <div class="col-lg-6">
+            <h2 class="text-white f-s-40 m-b-16">
+              Welcome to <br />
+              Replezy !
+            </h2>
+            <span class="op-75 f-s-16 text-white d-block m-b-16">
+              Access your personalized admin dashboard<br />
+              to manage replacements and system activities efficiently.
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+  </div>
+</div>

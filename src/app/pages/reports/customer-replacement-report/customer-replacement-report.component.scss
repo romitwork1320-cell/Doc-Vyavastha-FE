@@ -1,0 +1,52 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  min-height: 0;
+}
+
+mat-card.cardWithShadow {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  padding: 0 !important; /* Remove card padding */
+}
+
+mat-card-content.table-card-content {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  min-height: 0;
+  padding: 0; /* Ensure no padding */
+}
+
+.table-container {
+  flex-grow: 1;
+  overflow-y: auto;
+  overflow-x: auto;
+  min-height: 0;
+}
+
+/* --- Standard Styles --- */
+.loading-spinner {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  min-height: 300px;
+  p {
+    margin-top: 16px;
+    font-size: 16px;
+  }
+}
+
+.mat-sort-header-container {
+  display: flex !important;
+  align-items: center;
+}
+
+.mat-mdc-row {
+  cursor: pointer;
+}

@@ -1,0 +1,75 @@
+/* Header Styling */
+.dialog-header {
+  background-color: #ffffff;
+  border-radius: 8px 8px 0 0;
+}
+
+.header-icon-wrapper {
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #ecf2ff; /* Light primary color */
+}
+
+.close-btn {
+  background-color: #f4f6f9;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+  &:hover {
+    background-color: #feeceb;
+    color: #fa896b !important;
+  }
+}
+
+.border-light {
+  border-top: 1px solid #eef2f6;
+}
+
+/* Typography & Forms */
+.text-error {
+  color: #fa896b;
+}
+
+.custom-textarea {
+  resize: vertical;
+  min-height: 100px;
+  padding-top: 8px !important;
+}
+
+/* Priority Dots inside Dropdown */
+.dot-indicator {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  display: inline-block;
+
+  &.low { background-color: #13deb9; }    /* Success Green */
+  &.medium { background-color: #ffae1f; } /* Warning Orange */
+  &.high { background-color: #fa896b; }   /* Error Red */
+  &.critical { background-color: #539bff; box-shadow: 0 0 0 3px rgba(83, 155, 255, 0.2); } /* Alert Blue */
+}
+
+/* Scrollbar styling for dialog content */
+.custom-scrollbar {
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  &::-webkit-scrollbar-thumb {
+    background: #e0e0e0;
+    border-radius: 10px;
+  }
+  &::-webkit-scrollbar-thumb:hover {
+    background: #bdbdbd;
+  }
+}
+
+/* Fix disabled button text color for modern look */
+.mat-mdc-button:disabled {
+  opacity: 0.6;
+}

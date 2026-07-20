@@ -1,0 +1,534 @@
+/* =========================================================
+   1. HOST & LAYOUT
+   ========================================================= */
+:host {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  height: 100%;
+  min-height: 0;
+  overflow: hidden;
+}
+
+mat-card.cardWithShadow {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  padding: 0 !important;
+  box-shadow: 0px 7px 30px 0px rgba(90, 114, 123, 0.11) !important;
+  overflow: hidden; 
+}
+
+mat-card-content.common-content {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  padding: 24px;
+  overflow: hidden; 
+}
+
+.table-container {
+  flex: 1 1 auto;
+  height: 100%;
+  width: 100%;
+  overflow-y: auto; 
+  overflow-x: auto;
+  min-height: 0;
+  display: block;
+}
+
+/* =========================================================
+   2. TABLE STYLING (Fixed Layout Strategy)
+   ========================================================= */
+table.mat-mdc-table {
+  width: 100%;
+  table-layout: fixed; /* Ensures columns respect widths */
+  background: transparent;
+  border-collapse: collapse;
+
+  /* Header */
+  thead {
+    background-color: #ffffff;
+
+    th.mat-mdc-header-cell {
+      font-size: 14px !important;
+      font-weight: 600 !important;
+      color: #5a6a85;
+      text-transform: capitalize;
+      letter-spacing: 0.5px;
+      border-bottom: 1px solid #eef2f6;
+      padding: 16px;
+      white-space: nowrap;
+      
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background-color: #fff;
+    }
+  }
+
+  /* Body */
+  tbody {
+    tr.mat-mdc-row {
+      height: 60px;
+      background-color: #ffffff;
+      transition: all 0.2s ease-in-out;
+      cursor: pointer;
+
+      &:hover {
+        background-color: #fbfbfb;
+        
+        /* Show Hover Actions */
+        .hover-actions {
+          opacity: 1;
+          visibility: visible;
+        }
+      }
+
+      td.mat-mdc-cell {
+        font-size: 14px !important;
+        font-weight: 400;
+        color: #2a3547;
+        border-bottom: 1px solid #eef2f6;
+        padding: 8px 16px;
+      }
+    }
+  }
+}
+
+/* =========================================================
+   3. COLUMN WIDTHS (Matches Reference Logic)
+   ========================================================= */
+
+/* 1. ID Column */
+.mat-column-id {
+  width: 60px; 
+  text-align: center;
+}
+
+/* 2. Title (FLUID - Takes remaining space) */
+.mat-column-title {
+  width: 40%; 
+  padding-right: 24px;
+  /* Fix: Ensure flex children can shrink */
+  .d-flex { min-width: 0; }
+}
+
+/* 3. Amount (Fixed) */
+.mat-column-amount {
+  width:20%;
+}
+
+/* 4. Customer (Fixed) */
+.mat-column-customer {
+  width: 25%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* 5. Date (Fixed) */
+.mat-column-date {
+  width: 20%;
+}
+
+/* 6. Actions (Fixed) */
+.mat-column-actions {
+  width: 35%;
+  padding-right: 24px !important;
+  
+  /* ✅ Fix: Force vertical alignment to center */
+  vertical-align: middle !important; 
+  
+  /* Horizontal alignment (backup for flex) */
+  text-align: right; 
+}
+
+/* =========================================================
+   4. COMPONENT STYLES & UTILITIES
+   ========================================================= */
+
+/* Truncation Utility */
+.truncate-text, .truncate-cell-content {
+  display: block;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+
+/* Text Colors */
+.text-dark { color: #2a3547 !important; }
+.text-muted { color: #7c8fac !important; }
+.text-success { color: #36c76c !important; }
+.text-primary { color: #635bff !important; }
+.text-error { color: #ea5455 !important; }
+.text-info { color: #000000 !important; }
+
+/* Font Weights */
+.f-w-600 { font-weight: 600 !important; }
+.f-w-500 { font-weight: 500 !important; }
+
+/* Icons */
+.icon-22 { width: 22px; height: 22px; font-size: 22px; }
+.icon-18 { width: 18px; height: 18px; font-size: 18px; vertical-align: middle; }
+
+/* Desktop Actions */
+.desktop-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 4px;
+}
+
+.hover-actions {
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.2s;
+  margin-right: 8px;
+  gap: 12px;
+  
+  a { display: flex; align-items: center; transition: transform 0.1s; }
+  a:hover { transform: scale(1.1); }
+}
+
+/* Loading */
+.loading-spinner {
+   flex-grow: 1;
+   display: flex;
+   flex-direction: column;
+   justify-content: center;
+   align-items: center;
+   min-height: 300px;
+   p { margin-top: 16px; color: #777; }
+}
+
+/* Utilities */
+.m-r-8 { margin-right: 8px; }
+.gap-8 { gap: 8px; }
+.mt-1 { margin-top: 4px; }
+
+/* Mobile Visibility Defaults */
+.mobile-action-drawer { position: relative; .mobile-drawer-content { display: none; } }
+.mobile-stack { display: none; }
+.desktop-only { display: block; }
+
+
+/* Add to your Column Widths section */
+.mat-column-select {
+  width: 48px !important;      /* Fixed tight width */
+  flex: 0 0 48px !important;   /* Prevent flexing */
+  padding-left: 24px !important; /* Align with card edge padding */
+  padding-right: 0 !important;   /* No extra right padding */
+  box-sizing: content-box;       /* Ensure padding doesn't shrink width */
+}
+
+.compare-bar {
+  position: fixed;
+  bottom: 30px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #2a3547;
+  /* Adjusted padding: more on left for text, less on right for close button balance */
+  padding: 6px 6px 6px 24px; 
+  border-radius: 50px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.25);
+  z-index: 1000;
+  animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1); /* Smoother pop-up */
+  
+  /* Flexbox to center everything vertically */
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  /* Helper for the left side content */
+  .bar-content {
+     display: flex;
+     align-items: center;
+     gap: 16px; /* Space between "Selected" text and "Compare" button */
+  }
+
+  .text-white { 
+     color: #fff !important; 
+     font-size: 14px;
+     font-weight: 600;
+     white-space: nowrap;
+  }
+  
+  /* Close Button Specifics */
+  .close-btn {
+     color: rgba(255,255,255,0.7);
+     margin-left: 8px;
+     width: 36px;       /* Smaller touch target to fit bar height */
+     height: 36px;
+     padding: 0;        /* Reset padding */
+     display: flex;
+     align-items: center;
+     justify-content: center;
+     
+     &:hover {
+        color: #fff;
+        background-color: rgba(255,255,255,0.1);
+     }
+
+     /* Ensure icon is centered */
+     i-tabler {
+        display: flex;
+     }
+  }
+}
+
+@keyframes slideUp {
+  from { transform: translate(-50%, 100%); opacity: 0; }
+  to { transform: translate(-50%, 0); opacity: 1; }
+}
+
+/* =========================================================
+   5. MOBILE RESPONSIVENESS (Max Width 960px)
+   ========================================================= */
+@media (max-width: 960px) {
+    /* 1. VISIBILITY TOGGLES */
+    .mat-mdc-header-row { display: none !important; }
+    .mobile-hide { display: none !important; }
+    .desktop-only { display: none !important; }
+    .mobile-stack { display: flex !important; }
+
+    /* 2. ROW LAYOUT (Flex) */
+    .mat-mdc-row {
+        display: flex !important;
+        align-items: center;
+        justify-content: space-between;
+        padding: 12px 16px;
+        border-bottom: 1px solid #eeeeee;
+        background: #ffffff;
+        min-height: 72px;
+        width: 100%;
+        position: relative;
+        overflow: hidden;
+    }
+
+    /* 3. MAIN LEFT COLUMN (Title) */
+    /* Target the class '.mat-column-title' which we added 'mobile-main-col' to */
+    .mat-column-title.mobile-main-col { 
+        width: auto !important; 
+        flex: 1; 
+        min-width: 0;
+        padding: 0 !important; 
+        display: block !important;
+        text-align: left;
+        border-bottom: none !important;
+
+        .mobile-stack {
+           flex-direction: column;
+           align-items: flex-start;
+           width: 100%;
+
+           .truncate-text {
+             width: 100%;
+             white-space: nowrap;
+             overflow: hidden;
+             text-overflow: ellipsis;
+             display: block;
+             font-size: 16px !important;
+             margin-bottom: 2px;
+           }
+
+           .text-muted {
+             font-size: 13px !important;
+             display: flex;
+             align-items: center;
+           }
+        }
+    }
+    
+    /* 4. MAIN RIGHT COLUMN (Amount) */
+    /* Target the class '.mat-column-amount' which we added 'mobile-right-col' to */
+    .mat-column-amount.mobile-right-col { 
+        width: auto !important; 
+        flex: 0 0 auto; 
+        padding: 0 !important; 
+        text-align: right; 
+        border-bottom: none !important;
+        display: flex !important;
+        justify-content: flex-end;
+        align-items: center;
+    }
+
+    /* 5. SWIPE DRAWER */
+    .mobile-action-drawer {
+        display: flex !important;
+        position: absolute;
+        top: 0; bottom: 0; right: 0;
+        width: 180px; 
+        background-color: #f1f1f1;
+        z-index: 10;
+        padding: 0 !important;
+        transform: translateX(100%);
+        transition: transform 0.2s ease-out;
+        border-left: 1px solid #ddd;
+        
+        .desktop-actions { display: none !important; }
+        .mobile-drawer-content { display: flex !important; width: 100%; height: 100%; align-items: center; justify-content: space-evenly; }
+    }
+    
+    .mobile-swipe-active .mobile-action-drawer { 
+        transform: translateX(0); 
+        box-shadow: -4px 0 8px rgba(0,0,0,0.1); 
+    }
+    
+    /* Circle Buttons */
+    .mobile-action-btn { 
+        width: 40px; height: 40px; border-radius: 50%; background: #fff; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 5px rgba(0,0,0,0.1); 
+        &.info { color: #00cfe8; } 
+        &.success { color: #36c76c; } 
+        &.primary { color: #635bff; } 
+        &.delete { color: #ea5455; }
+    }
+}
+
+::ng-deep .filter-menu-panel {
+  max-width: none !important; /* Allow it to exceed 280px */
+  width: auto !important;     /* Let content define width */
+  
+  /* Optional: Ensure the internal container matches our custom width */
+  .mat-mdc-menu-content {
+    padding: 0 !important; /* Remove default padding so our design hits edges */
+  }
+}
+
+
+.filter-panel {
+  width: 380px; /* ✅ Increased from 320px for better spacing */
+  max-width: 90vw; /* Safety for small mobile screens */
+  background: #ffffff;
+  padding: 0; 
+  border-radius: 8px; 
+  overflow: hidden;   
+  outline: none;
+}
+
+/* Section Headers */
+h5 {
+  margin: 0;
+  padding: 14px 20px; /* Slightly more padding */
+  font-size: 13px;
+  font-weight: 600;
+  color: #5a6a85; 
+  background-color: #f8f9fa; 
+  text-transform: uppercase;
+  letter-spacing: 0.8px; /* More spacing for cleaner look */
+  border-bottom: 1px solid #eef2f6;
+  border-top: 1px solid #eef2f6;
+  
+  &:first-child { border-top: none; }
+}
+
+/* Form Container Padding */
+form {
+  padding: 0; /* Reset form padding, handled by inner divs */
+}
+
+/* Content Wrappers */
+.p-x-16 { padding-left: 20px !important; padding-right: 20px !important; }
+.p-t-16 { padding-top: 20px !important; }
+
+/* Compact Form Fields */
+.density-compact {
+  /* 1. Hide the hint/error wrapper to save space */
+  .mat-mdc-form-field-subscript-wrapper {
+    display: none; 
+  }
+  
+  /* 2. Adjust the container padding */
+  .mat-mdc-form-field-infix { 
+    padding-top: 8px !important; 
+    padding-bottom: 8px !important; 
+    min-height: 42px; /* Set your desired height */
+    display: flex;    /* ✅ Force flex layout to manage children */
+    align-items: center; /* ✅ Vertically center the content */
+  }
+
+  /* 3. Force the input element to center perfectly */
+  .mat-mdc-input-element {
+    margin-top: 0 !important; /* Reset native margins */
+    transform: translateY(-1px); /* micro-adjustment if font looks slightly off */
+  }
+  
+  /* 4. Optional: Adjust placeholder color/size if needed */
+  input::placeholder {
+    color: #b0b8c4;
+    font-size: 13px;
+  }
+}
+
+/* Gap Utility for Price Inputs */
+.gap-8 { gap: 12px; } /* Increased gap between Min/Max */
+
+/* Action Buttons Footer */
+.actions-footer {
+  padding: 16px 20px; /* consistent padding */
+  background-color: #ffffff;
+  border-top: 1px solid #eef2f6;
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+}
+
+/* Badge Style */
+.badge-count {
+  background: #635bff;
+  color: white;
+  border-radius: 50%;
+  padding: 2px 6px;
+  font-size: 10px;
+  margin-left: 6px;
+  vertical-align: top;
+  line-height: 12px;
+}
+
+/* =========================================================
+   HOVER ACTION STYLES
+   ========================================================= */
+
+/* 1. Icon Sizing */
+.icon-22 {
+  width: 22px;
+  height: 22px;
+  font-size: 22px;
+}
+
+/* 2. Container: Hidden by default */
+.hover-actions {
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.2s ease-in-out;
+  
+  /* Spacing */
+  gap: 12px;          
+  margin-right: 8px;  
+}
+
+/* 3. Trigger: Show when hovering the TABLE ROW */
+.mat-mdc-row:hover .hover-actions {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* 4. Link Styling */
+.hover-actions a {
+  display: flex;
+  align-items: center;
+  transition: transform 0.1s ease;
+  cursor: pointer;
+}
+
+.hover-actions a:hover {
+  transform: scale(1.1); /* Slight zoom on hover */
+}
+
+/* 5. Colors (Ensure these exist) */
+.text-success { color: #36c76c !important; }
+.text-primary { color: #635bff !important; }
+.text-info { color: #00cfe8 !important; }

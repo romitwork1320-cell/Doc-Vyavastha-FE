@@ -1,0 +1,403 @@
+/* You can add global styles to this file, and also import other style files */
+
+html,
+body {
+  /* Prevent the browser itself from ever scrolling */
+  overflow: hidden;
+  height: 100%;
+  width: 100%;
+  margin: 0;
+  font-family: Inter, "Helvetica Neue", sans-serif;
+}
+
+.permission-disabled {
+  opacity: 0.5;
+  cursor: not-allowed !important;
+  pointer-events: none;
+}
+
+/* Override browser autofill styles */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active {
+  box-shadow: 0 0 0 30px white inset !important;
+  -webkit-text-fill-color: inherit !important;
+}
+
+.global-floating-add-button {
+  position: fixed !important;
+  bottom: 24px;
+  right: 24px;
+  z-index: 100;
+}
+
+/* --- Global Layout Rules --- */
+
+/* 1. Make the main sidenav container fill the screen */
+mat-sidenav-container.mainWrapper {
+  height: 100vh;
+}
+
+/* 2. Constrain the content area (header + body) */
+mat-sidenav-content.contentWrapper {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  overflow: hidden;
+}
+
+/* --- 10. Forms / Input adjustments --- */
+.mat-mdc-form-field-subscript-wrapper {
+  display: none;
+}
+
+/* --- FIX: Hide Google Identity Services leftover iframe artifact --- */
+iframe#credential_picker_container {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  height: 0 !important;
+  width: 0 !important;
+  pointer-events: none !important;
+}
+
+/* 3. Make the body (below header) the main scrolling area */
+.body-wrapper {
+  flex-grow: 1;
+  min-height: 0;
+  width: 100%;
+  /* Enable scroll here so the whole page can scroll normally */
+  overflow-y: auto;
+  overflow-x: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+/* 4. Fix the padding + width overflow issue */
+.pageWrapper {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  box-sizing: border-box;
+  min-height: 0 !important;
+}
+
+/* --- Theme Overrides (Background Colors) --- */
+
+.sidebarNav,
+.mat-drawer-inner-container,
+.sidebar-list {
+  background-color: #f3f3f3 !important;
+}
+
+.topbar {
+  background-color: #f3f3f3 !important;
+  box-shadow: none !important;
+}
+
+.mat-drawer-content,
+.contentWrapper,
+.body-wrapper {
+  background-color: #f3f3f3 !important;
+}
+
+.cardWithShadow {
+  background-color: #ffffff !important;
+}
+
+/* ==================================================================
+   NEW GLOBAL HELPERS (Apply these to your component HTML)
+   ================================================================== */
+
+/* 1. The Card: Fills the space, no scrolling on the card itself */
+.common-card {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  padding: 0 !important;
+  overflow: hidden;
+  /* Important: stops double scrollbars */
+}
+
+/* 2. The Content Area: Fills the card */
+.common-content {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  padding: 0;
+  overflow: hidden;
+}
+
+/* 3. The Scroll Container: The ONLY thing that scrolls in standard tables */
+.common-table-container {
+  flex-grow: 1;
+  overflow-y: auto;
+  /* This enables the scrollbar */
+  overflow-x: hidden;
+  min-height: 0;
+  height: 100%;
+}
+
+/* 4. Global Sticky Header Fix */
+/* Automatically fixes sticky headers inside .common-table-container */
+.common-table-container .mat-mdc-header-row {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background-color: white;
+}
+
+/* 5. Tab Group Fix (For Teams Page) */
+/* This forces the scrollbar to be INSIDE the tab content */
+.common-content mat-tab-group {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.common-content .mat-mdc-tab-body-wrapper {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+/* The scrollbar will appear here for tabbed pages */
+.common-content .mat-mdc-tab-body-content {
+  height: 100%;
+  overflow-y: auto;
+  overflow-x: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.mat-mdc-table tbody .mat-mdc-row:hover {
+  /* Option 1: Standard Light Gray (Clean & Professional) */
+  background-color: #f3f3f3 !important;
+
+  /* Option 2: Light Blue Tint (Matches your Blue Theme) */
+  /* background-color: #eff2ff !important; */
+
+  transition: background-color 0.2s ease-in-out;
+}
+
+.mat-mdc-table .mat-mdc-header-row .mat-mdc-header-cell,
+.mat-mdc-table .mat-mdc-row .mat-mdc-cell {
+  /* Make the border darker */
+  border-bottom-color: #ececec !important;
+}
+
+
+/* =========================================
+   GLOBAL MOBILE TABLE ACTIONS (Shared)
+   ========================================= */
+
+@media (max-width: 960px) {
+
+  /* 1. The Container (The TR or Div) */
+  .mobile-swipe-row {
+    position: relative;
+    overflow: hidden;
+    /* Critical for sliding effect */
+    transition: background-color 0.2s;
+  }
+
+  /* 2. The Drawer (The Action Cell) */
+  .mobile-action-drawer {
+    display: flex !important;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    right: 0;
+    width: 140px;
+    /* Width of drawer */
+
+    background-color: #f1f1f1;
+    border-left: 1px solid #ddd;
+    z-index: 10;
+
+    align-items: center;
+    justify-content: space-evenly;
+    padding: 0;
+
+    /* Start Hidden (Off-screen right) */
+    transform: translateX(100%);
+    transition: transform 0.2s ease-out;
+  }
+
+  /* 3. The Trigger Class (Added when swiped) */
+  .mobile-swipe-active .mobile-action-drawer {
+    transform: translateX(0);
+    /* Slide in */
+    box-shadow: -4px 0 8px rgba(0, 0, 0, 0.1);
+  }
+
+  /* 4. Common Action Buttons */
+  .mobile-action-btn {
+    background: #fff;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    cursor: pointer;
+
+    &.edit {
+      color: #1e88e5;
+    }
+
+    &.delete {
+      color: #e53935;
+    }
+  }
+}
+
+/* =======================================
+   TYPOGRAPHY & TABLE STYLING
+   ======================================= */
+
+/* 1. Table Headers (Replaces f-s-14 and f-w-600) */
+.mat-mdc-header-cell {
+  font-size: 14px !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.5px;
+}
+
+/* 2. Table Body Cells (Replaces f-s-14) */
+.mat-mdc-cell {
+  font-size: 14px !important;
+  font-weight: 400;
+}
+
+/* 3. Mobile Stack Typography (The Name and Date block on mobile) */
+@media (max-width: 960px) {
+  .mobile-stack {
+
+    /* The Contact Name (Primary Info) */
+    .text-dark {
+      font-size: 16px !important;
+      font-weight: 600 !important;
+      line-height: 1.4;
+      display: block;
+      margin-bottom: 2px;
+    }
+
+    .text-muted {
+      font-size: 13px !important;
+      font-weight: 400;
+    }
+
+    .text-muted span {
+      display: inline-flex;
+      align-items: center;
+    }
+  }
+}
+
+.mat-mdc-menu-item {
+  font-size: 14px !important;
+
+  .icon-18 {
+    width: 18px;
+    height: 18px;
+    font-size: 18px;
+    vertical-align: middle;
+  }
+}
+
+/* 5. Tooltip text size (Optional, but good for consistency) */
+.mat-mdc-tooltip {
+  font-size: 12px !important;
+}
+
+/* =======================================
+   HELPER CLASSES (In case styles.css is missing them)
+   ======================================= */
+.f-w-600 {
+  font-weight: 600 !important;
+}
+
+.f-w-500 {
+  font-weight: 500 !important;
+}
+
+body .mat-mdc-form-field .mat-mdc-text-field-wrapper.mdc-text-field {
+  will-change: unset !important;
+}
+
+/* --- Full Screen Modal for Mobile --- */
+@media (max-width: 600px) {
+  .full-screen-modal {
+    max-width: 100vw !important;
+    width: 100vw !important;
+    height: 100vh !important;
+    margin: 0 !important;
+  }
+  .full-screen-modal .mdc-dialog__surface {
+    border-radius: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    padding: 0 !important;
+  }
+}
+
+
+/* =======================================
+   AUTOCOMPLETE CONTACT OPTION STYLES
+   (Matches Replacement dialog dropdown)
+   ======================================= */
+
+/* Allow mat-option to expand for 2-line contact entries */
+.mat-mdc-autocomplete-panel .mat-mdc-option {
+  height: auto !important;
+  min-height: 48px;
+  padding-top: 8px !important;
+  padding-bottom: 8px !important;
+  line-height: 1.3 !important;
+
+  .mdc-list-item__primary-text {
+    width: 100%;
+    white-space: normal !important;
+  }
+}
+
+/* Two-line contact option layout */
+.mat-mdc-autocomplete-panel .mat-mdc-option .d-flex.flex-column {
+  display: flex !important;
+  flex-direction: column !important;
+  width: 100%;
+  gap: 2px;
+
+  .f-w-500 {
+    font-size: 14px;
+    font-weight: 500;
+    color: #2a3547;
+    line-height: 1.3;
+  }
+
+  .f-s-12 {
+    font-size: 12px !important;
+  }
+}
+
+/* "Add Contact" option — icon + label style */
+.mat-mdc-autocomplete-panel .mat-mdc-option.add-new-option {
+  color: #5d87ff;
+  font-weight: 500;
+  font-size: 13.5px;
+  border-top: 1px solid #e4e9f2;
+  margin-top: 4px;
+
+  i-tabler {
+    color: #5d87ff;
+    vertical-align: middle;
+  }
+}

@@ -1,0 +1,94 @@
+/* 1. FIX PAGE SCROLLBAR */
+:host {
+  display: block;
+  height: 100%;
+  overflow-y: auto;  /* Enables vertical scrolling for the whole page */
+  overflow-x: hidden;
+  padding-right: 4px; /* Prevents scrollbar from covering content edges */
+}
+
+/* 2. CARD STYLING */
+.cardWithShadow {
+  box-shadow: 0px 1px 4px rgba(0, 0, 0, 0.08);
+  transition: transform 0.2s, box-shadow 0.2s;
+  height: 100%; /* Ensures all cards in a row match height */
+  
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.12);
+  }
+}
+
+/* 3. STATUS BADGE STYLING (Professional Pill Look) */
+.status-badge {
+  padding: 4px 10px;
+  border-radius: 20px; /* Fully rounded pill shape */
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 80px; /* Ensures consistent width for badges */
+  
+  /* Status Colors */
+  &.healthy {
+    background-color: #e8f7ff;
+    color: #13deb9;
+    border: 1px solid rgba(19, 222, 185, 0.2);
+  }
+  
+  &.unhealthy, &.degraded {
+    background-color: #fdede8;
+    color: #fa896b;
+    border: 1px solid rgba(250, 137, 107, 0.2);
+  }
+}
+
+.text-primary { color: #5d87ff !important; } /* Adjust to match your theme blue */
+.text-secondary { color: #49beff !important; }
+
+/* 4. UTILITIES */
+.bg-light-primary { background-color: #e5f3ff; }
+.bg-light-success { background-color: #e8f7ff; }
+.bg-light-error { background-color: #fdede8; }
+
+.text-success { color: #13deb9 !important; }
+.text-error { color: #fa896b !important; }
+.text-warning { color: #ffae1f !important; }
+
+.round-40 {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  flex-shrink: 0; /* Prevents icon circle from squishing */
+}
+
+.icon-24 {
+  width: 24px;
+  height: 24px;
+  font-size: 24px;
+}
+
+.gap-8 { gap: 8px; }
+.gap-12 { gap: 12px; }
+
+/* Text Truncation for Long Tenant Names */
+.text-truncate {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: block;
+  max-width: 100%;
+}
+
+/* Spin animation for refresh button */
+.spin {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}

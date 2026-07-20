@@ -1,0 +1,40 @@
+<mat-card class="cardWithShadow border-0 overflow-hidden h-100">
+  <mat-card-content class="p-24 h-100 d-flex flex-column">
+    
+    <div class="d-flex justify-content-between align-items-start m-b-24">
+      <div>
+        <h5 class="mat-subtitle-1 f-s-18 f-w-600 m-b-4 text-dark">Warranty Claims</h5>
+        <span class="f-s-13 text-muted d-block">In-Warranty vs Out-of-Warranty</span>
+      </div>
+      
+      <div class="icon-48 rounded-circle bg-light-accent text-accent d-flex align-items-center justify-content-center">
+         <i-tabler name="shield-check" class="icon-24"></i-tabler>
+      </div>
+    </div>
+    
+    <div id="chart" class="d-flex justify-content-center align-items-center flex-grow-1" style="min-height: 315px;">
+      @if (isChartVisible) {
+          @if(hasData) {
+             <apx-chart
+               [series]="chartOptions.series"
+               [chart]="chartOptions.chart"
+               [labels]="chartOptions.labels"
+               [colors]="chartOptions.colors"
+               [legend]="chartOptions.legend"
+               [tooltip]="chartOptions.tooltip"
+               [dataLabels]="chartOptions.dataLabels"
+               [plotOptions]="chartOptions.plotOptions"
+             ></apx-chart>
+          } @else {
+             <div class="d-flex flex-column align-items-center text-muted">
+                <i-tabler name="chart-pie-off" class="icon-48 m-b-8 opacity-50"></i-tabler>
+                <span class="f-s-14">No data available</span>
+             </div>
+          }
+      } @else {
+          <mat-spinner diameter="40"></mat-spinner>
+      }
+    </div>
+
+  </mat-card-content>
+</mat-card>

@@ -1,0 +1,51 @@
+.dialog-title {
+  margin: 0;
+  font-weight: 600;
+  font-size: 20px;
+  padding: 24px 24px 0 24px;
+}
+
+.dialog-content {
+  padding: 16px 24px !important;
+  overflow-x: hidden; // Prevents the horizontal scrollbar
+}
+
+.promo-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px; // Vertical space between form fields
+  margin-top: 8px;
+}
+
+.form-row {
+  display: flex;
+  flex-direction: row;
+  gap: 16px; // Horizontal space between fields in the same row
+  width: 100%;
+}
+
+.full-width {
+  width: 100%;
+}
+
+.half-width {
+  flex: 1 1 0; // Ensures both fields take up exactly 50% minus the gap
+  width: 100%; 
+}
+
+.dialog-actions {
+  padding: 0 24px 24px 24px;
+  margin-bottom: 0;
+}
+
+/* Fixes Material form field bottom spacing so the form isn't unnecessarily tall */
+mat-form-field {
+  .mat-mdc-form-field-subscript-wrapper {
+    margin-bottom: -16px; 
+  }
+}
+
+button[matSuffix] {
+  cursor: pointer;
+  margin-right: 4px;
+}

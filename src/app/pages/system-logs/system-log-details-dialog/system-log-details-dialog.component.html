@@ -1,0 +1,70 @@
+<div class="dialog-header p-24 d-flex align-items-center justify-content-between">
+  <h2 mat-dialog-title class="m-0 f-s-20 f-w-600">Error Details</h2>
+  <button mat-icon-button mat-dialog-close>
+    <i-tabler name="x" class="icon-20"></i-tabler>
+  </button>
+</div>
+
+<mat-dialog-content class="p-x-24 p-b-24">
+  <div class="row">
+    
+    <div class="col-12 m-b-20">
+      <span class="f-w-600 d-block m-b-8 f-s-14 text-dark">Message</span>
+      <div class="error-box p-16 rounded d-flex align-items-start gap-12">
+        <i-tabler name="alert-circle" class="icon-24 text-error flex-shrink-0 mt-1"></i-tabler>
+        <span class="text-error f-w-500 f-s-14" style="word-break: break-word;">{{ data.message }}</span>
+      </div>
+    </div>
+
+    <div class="col-md-6 m-b-16">
+      <div class="d-flex flex-column">
+         <span class="text-muted f-s-12 f-w-500 m-b-4">Source</span>
+         <span class="f-s-14 f-w-600 text-dark">{{ data.source || 'N/A' }}</span>
+      </div>
+    </div>
+
+    <div class="col-md-6 m-b-16">
+      <div class="d-flex flex-column">
+         <span class="text-muted f-s-12 f-w-500 m-b-4">User ID</span>
+         <div class="d-flex align-items-center gap-8">
+            <i-tabler name="user" class="icon-18 text-muted"></i-tabler>
+            <span class="f-s-14 text-dark">{{ data.userId || 'Anonymous' }}</span>
+         </div>
+      </div>
+    </div>
+
+    <div class="col-md-6 m-b-16">
+      <div class="d-flex flex-column">
+         <span class="text-muted f-s-12 f-w-500 m-b-4">Tenant</span>
+         <span class="f-s-14 text-dark">{{ data.tenantName || 'Global' }}</span>
+      </div>
+    </div>
+
+    <div class="col-md-6 m-b-16">
+      <div class="d-flex flex-column">
+         <span class="text-muted f-s-12 f-w-500 m-b-4">Timestamp</span>
+         <span class="f-s-14 text-dark">{{ data.logDate | date:'medium' }}</span>
+      </div>
+    </div>
+
+    <div class="col-12">
+      <div class="d-flex align-items-center justify-content-between m-b-8">
+        <span class="f-w-600 f-s-14 text-dark">Stack Trace</span>
+        
+        <button mat-stroked-button color="primary" class="copy-btn small-btn" (click)="copyStackTrace()" [disabled]="!data.stackTrace">
+          <i-tabler name="copy" class="icon-16 m-r-4"></i-tabler>
+          Copy
+        </button>
+      </div>
+
+      <div class="code-container">
+        <pre class="code-block m-0">{{ data.stackTrace || 'No stack trace available.' }}</pre>
+      </div>
+    </div>
+
+  </div>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end" class="p-24 pt-0">
+  <button mat-stroked-button mat-dialog-close class="m-r-8">Close</button>
+</mat-dialog-actions>

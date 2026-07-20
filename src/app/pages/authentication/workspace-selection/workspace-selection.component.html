@@ -1,0 +1,52 @@
+<div class="auth-bg">
+  
+  <div class="bg-effects"></div>
+
+  <div class="brand-arrows">
+    <div class="arrow arrow-up"></div>
+    <div class="arrow arrow-down"></div>
+  </div>
+
+  <div class="workspace-card">
+    
+    <div class="card-content">
+      <img src="./assets/images/logos/logo.png" class="logo-img" alt="logo" />
+
+      <h4 class="auth-title">Choose Workspace</h4>
+      <p class="auth-subtitle">
+        You have access to multiple companies.<br>Please select one to continue.
+      </p>
+
+      <mat-list role="list" class="m-t-24">
+        <mat-list-item
+          role="listitem"
+          *ngFor="let tenant of tenants"
+          (click)="selectWorkspace(tenant)"
+          class="workspace-item"
+          [class.disabled-item]="!tenant.isActive"
+        >
+          <div class="d-flex align-items-center justify-content-between w-100">
+            <div class="workspace-info">
+              <span class="tenant-name d-block">{{ tenant.tenantName }}</span>
+              <span class="tenant-role d-block">{{ tenant.role }}</span>
+            </div>
+            
+            <div class="status-action">
+                <span *ngIf="!tenant.isActive" class="inactive-badge">Inactive</span>
+                <mat-icon *ngIf="tenant.isActive" class="arrow-icon">chevron_right</mat-icon>
+            </div>
+          </div>
+        </mat-list-item>
+      </mat-list>
+
+      <div class="text-center m-t-24" *ngIf="isLoading">
+          <mat-spinner [diameter]="30" class="d-inline-block"></mat-spinner>
+      </div>
+      
+      <div *ngIf="errorMessage" class="alert alert-error m-t-24">
+         {{ errorMessage }}
+      </div>
+
+    </div>
+  </div>
+</div>

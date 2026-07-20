@@ -1,0 +1,80 @@
+<h2 mat-dialog-title>Mark as Ready</h2>
+
+<mat-dialog-content>
+  <div class="alert alert-light-primary d-flex justify-content-between align-items-center mb-4 p-12 rounded-sm border-start border-4 border-primary">
+    <div>
+       <strong class="f-s-14">Item:</strong> {{data.productName}}
+       <div class="text-muted f-s-12 mt-1">Invert No: {{data.invertNo}}</div>
+    </div>
+  </div>
+
+  <form [formGroup]="form">
+    <div class="row">
+      
+      <div class="col-md-5 border-end-md"> 
+        <div class="form-group mb-3">
+          <mat-form-field appearance="outline" class="w-100">
+            <mat-label>Outcome</mat-label>
+            <mat-select formControlName="productStatusId">
+              @for (status of productStatuses; track status.id) {
+                <mat-option [value]="status.id">{{status.name}}</mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
+        </div>
+      </div>
+
+      <div class="col-md-7">
+        
+        <div class="row g-2">
+          @if (form.get('productStatusId')?.value === 5) {
+             <div class="col-md-6 col-12">
+                <mat-form-field appearance="outline" class="w-100">
+                  <mat-label>New Serial No</mat-label>
+                  <input matInput formControlName="newSerialNo" placeholder="Enter new S/N">
+                  <mat-error>Required</mat-error>
+                </mat-form-field>
+             </div>
+          }
+
+          <div [class]="form.get('productStatusId')?.value === 5 ? 'col-md-6 col-12' : 'col-12'">
+             <mat-form-field appearance="outline" class="w-100">
+               <mat-label>Notes (Optional)</mat-label>
+               <textarea matInput formControlName="notes" cdkTextareaAutosize cdkAutosizeMinRows="1" style="min-height: 24px; resize: none;"></textarea>
+             </mat-form-field>
+          </div>
+        </div>
+
+        @if (form.get('productStatusId')?.value === 5) {
+          <div class="row mt-2">
+            <div class="col-12">
+               <mat-checkbox formControlName="isUpgraded" color="primary" class="f-s-14">Upgrade Product?</mat-checkbox>
+            </div>
+            
+            @if (form.get('isUpgraded')?.value) {
+               <div class="col-12 mt-2">
+                 <mat-form-field appearance="outline" class="w-100">
+                   <mat-label>Select New Product</mat-label>
+                   <input type="text" matInput formControlName="upgradedProduct" [matAutocomplete]="auto">
+                   <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayFn">
+                     @for (option of filteredProducts | async; track option.id) {
+                       <mat-option [value]="option">{{option.name}}</mat-option>
+                     }
+                   </mat-autocomplete>
+                   <mat-error>Required</mat-error>
+                 </mat-form-field>
+               </div>
+            }
+          </div>
+        }
+
+      </div>
+    </div>
+  </form>
+
+</mat-dialog-content>
+
+<mat-dialog-actions align="end" class="p-24 pt-0">
+  <button mat-button mat-dialog-close>Cancel</button>
+  <button mat-flat-button color="primary" (click)="submit()" [disabled]="form.invalid">Submit</button>
+</mat-dialog-actions>

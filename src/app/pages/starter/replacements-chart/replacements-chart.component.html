@@ -1,0 +1,21 @@
+<mat-card class="cardWithShadow">
+  <mat-card-content class="p-24 chart-card-content">
+    <div class="d-flex align-items-center">
+      <mat-card-title>Replacements Overview</mat-card-title>
+    </div>
+    <div id="chart">
+      <apx-chart
+        [series]="chartOptions.series"
+        [chart]="chartOptions.chart"
+        [colors]="chartOptions.colors"
+        [plotOptions]="chartOptions.plotOptions"
+        [yaxis]="chartOptions.yaxis"
+        [grid]="chartOptions.grid"
+        [tooltip]="chartOptions.tooltip"
+        [xaxis]="chartOptions.xaxis"
+        [dataLabels]="chartOptions.dataLabels"
+        [legend]="chartOptions.legend"
+      ></apx-chart>
+    </div>
+  </mat-card-content>
+</mat-card>

@@ -1,0 +1,153 @@
+<mat-card class="cardWithShadow common-card">
+
+  <mat-card-content class="table-card-content common-content">
+    @if (isLoading && !documents.length) {
+    <div class="loading-spinner">
+      <mat-spinner diameter="40"></mat-spinner>
+      <p class="m-t-16 text-muted f-s-14">Loading invoices...</p>
+    </div>
+    } @else {
+    <div class="table-container common-table-container" #tableContainer (scroll)="onScroll($event)">
+      <table mat-table [dataSource]="dataSource" class="w-100" matSort>
+
+        <ng-container matColumnDef="id">
+          <th mat-header-cell *matHeaderCellDef class="f-w-600 mobile-hide">#</th>
+          <td mat-cell *matCellDef="let row; let i=index" class="text-muted mobile-hide">{{ i+1 }}</td>
+        </ng-container>
+        <ng-container matColumnDef="date">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header="DocumentDate"
+            class="f-w-600 mobile-hide">Date</th>
+          <td mat-cell *matCellDef="let row" class="text-muted mobile-hide">
+            {{ row.documentDate | date:'dd-MM-yyyy' }}
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="vendorRefNo">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header="VendorRefNo"
+            class="f-w-600 mobile-hide">Supplier Bill No</th>
+          <td mat-cell *matCellDef="let row" class="mobile-hide">
+            <span>{{ row.vendorRefNo || '-' }}</span>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="documentNo">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header="DocumentNo"
+            class="f-w-600 mobile-hide">Invoice No</th>
+          <td mat-cell *matCellDef="let row" class="mobile-hide">
+            <span>{{ row.documentNo }}</span>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="contact">
+          <th mat-header-cell *matHeaderCellDef class="f-w-600">Bill From</th>
+          <td mat-cell *matCellDef="let row">
+            <div class="d-flex flex-column p-y-8">
+              <span class="truncate-cell-content" [matTooltip]="row.contactName">{{ row.contactName
+                }}</span>
+
+              <!-- Show Invoice details ONLY on Mobile -->
+              <span class="text-muted m-t-4 desktop-hide">Inv: {{ row.documentNo }} &bull; {{
+                row.documentDate | date:'dd-MMM' }}</span>
+
+              <!-- Show Phone ONLY on Desktop -->
+              <small class="text-muted mobile-hide" *ngIf="row.contactPhone">
+                {{ row.contactPhone }}
+              </small>
+            </div>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="amount">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header="NetPayable"
+            class="f-w-600 text-right">Amount</th>
+          <td mat-cell *matCellDef="let row" class="text-right">
+            <span class="text-primary f-w-600">
+              ₹ {{ row.netPayable | number:'1.2-2' }}
+            </span>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef class="f-w-600 text-end p-r-24"></th>
+          <td mat-cell *matCellDef="let row" class="action-link mobile-action-drawer text-end p-r-24">
+
+            <div class="d-flex align-items-center justify-content-end desktop-actions">
+              <!-- Hover Quick Actions -->
+              <div class="hover-actions d-flex align-items-center">
+                <!-- PDF Download -->
+                <a (click)="$event.stopPropagation(); generatePdf(row)" 
+                  class="cursor-pointer text-primary m-r-8" 
+                  matTooltip="Generate PDF"
+                  *ngIf="!isPdfLoading || selectedInvoiceId !== row.id">
+                  <i-tabler name="file-invoice" class="icon-22"></i-tabler>
+                </a>
+                <mat-spinner diameter="20" class="m-r-8" *ngIf="isPdfLoading && selectedInvoiceId === row.id"></mat-spinner>
+                
+                <!-- Delete -->
+                <a (click)="$event.stopPropagation(); deleteDocument(row)" class="cursor-pointer text-error"
+                  matTooltip="Delete Invoice">
+                  <i-tabler name="trash" class="icon-22"></i-tabler>
+                </a>
+              </div>
+
+              <!-- 3 Dots Menu -->
+              <button mat-icon-button [matMenuTriggerFor]="actionMenu" (click)="$event.stopPropagation()">
+                <i-tabler name="dots-vertical" class="icon-18"></i-tabler>
+              </button>
+
+              <mat-menu #actionMenu="matMenu" xPosition="before">
+                <button mat-menu-item (click)="openDialog(row)">
+                  <i-tabler name="edit" class="icon-18 m-r-8 text-primary"></i-tabler> <span>Edit</span>
+                </button>
+                <button mat-menu-item (click)="generatePdf(row)" [disabled]="isPdfLoading && selectedInvoiceId === row.id">
+                  <i-tabler name="file-invoice" class="icon-18 m-r-8 text-primary"></i-tabler> <span>Generate PDF</span>
+                </button>
+                <button mat-menu-item class="text-error" (click)="deleteDocument(row)">
+                  <i-tabler name="trash" class="icon-18 m-r-8 text-error"></i-tabler> <span>Delete</span>
+                </button>
+              </mat-menu>
+            </div>
+
+            <!-- Mobile Swipe Drawer Content -->
+            <div class="mobile-drawer-content">
+              <a (click)="$event.stopPropagation(); generatePdf(row)" class="mobile-action-btn primary" *ngIf="!isPdfLoading || selectedInvoiceId !== row.id">
+                <i-tabler name="file-invoice" class="icon-18"></i-tabler>
+              </a>
+              <a (click)="$event.stopPropagation(); deleteDocument(row)" class="mobile-action-btn delete">
+                <i-tabler name="trash" class="icon-18"></i-tabler>
+              </a>
+            </div>
+
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></tr>
+
+        <!-- ✅ ADDED: Mobile Swipe Logic and Classes to the Row -->
+        <tr mat-row *matRowDef="let row; columns: displayedColumns" class="mobile-swipe-row cursor-pointer"
+          [class.mobile-swipe-active]="swipedInvoiceId === row.id" (click)="openDialog(row)" appSwipeable
+          (swipeLeft)="onSwipe(row.id, 'open')" (swipeRight)="onSwipe(row.id, 'close')"></tr>
+
+        <tr class="mat-row" *matNoDataRow>
+          <td class="mat-cell text-center border-0" [attr.colspan]="displayedColumns.length">
+            <div class="p-24 d-flex flex-column align-items-center justify-content-center h-200">
+              <i-tabler name="receipt-off" class="icon-40 text-muted opacity-50 m-b-16"></i-tabler>
+              <h4 class="m-0 f-s-16 f-w-600 text-dark">No invoices found</h4>
+              <p class="m-0 text-muted f-s-13 m-t-4">
+                <ng-container *ngIf="filterValue"> matching "<strong>{{ filterValue }}</strong>" </ng-container>
+                <ng-container *ngIf="!filterValue">Try adjusting your search or add a new invoice.</ng-container>
+              </p>
+            </div>
+          </td>
+        </tr>
+      </table>
+
+      @if (isLoading && documents.length) {
+      <div class="text-center p-16">
+        <mat-spinner diameter="30" class="m-x-auto"></mat-spinner>
+      </div>
+      }
+    </div>
+    }
+  </mat-card-content>
+</mat-card>

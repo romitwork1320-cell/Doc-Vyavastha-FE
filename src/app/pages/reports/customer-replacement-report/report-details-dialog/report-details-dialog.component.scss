@@ -1,0 +1,83 @@
+.status-badge {
+  padding: 4px 6px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  display: inline-block;
+  line-height: 1.2;
+  white-space: nowrap;
+  text-align: center;
+  min-width: 70px;
+  
+  /* Base styles for outline look */
+  background-color: #ffffff; /* White background */
+  border: 1px solid transparent; /* Setup border */
+
+  /* --- Status Specific Colors (Border & Text only) --- */
+  
+  /* Pending - Orange/Yellow */
+  &.pending {
+    color: #f8c20a;
+    border-color: #f8c20a;
+  }
+
+  /* In Progress - Purple */
+  &.in-progress {
+    color: #7367f0;
+    border-color: #7367f0;
+  }
+
+  /* Ready - Cyan/Blue */
+  &.ready {
+    color: #16cdc7;
+    border-color: #16cdc7;
+  }
+
+  /* Completed - Green */
+  &.completed {
+    color: #36c76c;
+    border-color: #36c76c;
+  }
+
+  /* Fallbacks */
+  &.repair {
+    color: #00cfe8;
+    border-color: #00cfe8;
+  }
+
+  &.replace {
+    color: #635bff;
+    border-color: #635bff;
+  }
+
+  &.not-accepted {
+    color: #ea5455;
+    border-color: #ea5455;
+  }
+}
+
+/* Fix: Align table data to the top */
+.mat-mdc-table .mat-mdc-cell {
+  vertical-align: top;
+  padding-top: 14px;
+  padding-bottom: 14px;
+}
+
+.mat-mdc-table {
+  
+  /* Target the Header Cells */
+  .mat-mdc-header-cell {
+    font-size: 14px;       /* Smaller header font */
+    padding-top: 8px;      /* Reduced padding */
+    padding-bottom: 8px;
+    height: 48px;          /* Enforce shorter header row */
+  }
+
+  /* Target the Body Cells */
+  .mat-mdc-cell {
+    font-size: 14px;       /* Smaller body font */
+    vertical-align: top;   /* Keep top alignment */
+    padding-top: 8px;      /* Reduced padding */
+    padding-bottom: 8px;
+  }
+}

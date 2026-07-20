@@ -1,0 +1,169 @@
+/* --- Global / Host --- */
+:host {
+    display: flex;
+    flex-direction: column;
+    height: 100%;       /* Force component to fill the layout router outlet */
+    overflow-y: auto;   /* Enable vertical scrolling */
+    overflow-x: hidden; /* Prevent horizontal scroll bars */
+    padding: 0 16px;    /* Optional: Add slight padding so card shadows don't get cut off */
+}
+
+.loading-spinner {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    min-height: 300px;
+    height: 100%; /* Center spinner in the available full height */
+}
+
+/* --- Typography (Matches Reference + Utilities) --- */
+.f-s-12 { font-size: 12px; }
+.f-s-14 { font-size: 14px; }
+.f-s-16 { font-size: 16px; }
+.f-s-24 { font-size: 24px; }
+.f-s-30 { font-size: 30px; }
+
+.f-w-500 { font-weight: 500; }
+.f-w-600 { font-weight: 600; }
+.f-w-700 { font-weight: 700; }
+.f-w-800 { font-weight: 800; }
+
+.m-b-8  { margin-bottom: 8px; }
+.m-b-16 { margin-bottom: 16px; }
+.m-b-24 { margin-bottom: 24px; }
+.m-b-32 { margin-bottom: 32px; }
+.m-t-16 { margin-top: 16px; }
+.m-t-24 { margin-top: 24px; }
+.m-t-32 { margin-top: 32px; }
+.m-r-8  { margin-right: 8px; }
+.m-r-12 { margin-right: 12px; }
+.p-y-4  { padding-top: 4px; padding-bottom: 4px; }
+.p-y-12 { padding-top: 12px; padding-bottom: 12px; }
+.p-y-24 { padding-top: 24px; padding-bottom: 24px; }
+.p-x-8  { padding-left: 8px; padding-right: 8px; }
+.p-x-24 { padding-left: 24px; padding-right: 24px; }
+
+.text-center { text-align: center; }
+.d-block { display: block; }
+.w-100 { width: 100%; }
+
+.text-primary { color: #635bff !important; }
+.text-warning { color: #ffaE1f !important; }
+.text-success { color: #13deb9 !important; }
+.text-muted { color: #76889a !important; }
+.bg-light-primary { background-color: #ecf2ff; }
+.bg-light-warning { background-color: #fef5e5; }
+
+/* --- Specific Reference Styles --- */
+.cardWithShadow {
+    box-shadow: 0px 1px 4px rgba(0, 0, 0, 0.08);
+    border: 1px solid rgba(0,0,0,0.05);
+    transition: all 0.3s ease;
+    border-radius: 12px;
+    height: 100%; 
+}
+
+.plan-card {
+    &.selected {
+        border: 2px solid #635bff;
+        background-color: #f5f9ff;
+    }
+}
+
+.popular-badge {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    letter-spacing: 0.5px;
+}
+
+.plan-title {
+    font-size: 50px;
+    line-height: 50px;
+    font-weight: 600;
+    margin-bottom: 24px;
+    color: #2a3547;
+}
+
+.dollar-sign {
+    margin-right: 8px;
+    font-weight: 600;
+    position: relative;
+    top: -15px;
+}
+
+.per-month {
+    margin-left: 8px;
+}
+
+.icon-16 { width: 16px; height: 16px; font-size: 16px; }
+.icon-20 { width: 20px; height: 20px; font-size: 20px; }
+.icon-60 { width: 60px; height: 60px; font-size: 60px; }
+.icon-150 { width: 150px; height: 150px; font-size: 150px; }
+.op-10 { opacity: 0.1; }
+
+.promo-btn { height: 56px; }
+
+.letter-spacing-1 { letter-spacing: 1px; }
+.letter-spacing-2 { letter-spacing: 2px; }
+.text-error { color: #fa896b !important; }
+.sub-progress { height: 6px; }
+.gap-8 { gap: 8px; }
+.gap-16 { gap: 16px; }
+.gap-24 { gap: 24px; }
+
+
+/* --- Header Card Specific Fixes --- */
+.header-card {
+    height: auto !important; /* Prevent stretching */
+    min-height: auto !important;
+    
+    .mat-mdc-card-content {
+        padding: 24px 32px; /* Balanced padding */
+    }
+}
+
+/* Fix Badge Alignment */
+.plan-badge {
+    padding: 6px 12px;        /* Increased vertical padding slightly for better shape */
+    border-radius: 6px;
+    font-size: 11px;          /* Slightly adjusted for neatness */
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    white-space: nowrap;
+    
+    display: inline-flex;     /* Ensures flex properties work */
+    align-items: center;      /* Vertical center of text */
+    justify-content: center;  /* [FIX] Horizontal center of text */
+    line-height: normal;      /* [FIX] Reset line height to prevent offset */
+    height: fit-content;      /* Ensure it doesn't stretch */
+    
+    &.bg-warning {
+        background-color: #ffae1f !important;
+        color: #fff !important;
+    }
+    
+    &.bg-success {
+        background-color: #13deb9 !important;
+        color: #fff !important;
+    }
+}
+
+.mat-h1 {
+    margin-bottom: 0 !important;
+}
+
+/* Remove huge margins from headings */
+.m-b-0 { margin-bottom: 0px !important; }
+.gap-12 { gap: 12px; }
+
+/* Warning Text Icon Alignment */
+.warning-text {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #fa896b; /* Error color */
+    margin-top: 12px;
+}

@@ -1,0 +1,80 @@
+<h2 mat-dialog-title class="dialog-title">Generate Promo Code</h2>
+
+<mat-dialog-content class="dialog-content mat-typography">
+  <form [formGroup]="promoForm" class="promo-form">
+    
+    <mat-form-field appearance="outline" class="full-width mt-2">
+      <mat-label>Promo Code</mat-label>
+      <input matInput formControlName="code" placeholder="e.g. WINTER50 or Auto-generate" style="text-transform: uppercase;">
+      <button mat-icon-button matSuffix type="button" (click)="autoGenerateCode()" matTooltip="Auto Generate Code" color="primary">
+        <i-tabler name="wand" class="icon-20"></i-tabler>
+      </button>
+      @if (promoForm.get('code')?.hasError('required') && promoForm.get('code')?.touched) {
+        <mat-error>Code is required</mat-error>
+      }
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Description (Optional)</mat-label>
+      <input matInput formControlName="description" placeholder="e.g. 50% off for new users">
+    </mat-form-field>
+
+    <div class="form-row">
+      <mat-form-field appearance="outline" class="half-width">
+        <mat-label>Discount Type</mat-label>
+        <mat-select formControlName="discountType">
+          @for (type of discountTypes; track type) {
+            <mat-option [value]="type">{{ type }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="half-width">
+        <mat-label>
+          {{ selectedType === 'Day' ? 'Number of Days' : 'Discount Value' }}
+        </mat-label>
+        
+        <input matInput type="number" formControlName="discountValue" 
+               [placeholder]="selectedType === 'Day' ? 'e.g. 30' : '0.00'"
+               [step]="selectedType === 'Day' ? '1' : '0.01'">
+        
+        <span matTextSuffix class="text-muted p-r-4">
+          @if (selectedType === 'Percentage') { % }
+          @else if (selectedType === 'Fixed Amount') { ₹ }
+          @else { Days }
+        </span>
+        
+        @if (promoForm.get('discountValue')?.hasError('required') && promoForm.get('discountValue')?.touched) {
+          <mat-error>Value is required</mat-error>
+        }
+      </mat-form-field>
+    </div>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Max Usage Limit (Optional)</mat-label>
+      <input matInput type="number" formControlName="maxUsageLimit" placeholder="Leave blank for unlimited">
+    </mat-form-field>
+
+    <div class="form-row">
+      <mat-form-field appearance="outline" class="half-width">
+        <mat-label>Valid From</mat-label>
+        <input matInput [matDatepicker]="pickerFrom" formControlName="validFrom">
+        <mat-datepicker-toggle matIconSuffix [for]="pickerFrom"></mat-datepicker-toggle>
+        <mat-datepicker #pickerFrom></mat-datepicker>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="half-width">
+        <mat-label>Valid To (Optional)</mat-label>
+        <input matInput [matDatepicker]="pickerTo" formControlName="validTo" [min]="promoForm.get('validFrom')?.value">
+        <mat-datepicker-toggle matIconSuffix [for]="pickerTo"></mat-datepicker-toggle>
+        <mat-datepicker #pickerTo></mat-datepicker>
+      </mat-form-field>
+    </div>
+
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end" class="dialog-actions">
+  <button mat-stroked-button color="warn" (click)="onCancel()">Cancel</button>
+  <button mat-flat-button color="primary" (click)="onSubmit()" [disabled]="promoForm.invalid">Create Promo Code</button>
+</mat-dialog-actions>

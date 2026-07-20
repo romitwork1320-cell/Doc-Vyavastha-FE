@@ -1,0 +1,55 @@
+<div class="dialog-container">
+  
+  <div class="dialog-header">
+    <h3 class="m-0 f-w-600">Compare Quotations</h3>
+    <button mat-icon-button (click)="dialogRef.close()">
+      <i-tabler name="x" class="icon-18"></i-tabler>
+    </button>
+  </div>
+
+  @if (isLoading) {
+    <div class="loading-box">
+      <mat-spinner diameter="40"></mat-spinner>
+      <p class="m-t-16 text-muted">Fetching details...</p>
+    </div>
+  } @else {
+    
+    <div class="compare-content">
+      
+      <div class="compare-grid" [style.--col-count]="quotations.length">
+        
+        <div class="sticky-header-group">
+          <div class="grid-row top-row">
+            <div class="grid-col header-col" *ngFor="let q of quotations" [class.highlight-col]="isCheapest(q.finalPrice)">
+              <span class="customer-badge">{{ q.customerName }}</span>
+              <h4 class="quote-title">{{ q.title || 'Custom Build' }}</h4>
+              <div class="price-container">
+                <span class="price-tag">₹ {{ q.finalPrice | number }}</span>
+                <span *ngIf="isCheapest(q.finalPrice)" class="badge-best-value">BEST</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="grid-row item-row" *ngFor="let i of itemRows">
+          <div class="grid-col" *ngFor="let q of quotations" [class.highlight-col]="isCheapest(q.finalPrice)">
+            
+            @if (q.items[i]) {
+              <span class="product-name">{{ q.items[i].productName }}</span>
+              
+              <div class="meta-info" *ngIf="q.items[i].warrantyText">
+                 <span class="warranty-tag">{{ q.items[i].warrantyText }}</span>
+              </div>
+            } @else {
+              <div class="empty-slot">—</div>
+            }
+
+          </div>
+        </div>
+        
+        <div style="height: 10px;"></div>
+
+      </div>
+    </div>
+  }
+</div>

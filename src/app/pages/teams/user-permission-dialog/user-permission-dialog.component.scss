@@ -1,0 +1,205 @@
+/* --- Variables --- */
+$primary-light: #ecf2ff;
+$primary-color: #5d87ff;
+$text-dark: #2a3547;
+$text-muted: #5a6a85;
+$border-color: #e5eaef;
+
+/* --- Layout --- */
+.dialog-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 24px;
+
+  .dialog-title {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 600;
+    color: $text-dark;
+  }
+
+  /* --- FIXED CLOSE BUTTON STYLE --- */
+  .close-button {
+    color: $text-muted;
+    background-color: $primary-light; /* Adds the light purple circle */
+    border-radius: 50%;               /* Makes it a perfect circle */
+    width: 32px;
+    height: 32px;
+    
+    /* Flex centering to ensure icon is in the middle */
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+    padding: 0; 
+    
+    transition: all 0.2s ease-in-out;
+
+    /* Hover effect for better UX */
+    &:hover {
+      background-color: darken($primary-light, 5%);
+      color: $primary-color;
+    }
+    
+    ::ng-deep i-tabler {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 20px;
+      height: 20px;
+    }
+  }
+}
+
+.dialog-body {
+  padding: 0 24px 20px;
+  max-height: 550px;
+  overflow-y: auto;
+}
+
+/* --- User Card --- */
+.user-card {
+  display: flex;
+  align-items: center;
+  background-color: $primary-light;
+  border-radius: 12px;
+  padding: 16px;
+  margin-bottom: 20px;
+
+  .user-icon-wrapper {
+    width: 40px;
+    height: 40px;
+    background-color: #ffffff;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 16px;
+    color: $primary-color;
+  }
+
+  .user-details {
+    display: flex;
+    flex-direction: column;
+
+    .user-name {
+      font-weight: 600;
+      font-size: 14px;
+      color: $text-dark;
+      margin-bottom: 2px;
+    }
+
+    .user-role {
+      font-size: 12px;
+      color: $text-muted;
+    }
+  }
+}
+
+.helper-text {
+  font-size: 14px;
+  color: $text-muted;
+  margin-bottom: 24px;
+  line-height: 1.5;
+  
+  strong {
+    color: $text-dark;
+    font-weight: 600;
+  }
+}
+
+/* --- Grid Layout --- */
+.permissions-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  column-gap: 24px;
+  row-gap: 24px;
+}
+
+/* --- Checkbox Styling (The Fix) --- */
+.permission-item {
+  display: flex;
+  align-items: flex-start;
+}
+
+.checkbox-label-content {
+  display: flex;
+  flex-direction: column;
+  margin-left: 12px; /* Space between box and text */
+  margin-top: 2px;   /* Slight adjustment to align Title with Box */
+
+  .page-name {
+    font-size: 14px;
+    font-weight: 500;
+    color: $text-dark;
+    line-height: 1.2;
+    margin-bottom: 2px;
+  }
+
+  .page-url {
+    font-size: 12px;
+    color: $text-muted;
+  }
+}
+
+/* KEY FIX: Override Material Internal Layout 
+   Forces the checkbox input to align to the TOP, not center 
+*/
+::ng-deep .custom-checkbox {
+  width: 100%;
+  
+  /* Target the internal Flex wrapper */
+  .mdc-form-field {
+    align-items: flex-start !important; /* Top align everything */
+  }
+
+  /* Target the actual check box square wrapper */
+  .mdc-checkbox {
+    padding: 0 !important; /* Remove massive default ripple padding */
+    margin: 0 !important;
+    height: 18px !important; /* Force tight height */
+    width: 18px !important;  /* Force tight width */
+    flex-shrink: 0;          /* Prevent shrinking */
+    top: 2px;               /* Visual tweak to align with text cap-height */
+  }
+
+  /* Adjust ripple to not overflow weirdly */
+  .mat-mdc-checkbox-touch-target {
+    height: 30px;
+    width: 30px;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+  }
+  
+  /* Ensure label doesn't have extra padding */
+  .mdc-label {
+    padding-left: 0 !important;
+    width: 100%;
+  }
+}
+
+/* --- Footer --- */
+.dialog-footer {
+  display: flex;
+  justify-content: flex-end;
+  padding: 16px 24px;
+  
+  button {
+    font-weight: 500;
+    color: $text-dark;
+  }
+}
+
+/* --- Scrollbar --- */
+.scrollable-content::-webkit-scrollbar { width: 6px; }
+.scrollable-content::-webkit-scrollbar-track { background: transparent; }
+.scrollable-content::-webkit-scrollbar-thumb {
+  background-color: #cdd5e1;
+  border-radius: 4px;
+}
+.scrollable-content::-webkit-scrollbar-thumb:hover { background-color: #b0b8c6; }
+
+@media (max-width: 600px) {
+  .permissions-grid { grid-template-columns: 1fr; }
+}

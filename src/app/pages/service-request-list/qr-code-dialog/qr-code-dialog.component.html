@@ -1,0 +1,46 @@
+<div class="dialog-wrapper">
+  
+  <div class="dialog-header">
+    <h2 class="title">{{ companyName }}</h2>
+    <p class="subtitle">Scan this QR code to open the public request form on your mobile device.</p>
+  </div>
+
+  <mat-dialog-content class="content-area">
+    
+    <div class="qr-card" id="qr-container">
+      <qrcode 
+        [qrdata]="data.url" 
+        [width]="240" 
+        [errorCorrectionLevel]="'M'" 
+        [margin]="2"
+        colorDark="#2a3547">
+      </qrcode>
+    </div>
+
+    <div class="url-copy-box" (click)="copyLink()" matRipple>
+      <div class="url-content">
+        <i-tabler name="link" class="icon-18 text-primary"></i-tabler>
+        <span class="url-text">{{ data.url }}</span>
+      </div>
+      <div class="copy-action">
+        <span class="copy-label">Copy</span>
+        <i-tabler name="copy" class="icon-16"></i-tabler>
+      </div>
+    </div>
+
+  </mat-dialog-content>
+
+  <mat-dialog-actions align="center" class="dialog-footer">
+    
+    <button mat-stroked-button color="primary" class="w-100 m-b-12 action-btn" (click)="downloadQrImage()">
+      <i-tabler name="download" class="icon-18 m-r-8"></i-tabler>
+      Download QR Image
+    </button>
+
+    <button mat-flat-button color="primary" class="w-100 action-btn" [mat-dialog-close]="true">
+      Done
+    </button>
+
+  </mat-dialog-actions>
+
+</div>

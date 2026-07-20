@@ -1,0 +1,250 @@
+$primary: #5d87ff;
+$border: #dfe5ef; 
+$bg-head: #f8f9fa; 
+$text: #2a3547;
+$text-light: #5a6a85;
+$red: #fa896b;
+$title-bg: #fffcf2; 
+$title-border: #fedc00; 
+
+.dialog-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background: #fff;
+  min-height: 500px; /* Ensure minimum height */
+}
+
+// --- Header ---
+.dialog-header {
+  flex: 0 0 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 24px;
+  border-bottom: 1px solid $border;
+
+  .header-content {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+
+    .header-icon {
+      width: 45px; height: 45px;
+      background: #ecf2ff;
+      color: $primary;
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+    }
+
+    h2 { margin: 0; font-size: 18px; font-weight: 700; color: $text; }
+    p { margin: 2px 0 0; font-size: 13px; color: $text-light; }
+  }
+}
+
+// --- Content ---
+mat-dialog-content {
+  flex: 1 1 auto;
+  padding: 24px !important;
+  overflow-y: auto;
+}
+
+.form-section { margin-bottom: 24px; }
+.form-row { display: flex; gap: 24px; }
+.flex-1 { flex: 1; }
+
+.form-group {
+  display: flex; flex-direction: column; gap: 8px;
+  label { font-size: 13px; font-weight: 600; color: $text; }
+  .text-red { color: $red; }
+}
+
+.input-with-icon {
+  position: relative;
+  i-tabler { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: $text-light; }
+  input { padding-left: 42px; }
+}
+
+// --- TABLE STYLING ---
+.items-section {
+  display: flex; flex-direction: column; gap: 16px;
+}
+
+.items-header-row {
+  display: flex; justify-content: space-between; align-items: center;
+  h3 { margin: 0; font-size: 16px; font-weight: 700; color: $text; }
+  .small-btn { height: 36px; line-height: 36px; font-size: 13px; padding: 0 16px; border-radius: 6px; }
+}
+
+.custom-table {
+  border: 1px solid $border;
+  border-radius: 8px;
+  overflow: hidden;
+  background: #fff;
+}
+
+// Grid Layout: Product (Flex) | Warranty | Qty | Price | Action
+$grid-layout: 1fr 130px 80px 120px 50px;
+
+.table-head {
+  display: grid;
+  grid-template-columns: $grid-layout;
+  background-color: $bg-head;
+  border-bottom: 1px solid $border;
+  padding: 12px 16px;
+  align-items: center;
+  gap: 12px;
+
+  div {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: $text-light;
+    letter-spacing: 0.8px;
+  }
+}
+
+.table-body {
+  display: flex; flex-direction: column;
+}
+
+.table-row {
+  display: grid;
+  grid-template-columns: $grid-layout;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  border-bottom: 1px solid $border;
+  min-height: 60px;
+  position: relative;
+  transition: background 0.2s;
+
+  &:last-child { border-bottom: none; }
+  &:hover { background-color: #fbfbfb; }
+
+  // Title Row Special Styling
+  &.title-row {
+    background-color: $title-bg;
+    border-bottom: 1px solid rgba($title-border, 0.4); 
+
+    .badge-title {
+      position: absolute;
+      top: 6px;
+      left: 16px;
+      background: #b7791f;
+      color: #fff;
+      font-size: 9px;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: 4px;
+      text-transform: uppercase;
+      z-index: 2;
+    }
+
+    .col-product input {
+      padding-top: 18px; 
+      padding-bottom: 6px;
+      font-weight: 600;
+    }
+  }
+}
+
+// --- Inputs Inside Table ---
+.clean-input {
+  width: 100%;
+  border: 1px solid $border;
+  border-radius: 6px;
+  padding: 10px 14px;
+  font-size: 14px;
+  color: $text;
+  outline: none;
+  transition: all 0.2s;
+
+  &::placeholder { color: #aebac9; }
+  &:focus { border-color: $primary; box-shadow: 0 0 0 3px rgba($primary, 0.1); }
+
+  &.no-border {
+    border-color: transparent;
+    background: transparent;
+    padding: 8px 0;
+    
+    &:focus { 
+      border-bottom: 1px solid $primary; 
+      border-radius: 0; 
+      box-shadow: none; 
+    }
+    
+    &::placeholder { font-style: italic; font-size: 13px; }
+  }
+}
+
+// Warranty Group
+.warranty-group {
+  display: flex;
+  align-items: center;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  padding: 4px;
+  
+  &:hover { background: #f9f9f9; }
+
+  input { 
+    width: 40px; 
+    text-align: center; 
+    font-weight: 600;
+  }
+  
+  select { 
+    width: 60px; 
+    border: none; 
+    background: transparent; 
+    font-size: 13px; 
+    font-weight: 600;
+    color: $text;
+    cursor: pointer;
+    outline: none;
+  }
+}
+
+// Utilities
+.text-center { text-align: center; }
+.text-right { text-align: right; }
+.mr-1 { margin-right: 4px; }
+.ml-2 { margin-left: 8px; }
+.f-w-500 { font-weight: 500; }
+.text-muted { color: $text-light; }
+
+// --- Footer ---
+mat-dialog-actions {
+  flex: 0 0 auto;
+  padding: 20px 24px !important;
+  border-top: 1px solid $border;
+  display: flex; justify-content: space-between; align-items: center;
+  margin: 0 !important;
+
+  .footer-content {
+    display: flex; align-items: center; gap: 32px;
+  }
+
+  .totals-group {
+    display: flex; align-items: baseline; gap: 8px;
+    .label { font-size: 13px; color: $text-light; font-weight: 600; text-transform: uppercase; }
+    .value { font-size: 18px; font-weight: 700; color: $text; }
+  }
+
+  .final-price-wrapper {
+    display: flex; align-items: center;
+    background: #ece9fc;
+    padding: 8px 16px;
+    border-radius: 8px;
+    
+    .label-final { font-size: 12px; font-weight: 700; color: $primary; margin-right: 12px; text-transform: uppercase; }
+    .input-final {
+      width: 100px; border: none; background: transparent;
+      font-size: 18px; font-weight: 700; color: $primary;
+      text-align: right; outline: none;
+    }
+  }
+}
+
+.white-spinner circle { stroke: #fff !important; }

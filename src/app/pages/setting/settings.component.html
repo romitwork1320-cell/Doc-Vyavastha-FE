@@ -1,0 +1,232 @@
+<div class="page-wrapper crm-form">
+
+  <div class="filter-row">
+    <div class="type-filters">
+      <button class="type-btn" [class.active]="activeTab === 'whatsapp'" (click)="activeTab = 'whatsapp'">
+        <i-tabler name="brand-whatsapp" style="width:16px;height:16px"></i-tabler>
+        WhatsApp Notifications
+      </button>
+      <button class="type-btn" [class.active]="activeTab === 'pipeline'" (click)="activeTab = 'pipeline'">
+        <i-tabler name="list" style="width:16px;height:16px"></i-tabler>
+        Pipeline Stages
+      </button>
+    </div>
+  </div>
+
+  <div class="common-content">
+
+    <!-- WhatsApp Settings -->
+    <div *ngIf="activeTab === 'whatsapp'" class="card">
+      <div class="card-header">
+        <div>
+          <h3>WhatsApp Notification Preferences</h3>
+          <p class="subtitle">Manage when WhatsApp notifications are sent to customers. Service and legal messages cannot be disabled.</p>
+        </div>
+        <div class="actions">
+          <button class="btn btn-outline" (click)="loadNotificationSettings()" [disabled]="isSavingSettings">Cancel</button>
+          <button class="btn btn-primary" (click)="saveNotificationSettings()" [disabled]="notificationSettingsForm.pristine || isSavingSettings">
+            <mat-spinner *ngIf="isSavingSettings" diameter="16" class="m-r-8 inline-spinner"></mat-spinner>
+            Save Settings
+          </button>
+        </div>
+      </div>
+
+      <div class="card-body">
+        <form [formGroup]="notificationSettingsForm">
+          
+          <div *ngIf="isLoadingSettings" class="loading-state">
+            <mat-spinner diameter="40"></mat-spinner>
+            <p>Loading settings...</p>
+          </div>
+
+          <div *ngIf="!isLoadingSettings" class="settings-list">
+            
+            <div class="setting-item">
+              <div class="setting-icon text-primary bg-light-primary">
+                <i-tabler name="brand-whatsapp" style="width:20px;height:20px"></i-tabler>
+              </div>
+              <div class="setting-content">
+                <h5>Enable WhatsApp Notifications</h5>
+                <p>Master toggle for all WhatsApp notifications.</p>
+              </div>
+              <div class="setting-action">
+                <mat-slide-toggle formControlName="enableWhatsAppNotifications" color="primary"></mat-slide-toggle>
+              </div>
+            </div>
+
+            <div class="setting-item" [class.disabled-setting]="!notificationSettingsForm.get('enableWhatsAppNotifications')?.value">
+              <div class="setting-icon text-accent bg-light-accent">
+                <i-tabler name="playlist-add" style="width:20px;height:20px"></i-tabler>
+              </div>
+              <div class="setting-content">
+                <h5>Notify on New Replacement</h5>
+                <p>Send a message when a new replacement request is registered.</p>
+              </div>
+              <div class="setting-action">
+                <mat-slide-toggle formControlName="notifyOnReplacementAdd" color="primary"></mat-slide-toggle>
+              </div>
+            </div>
+
+            <div class="setting-item" [class.disabled-setting]="!notificationSettingsForm.get('enableWhatsAppNotifications')?.value">
+              <div class="setting-icon text-info bg-light-info">
+                <i-tabler name="clock" style="width:20px;height:20px"></i-tabler>
+              </div>
+              <div class="setting-content">
+                <h5>Notify on Status Change</h5>
+                <p>Send a message when an item's status is updated (e.g., to "Ready").</p>
+              </div>
+              <div class="setting-action">
+                <mat-slide-toggle formControlName="notifyOnStatusChange" color="primary"></mat-slide-toggle>
+              </div>
+            </div>
+
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Pipeline Settings -->
+    <div *ngIf="activeTab === 'pipeline'" class="card">
+      <div class="card-header">
+        <div>
+          <h3>Pipeline Stages</h3>
+          <p class="subtitle">Manage the stages that appear in your Deals Pipeline and Dashboard.</p>
+        </div>
+        <div class="actions">
+          <button class="btn btn-primary" (click)="initEditStage()" *ngIf="editingStageId === null">
+            <i-tabler name="plus" style="width:16px;height:16px" class="m-r-4"></i-tabler> Add Stage
+          </button>
+        </div>
+      </div>
+
+      <div class="card-body">
+        
+        <div *ngIf="isLoadingStages" class="loading-state">
+          <mat-spinner diameter="40"></mat-spinner>
+          <p>Loading pipeline stages...</p>
+        </div>
+
+        <div *ngIf="!isLoadingStages" class="table-responsive" style="margin: 0 -20px;">
+          <table mat-table [dataSource]="pipelineStages" class="w-100 modern-table">
+            
+            <ng-container matColumnDef="name">
+              <th mat-header-cell *matHeaderCellDef> Stage Name </th>
+              <td mat-cell *matCellDef="let element">
+                <ng-container *ngIf="editingStageId === element.id; else viewName">
+                  <form [formGroup]="stageForm" class="inline-form-field">
+                    <input class="crm-input" formControlName="name" placeholder="Stage Name">
+                  </form>
+                </ng-container>
+                <ng-template #viewName>
+                  <span class="fw-semibold text-dark">{{element.name}}</span>
+                </ng-template>
+              </td>
+            </ng-container>
+
+            <ng-container matColumnDef="order">
+              <th mat-header-cell *matHeaderCellDef> Order </th>
+              <td mat-cell *matCellDef="let element">
+                <ng-container *ngIf="editingStageId === element.id; else viewOrder">
+                  <form [formGroup]="stageForm" class="inline-form-field">
+                    <input class="crm-input" type="number" formControlName="order" placeholder="Order">
+                  </form>
+                </ng-container>
+                <ng-template #viewOrder>{{element.order}}</ng-template>
+              </td>
+            </ng-container>
+
+            <ng-container matColumnDef="probability">
+              <th mat-header-cell *matHeaderCellDef> Probability (%) </th>
+              <td mat-cell *matCellDef="let element">
+                <ng-container *ngIf="editingStageId === element.id; else viewProb">
+                  <form [formGroup]="stageForm" class="inline-form-field">
+                    <input class="crm-input" type="number" formControlName="probability" placeholder="Probability">
+                  </form>
+                </ng-container>
+                <ng-template #viewProb>{{element.probability}}%</ng-template>
+              </td>
+            </ng-container>
+
+            <ng-container matColumnDef="color">
+              <th mat-header-cell *matHeaderCellDef> Color </th>
+              <td mat-cell *matCellDef="let element">
+                <ng-container *ngIf="editingStageId === element.id; else viewColor">
+                  <form [formGroup]="stageForm">
+                    <input type="color" formControlName="color" class="color-picker-input">
+                  </form>
+                </ng-container>
+                <ng-template #viewColor>
+                  <div class="color-badge">
+                    <div class="color-swatch" [style.background]="element.color"></div>
+                    <span>{{element.color}}</span>
+                  </div>
+                </ng-template>
+              </td>
+            </ng-container>
+
+            <ng-container matColumnDef="actions">
+              <th mat-header-cell *matHeaderCellDef class="text-right"> Actions </th>
+              <td mat-cell *matCellDef="let element" class="text-right">
+                <ng-container *ngIf="editingStageId === element.id; else viewActions">
+                  <button mat-icon-button color="primary" (click)="saveStage()" matTooltip="Save" [disabled]="stageForm.invalid">
+                    <i-tabler name="check" class="icon-20"></i-tabler>
+                  </button>
+                  <button mat-icon-button color="warn" (click)="cancelEditStage()" matTooltip="Cancel">
+                    <i-tabler name="x" class="icon-20"></i-tabler>
+                  </button>
+                </ng-container>
+                <ng-template #viewActions>
+                  <button mat-icon-button color="primary" (click)="initEditStage(element)" [disabled]="editingStageId !== null" matTooltip="Edit">
+                    <i-tabler name="edit" class="icon-20"></i-tabler>
+                  </button>
+                  <button mat-icon-button color="warn" (click)="deleteStage(element.id)" [disabled]="editingStageId !== null" matTooltip="Delete">
+                    <i-tabler name="trash" class="icon-20"></i-tabler>
+                  </button>
+                </ng-template>
+              </td>
+            </ng-container>
+
+            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+          </table>
+        </div>
+
+        <div *ngIf="editingStageId === 0" class="new-stage-row">
+          <form [formGroup]="stageForm" class="d-flex align-items-center gap-16 w-100">
+            <div class="flex-grow-1">
+              <label class="form-label">Stage Name</label>
+              <input class="crm-input" formControlName="name">
+            </div>
+            <div style="width: 100px;">
+              <label class="form-label">Order</label>
+              <input class="crm-input" type="number" formControlName="order">
+            </div>
+            <div style="width: 120px;">
+              <label class="form-label">Probability</label>
+              <input class="crm-input" type="number" formControlName="probability">
+            </div>
+            <div style="width: 60px;">
+              <label class="form-label">Color</label>
+              <input type="color" formControlName="color" class="color-picker-input">
+            </div>
+            <div class="d-flex align-items-end mb-1">
+              <button mat-icon-button color="primary" (click)="saveStage()" [disabled]="stageForm.invalid">
+                <i-tabler name="check" class="icon-24"></i-tabler>
+              </button>
+              <button mat-icon-button color="warn" (click)="cancelEditStage()">
+                <i-tabler name="x" class="icon-24"></i-tabler>
+              </button>
+            </div>
+          </form>
+        </div>
+
+        <div *ngIf="pipelineStages.length === 0 && !isLoadingStages && editingStageId !== 0" class="empty-state">
+          <i-tabler name="layout-board" style="width:40px;height:40px;color:#cbd5e1"></i-tabler>
+          <p>No pipeline stages found. Add one to get started.</p>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+</div>

@@ -1,0 +1,130 @@
+/* Wrapper */
+.dialog-wrapper {
+  padding: 0;
+  max-width: 400px;
+  margin: 0 auto;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+/* Header */
+.dialog-header {
+  text-align: center;
+  padding: 32px 24px 8px 24px;
+
+  .title {
+    font-size: 22px;
+    font-weight: 700;
+    margin-bottom: 8px;
+    color: #2a3547;
+  }
+
+  .subtitle {
+    font-size: 14px;
+    color: #7c8fac;
+    line-height: 1.5;
+    margin: 0;
+  }
+}
+
+/* Content */
+.content-area {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 24px;
+  overflow: visible; 
+}
+
+/* QR Card */
+.qr-card {
+  background: #ffffff;
+  padding: 16px;
+  border-radius: 16px;
+  border: 1px solid #e5eaef;
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.04);
+  margin-bottom: 24px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: transform 0.2s ease;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 18px rgba(0, 0, 0, 0.08);
+  }
+}
+
+/* URL Copy Box */
+.url-copy-box {
+  width: 100%;
+  background-color: #f8f9fa;
+  border: 1px solid #e5eaef;
+  border-radius: 12px;
+  padding: 12px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  user-select: none;
+
+  &:hover {
+    background-color: #ecf2ff;
+    border-color: #5d87ff;
+
+    .copy-action {
+      color: #5d87ff;
+      opacity: 1;
+    }
+  }
+
+  .url-content {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    overflow: hidden;
+    flex: 1;
+
+    .icon-18 { flex-shrink: 0; }
+
+    .url-text {
+      font-size: 13px;
+      color: #5a6a85;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+  }
+
+  .copy-action {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    color: #5a6a85;
+    margin-left: 12px;
+    opacity: 0.7;
+  }
+}
+
+/* Footer */
+.dialog-footer {
+  padding: 0 24px 32px 24px;
+  margin-bottom: 0;
+  display: flex;
+  flex-direction: column; /* Stack buttons */
+  gap: 8px;
+
+  .action-btn {
+    height: 45px;
+    font-size: 15px;
+    border-radius: 24px;
+  }
+  
+  .m-b-12 { margin-bottom: 4px; }
+}
+
+:host ::ng-deep .mat-mdc-dialog-container {
+  overflow: visible; 
+}

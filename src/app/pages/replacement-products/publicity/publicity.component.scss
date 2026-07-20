@@ -1,0 +1,82 @@
+:host {
+  // Makes the component <app-publicity>
+  // a flex column that fills 100% of its parent.
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+mat-card.cardWithShadow {
+  // Makes the card grow to fill the component
+  flex-grow: 1;
+
+  // Makes the card a flex container for its content
+  display: flex;
+  flex-direction: column;
+
+  // Fixes a flexbox overflow bug
+  min-height: 0;
+
+  // This removes the extra padding from the card
+  // so the table can be truly full-width
+  padding: 0 !important;
+  overflow: visible;
+}
+
+// Default style for mat-card-content (if you add another card)
+mat-card-content {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  padding: 24px;
+  overflow: visible;
+  box-sizing: border-box;
+}
+
+// Override for the *table's* card content
+mat-card-content.table-card-content {
+  padding: 0;
+}
+
+.table-container {
+  // THIS IS THE KEY:
+  // Makes the table container grow to fill the mat-card-content
+  flex-grow: 1;
+  // Adds the vertical scrollbar *only* to this container
+  overflow-y: auto;
+  // Prevents any horizontal scroll
+  overflow-x: hidden;
+  // Fixes a flexbox overflow bug
+  min-height: 0;
+}
+
+/* --- Your component-specific styles (UNCHANGED) --- */
+.table-image {
+  height: auto;
+  width: 80px;
+}
+
+.loading-spinner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 200px;
+  height: 100%; // Make it fill the container
+
+  p {
+    margin-top: 16px;
+    font-size: 16px;
+  }
+}
+
+/* --- Standard helper styles for consistency --- */
+.action-link {
+  text-align: left;
+}
+
+.mat-sort-header-container {
+  display: flex !important;
+  align-items: center;
+}

@@ -1,0 +1,159 @@
+:host {
+  display: block;
+}
+
+/* --- Card Base --- */
+.cardWithShadow {
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+
+  // &:hover {
+  //   transform: translateY(-4px);
+  //   box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+  // }
+}
+
+.border-0 {
+  border: none !important;
+}
+
+/* --- Compact Dimensions --- */
+.icon-48 {
+  width: 48px;
+  height: 48px;
+  flex-shrink: 0;
+}
+
+.icon-24 {
+  font-size: 24px;
+  width: 24px;
+  height: 24px;
+}
+
+.h-32 {
+  height: 32px;
+  line-height: 32px;
+  /* Ensure text is vertically centered */
+}
+
+/* --- Typography & Spacing --- */
+.p-24 {
+  padding: 24px !important;
+}
+
+.m-b-4 {
+  margin-bottom: 4px !important;
+}
+
+.m-b-12 {
+  margin-bottom: 12px !important;
+}
+
+.f-s-12 {
+  font-size: 12px;
+}
+
+.f-s-13 {
+  font-size: 13px;
+}
+
+.f-s-24 {
+  font-size: 24px;
+}
+
+.f-w-600 {
+  font-weight: 600;
+}
+
+.f-w-700 {
+  font-weight: 700;
+}
+
+.l-h-1 {
+  line-height: 1;
+}
+
+/* --- Gradients --- */
+.primary-gt {
+  background: linear-gradient(180deg, #635bff1f 0, #635bff08);
+}
+
+.warning-gt {
+  background: linear-gradient(180deg, #fff2001f 0, #fff20008);
+}
+
+.accent-gt {
+  background: linear-gradient(180deg, #00d4ff1f 0, #00d4ff08);
+}
+
+.error-gt {
+  background: linear-gradient(180deg, #ff1b6b1f 0, #ff1b6b08);
+}
+
+.success-gt {
+  background: linear-gradient(180deg, #00ff871f 0, #00ff8708);
+}
+
+/* --- Colors --- */
+.bg-primary {
+  background-color: #5d87ff !important;
+}
+
+.bg-warning {
+  background-color: #ffae1f !important;
+}
+
+.bg-accent {
+  background-color: #49beff !important;
+}
+
+.bg-success {
+  background-color: #13deb9 !important;
+}
+
+.bg-error {
+  background-color: #fa896b !important;
+}
+
+/* Text Colors */
+.text-primary {
+  color: #5d87ff !important;
+}
+
+.text-warning {
+  color: #dda608 !important;
+}
+
+.text-accent {
+  color: #00a1c9 !important;
+}
+
+.text-success {
+  color: #0ca689 !important;
+}
+
+.text-error {
+  color: #fa896b !important;
+}
+
+.text-dark {
+  color: #2a3547 !important;
+}
+
+.text-white {
+  color: #ffffff !important;
+}
+
+/* --- Button Styling --- */
+.bg-white {
+  background-color: #ffffff !important;
+}
+
+.btn-shadow {
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.08);
+  border-radius: 6px;
+  /* Slightly tighter radius for smaller button */
+
+  /* Reset padding to prevent it being too wide/tall */
+  padding: 0 16px;
+}

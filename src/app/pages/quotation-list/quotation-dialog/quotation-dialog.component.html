@@ -1,0 +1,132 @@
+<div class="dialog-container" [formGroup]="quotationForm">
+  
+  <div class="dialog-header">
+    <div class="header-content">
+      <div class="header-icon">
+        <i-tabler name="clipboard-list" class="icon-24"></i-tabler>
+      </div>
+      <div>
+        <h2>{{ isEditMode ? 'Edit Quotation' : 'New Quotation' }}</h2>
+        <p>Create or modify a quote for a customer</p>
+      </div>
+    </div>
+    <button mat-icon-button mat-dialog-close tabindex="-1">
+      <i-tabler name="x" class="icon-24"></i-tabler>
+    </button>
+  </div>
+
+  <mat-dialog-content>
+    
+    <div class="form-section">
+      <div class="form-row">
+        <div class="form-group flex-1">
+          <label>Customer Name <span class="text-red">*</span></label>
+          <div class="input-with-icon">
+            <i-tabler name="user" class="icon-18"></i-tabler>
+            <input type="text" formControlName="customerName" placeholder="e.g. Rahul Sharma" class="clean-input">
+          </div>
+        </div>
+        <div class="form-group flex-1">
+          <label>Mobile Number</label>
+          <div class="input-with-icon">
+            <i-tabler name="phone" class="icon-18"></i-tabler>
+            <input type="text" formControlName="customerMobile" placeholder="e.g. 9876543210" class="clean-input">
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="items-section">
+      <div class="items-header-row">
+        <h3>Items</h3>
+        <button mat-stroked-button color="primary" class="small-btn" (click)="addItem()">
+          <i-tabler name="plus" class="icon-16 mr-1"></i-tabler> Add Item
+        </button>
+      </div>
+
+      <div class="custom-table">
+        <div class="table-head">
+          <div class="col-product">Product / Description</div>
+          <div class="col-warranty">Warranty</div>
+          <div class="col-qty text-center">Qty</div>
+          <div class="col-price text-right">Unit Price</div>
+          <div class="col-action"></div>
+        </div>
+
+        <div formArrayName="items" class="table-body">
+          <div *ngFor="let item of items.controls; let i = index" 
+               [formGroupName]="i" 
+               class="table-row" 
+               [ngClass]="{'title-row': i === 0}">
+            
+            <div *ngIf="i === 0" class="badge-title">TITLE / BUILD</div>
+
+            <div class="col-product">
+              <input type="text" 
+                     class="clean-input no-border" 
+                     [placeholder]="i === 0 ? 'Ex: Intel i5 Gaming PC Build' : 'Search Product...'" 
+                     formControlName="productName" 
+                     [matAutocomplete]="auto">
+              
+              <mat-autocomplete #auto="matAutocomplete" (optionSelected)="onProductSelected($event, i)">
+                <mat-option *ngFor="let p of filteredProducts" [value]="p">
+                  <span class="f-w-500">{{ p.name }}</span>
+                  <span class="text-muted f-s-12 ml-2" *ngIf="p.sellingPrice">({{ p.sellingPrice | currency:'INR':'symbol':'1.0-0' }})</span>
+                </mat-option>
+              </mat-autocomplete>
+            </div>
+
+            <div class="col-warranty">
+              <div class="warranty-group">
+                <input type="number" formControlName="warrantyValue" class="clean-input no-border" placeholder="-">
+                <select formControlName="warrantyUnit" class="clean-select">
+                  <option value="Y">Yr</option>
+                  <option value="M">Mo</option>
+                  <option value="D">Day</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="col-qty">
+              <input type="number" formControlName="quantity" min="1" class="clean-input no-border text-center" (input)="calculateTotal()">
+            </div>
+
+            <div class="col-price">
+              <input type="number" formControlName="unitPrice" class="clean-input no-border text-right" placeholder="0" (input)="calculateTotal()">
+            </div>
+
+            <div class="col-action text-right">
+              <button mat-icon-button color="warn" (click)="removeItem(i)" [disabled]="items.length === 1">
+                <i-tabler name="trash" class="icon-18"></i-tabler>
+              </button>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </mat-dialog-content>
+
+  <mat-dialog-actions>
+    <div class="footer-content">
+      <div class="totals-group">
+        <span class="label">Subtotal:</span>
+        <span class="value">{{ totalAmount | currency:'INR':'symbol':'1.0-0' }}</span>
+      </div>
+      
+      <div class="final-price-wrapper">
+        <span class="label-final">Final Price:</span>
+        <input type="number" formControlName="finalPrice" class="input-final">
+      </div>
+    </div>
+
+    <button mat-flat-button color="primary" (click)="saveAndCopy()" [disabled]="isSaving || quotationForm.invalid">
+      <div class="d-flex align-items-center gap-2">
+        <i-tabler *ngIf="!isSaving" name="brand-whatsapp" class="icon-20"></i-tabler>
+        <mat-spinner *ngIf="isSaving" diameter="20" class="white-spinner"></mat-spinner>
+        <span>Save & Copy</span>
+      </div>
+    </button>
+  </mat-dialog-actions>
+</div>

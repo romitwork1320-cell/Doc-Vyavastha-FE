@@ -1,0 +1,25 @@
+.table-container  {
+  max-height: 500px; /* Or any height that works for your layout */
+  overflow-y: auto; /* This is crucial for enabling vertical scrolling */
+}
+
+/* Optional: Add some styling for the inline loading spinner */
+.inline-spinner-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 10px;
+}
+
+/* Make the header row sticky */
+.mat-mdc-header-row {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+/* To ensure proper alignment for the sort icons */
+.mat-sort-header-container {
+  display: flex !important;
+  align-items: center;
+}

@@ -1,0 +1,56 @@
+:host {
+  display: block;
+  width: 100%;
+}
+
+/* --- Clean Card Style (Matches Top Cards) --- */
+.cardWithShadow {
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.02);
+  border: 1px solid #e5eaef; /* Subtle border */
+  border-radius: 12px;       /* Modern radius */
+  transition: all 0.3s ease-in-out;
+  background-color: #fff;
+}
+
+.border-0 { border: 1px solid #e5eaef !important; } /* Override if mat-card adds its own */
+
+/* --- Typography --- */
+.f-s-12 { font-size: 12px; }
+.f-s-13 { font-size: 13px; }
+.f-s-18 { font-size: 18px; }
+.f-s-24 { font-size: 24px; }
+.f-w-600 { font-weight: 600; }
+.f-w-700 { font-weight: 700; }
+
+.text-dark { color: #2a3547 !important; }
+.text-muted { color: #7c8fac !important; }
+.text-primary { color: #5d87ff !important; }
+
+/* --- Spacing --- */
+.p-24 { padding: 24px; }
+.m-b-4 { margin-bottom: 4px; }
+.m-b-24 { margin-bottom: 24px; }
+.m-r-12 { margin-right: 12px; }
+.m-0 { margin: 0; }
+
+/* --- Icon Badge --- */
+.icon-48 {
+  width: 48px;
+  height: 48px;
+  flex-shrink: 0;
+}
+
+.icon-24 {
+  width: 24px;
+  height: 24px;
+  font-size: 24px;
+}
+
+.bg-light-primary {
+  background-color: #ecf2ff !important;
+}
+
+/* Responsive */
+@media (max-width: 767px) {
+  .p-24 { padding: 16px; }
+}

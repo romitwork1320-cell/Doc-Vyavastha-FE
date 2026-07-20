@@ -1,0 +1,201 @@
+<div class="history-dialog-container">
+  <div class="dialog-header p-x-24 p-y-16 d-flex align-items-center justify-content-between">
+    <div class="d-flex align-items-center gap-12">
+      <div class="header-icon bg-light-accent text-accent rounded-circle d-flex align-items-center justify-content-center">
+        <i-tabler name="box" class="icon-24"></i-tabler>
+      </div>
+      <h2 class="mat-h2 m-0 f-w-600">Product History</h2>
+    </div>
+    <button mat-icon-button (click)="closeDialog()" class="close-btn">
+      <i-tabler name="x" class="icon-20"></i-tabler>
+    </button>
+  </div>
+
+  <mat-dialog-content class="p-24 content-scroll">
+    
+    @if(isLoading) {
+      <div class="d-flex justify-content-center align-items-center p-y-48" style="min-height: 300px;">
+        <mat-progress-spinner mode="indeterminate" diameter="40"></mat-progress-spinner>
+      </div>
+    } @else if(historyData) {
+      
+      <mat-card class="cardWithShadow m-b-24 profile-card">
+        <mat-card-content class="p-24 position-relative">
+          
+          <button mat-mini-fab color="accent" 
+                  class="edit-fab" 
+                  matTooltip="Edit Product Name"
+                  (click)="openEditDialog()">
+            <i-tabler name="pencil" class="icon-18"></i-tabler>
+          </button>
+
+          <div class="row align-items-center">
+            <div class="col-md-8 m-b-16">
+              <div class="d-flex align-items-center gap-16">
+                <div class="product-avatar-lg bg-light-accent text-accent d-flex align-items-center justify-content-center rounded">
+                  <i-tabler name="device-desktop" class="icon-32"></i-tabler>
+                </div>
+                <div>
+                  <h5 class="f-s-18 f-w-600 m-0 text-dark">{{ historyData.name }}</h5>
+                  <div class="d-flex align-items-center gap-8 m-t-8">
+                    <span class="status-badge" [class.active]="historyData.isActive" [class.inactive]="!historyData.isActive">
+                      {{ historyData.isActive ? 'Active' : 'Inactive' }}
+                    </span>
+                    <span class="f-s-12 text-muted">Product ID: #{{ historyData.id }}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <div class="col-md-4 text-end">
+               <div class="stat-box d-inline-flex align-items-center p-16 rounded border bg-white shadow-sm">
+                  <div class="m-r-16 text-start">
+                    <span class="d-block f-s-11 text-muted f-w-700 text-uppercase tracking-wide">Replacements</span>
+                    <span class="f-s-28 f-w-600 text-accent l-h-1">{{ historyData.history.length }}</span>
+                  </div>
+                  <div class="stat-icon bg-light-accent text-accent rounded-circle d-flex align-items-center justify-content-center" style="width: 48px; height: 48px;">
+                    <i-tabler name="rotate-clockwise" class="icon-24"></i-tabler>
+                  </div>
+               </div>
+            </div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <div class="d-flex align-items-center justify-content-between m-b-16">
+        <h4 class="f-s-16 f-w-700 m-0 d-flex align-items-center gap-8">
+          <i-tabler name="history" class="icon-20 text-accent"></i-tabler>
+          Lifecycle History
+        </h4>
+        <span class="badge bg-light-accent text-accent f-s-12">{{ historyData.history.length }} Records</span>
+      </div>
+
+      <div class="table-responsive border rounded-3 overflow-hidden">
+        <table mat-table [dataSource]="historyData.history" class="w-100 history-table">
+
+          <ng-container matColumnDef="invertNo">
+            <th mat-header-cell *matHeaderCellDef class="f-w-600 f-s-13 bg-light-subtle" style="min-width: 90px;"> I/W No </th>
+            <td mat-cell *matCellDef="let element" class="align-top p-t-12">
+               <a class="f-w-600 text-primary text-decoration-none hover-link" 
+                  (click)="openReplacementDialog(element.invertNo)">
+                 {{ element.invertNo }}
+               </a>
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="date">
+            <th mat-header-cell *matHeaderCellDef class="f-w-600 f-s-13 bg-light-subtle" style="min-width: 100px;"> Date </th>
+            <td mat-cell *matCellDef="let element" class="f-s-13 text-muted align-top p-t-12"> {{ element.invertDate | date:'mediumDate' }} </td>
+          </ng-container>
+
+          <ng-container matColumnDef="customer">
+            <th mat-header-cell *matHeaderCellDef class="f-w-600 f-s-13 bg-light-subtle" style="min-width: 200px;"> Customer & Invoice </th>
+            <td mat-cell *matCellDef="let element" class="align-top p-t-12 p-b-12"> 
+              <div class="f-w-600 text-dark m-b-2 text-truncate" style="max-width: 190px;" [matTooltip]="element.contactName">
+                {{ element.contactName }}
+              </div>
+              <div class="f-s-11 text-muted m-b-4">
+                 <i-tabler name="phone" class="icon-12 m-r-4"></i-tabler>
+                 {{ element.contactNo }}
+              </div>
+
+              <div class="f-s-12 text-muted d-flex align-items-center">
+                <span class="f-w-500 text-dark m-r-4">Inv:</span> 
+                <span class="text-truncate d-inline-block align-middle" style="max-width: 100px;" [matTooltip]="element.invoiceNo">
+                  {{ element.invoiceNo }}
+                </span>
+                <span class="m-l-4" *ngIf="element.invoiceDate">({{ element.invoiceDate | date:'dd/MM/yy' }})</span>
+              </div>
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="serialNo">
+            <th mat-header-cell *matHeaderCellDef class="f-w-600 f-s-13 bg-light-subtle" style="min-width: 140px;"> Serial No </th>
+            <td mat-cell *matCellDef="let element" class="align-top p-t-12">
+              <div class="f-s-13 font-monospace text-dark m-b-2 text-truncate" style="max-width: 130px;" [matTooltip]="element.serialNo">
+                {{ element.serialNo }}
+              </div>
+
+              @if(element.newSerialNo && element.newSerialNo !== '-') {
+                <div class="d-flex align-items-center gap-4 text-success">
+                  <i-tabler name="arrow-right" class="icon-12 flex-shrink-0"></i-tabler>
+                  <span class="f-s-13 font-monospace text-truncate" style="max-width: 110px;" [matTooltip]="element.newSerialNo">
+                    {{ element.newSerialNo }}
+                  </span>
+                </div>
+              }
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="warranty">
+            <th mat-header-cell *matHeaderCellDef class="f-w-600 f-s-13 bg-light-subtle" style="min-width: 110px;"> Warranty </th>
+            <td mat-cell *matCellDef="let element" class="align-top p-t-12">
+              <div class="m-b-2">
+                @if(element.isUnderWarranty) {
+                  <span class="badge bg-light-success text-success f-s-10 border border-success">In Warranty</span>
+                } @else {
+                  <span class="badge bg-light-error text-error f-s-10 border border-error">Expired</span>
+                }
+              </div>
+              <div class="f-s-11 text-muted" *ngIf="element.warrantyEndDate">
+                Ends: {{ element.warrantyEndDate | date:'dd/MM/yy' }}
+              </div>
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="center">
+            <th mat-header-cell *matHeaderCellDef class="f-w-600 f-s-13 bg-light-subtle" style="min-width: 160px;"> Service Center </th>
+            <td mat-cell *matCellDef="let element" class="align-top p-t-12 p-b-12"> 
+              <div class="text-truncate f-w-600 text-dark m-b-2" style="max-width: 150px;" [matTooltip]="element.serviceCenterName">
+                {{ element.serviceCenterName }}
+              </div>
+              
+              @if(element.serviceInvoiceNo && element.serviceInvoiceNo !== '-') {
+                <div class="f-s-11 text-muted m-b-2">
+                  Ref: {{ element.serviceInvoiceNo }}
+                </div>
+              }
+              
+              @if(element.note && element.note !== '-') {
+                <div class="d-flex align-items-center gap-4 text-warning">
+                   <i-tabler name="note" class="icon-14 flex-shrink-0"></i-tabler>
+                   <span class="f-s-11 f-st-italic text-truncate" style="max-width: 130px;" [matTooltip]="element.note">
+                     {{ element.note }}
+                   </span>
+                </div>
+              }
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="status">
+            <th mat-header-cell *matHeaderCellDef class="f-w-600 f-s-13 bg-light-subtle" style="min-width: 100px;"> Status </th>
+            <td mat-cell *matCellDef="let element" class="align-top p-t-12">
+              <span class="status-pill" [ngClass]="getStatusClass(element.status)">
+                {{ element.status }}
+              </span>
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns;" class="hover-row"></tr>
+
+          <tr class="mat-row" *matNoDataRow>
+            <td class="mat-cell text-center p-32" [attr.colspan]="displayedColumns.length">
+              <div class="d-flex flex-column align-items-center">
+                <div class="bg-light-subtle rounded-circle p-16 m-b-12">
+                  <i-tabler name="folder-off" class="icon-32 text-muted"></i-tabler>
+                </div>
+                <span class="f-s-14 f-w-500 text-muted">No history found for this product.</span>
+              </div>
+            </td>
+          </tr>
+        </table>
+      </div>
+
+    } @else {
+      <div class="text-center p-48">
+        <p class="text-error f-s-14">Unable to load product details.</p>
+      </div>
+    }
+  </mat-dialog-content>
+</div>

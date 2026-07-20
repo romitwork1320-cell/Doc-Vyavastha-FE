@@ -1,0 +1,94 @@
+.restriction-dialog {
+  max-width: 450px; /* Slightly wider for better text flow */
+  margin: 0 auto;
+  font-family: 'Plus Jakarta Sans', sans-serif; /* Ensuring font consistency */
+
+  /* --- 1. Icon Styling (Soft Red/Orange Pulse) --- */
+  .icon-circle {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    
+    /* Soft background, vibrant icon */
+    background-color: #fff0ed; 
+    color: #ff4c4c; 
+    
+    /* Animation */
+    animation: pulse-soft 2s infinite;
+    
+    .icon-40 {
+        width: 40px; height: 40px;
+    }
+  }
+
+  /* --- 2. Typography --- */
+  .dialog-title {
+    font-weight: 800;
+    font-size: 24px;
+    color: #2a3547;
+  }
+
+  .dialog-message {
+    color: #5a6a85;
+    font-size: 16px;
+    line-height: 1.6;
+    
+    .highlight-error {
+        color: #ff4c4c;
+        font-weight: 600;
+    }
+  }
+
+  /* --- 3. Button Styling --- */
+  .action-buttons {
+    margin-top: 32px;
+
+    .dialog-btn {
+      min-width: 140px; 
+      height: 48px;
+      font-size: 15px;
+      font-weight: 600;
+      border-radius: 8px; /* Soft rounded corners like image */
+      letter-spacing: 0.3px;
+    }
+
+    /* Cancel Button: Red Border & Text */
+    .btn-cancel {
+        border: 1px solid #ff4c4c !important;
+        color: #ff4c4c !important;
+        background: transparent;
+        
+        &:hover {
+            background-color: #fff0ed;
+        }
+    }
+
+    /* Upgrade Button: Brand Purple Background */
+    .btn-upgrade {
+        background-color: #635bff !important; /* Matches your Search Bar Focus color */
+        color: white !important;
+        box-shadow: 0 4px 12px rgba(99, 91, 255, 0.2);
+        
+        &:hover {
+            background-color: #5249d6 !important;
+            box-shadow: 0 6px 15px rgba(99, 91, 255, 0.3);
+        }
+    }
+  }
+}
+
+/* --- 4. Pulse Animation --- */
+@keyframes pulse-soft {
+  0% {
+    box-shadow: 0 0 0 0 rgba(255, 76, 76, 0.2);
+    transform: scale(1);
+  }
+  50% {
+      box-shadow: 0 0 0 12px rgba(255, 76, 76, 0);
+      transform: scale(1.02);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(255, 76, 76, 0);
+    transform: scale(1);
+  }
+}

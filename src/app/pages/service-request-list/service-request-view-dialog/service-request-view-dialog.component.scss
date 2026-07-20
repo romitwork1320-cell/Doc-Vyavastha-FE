@@ -1,0 +1,150 @@
+/* Colors & Variables */
+$primary-color: #635bff;
+$text-dark: #2a3547;
+$text-muted: #5a6a85;
+$bg-light: #f8f9fa;
+$border-color: #eef2f6;
+
+/* Main Container */
+.dialog-container {
+  font-family: 'Plus Jakarta Sans', sans-serif; /* Or your theme font */
+  color: $text-dark;
+  padding: 0;
+  max-width: 100%;
+}
+
+/* Header */
+.dialog-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 24px 24px 0 24px;
+  margin-bottom: 24px;
+
+  .title {
+    margin: 0;
+    font-size: 20px;
+    font-weight: 700;
+    color: $text-dark;
+  }
+}
+
+/* Status Badges */
+.status-badge {
+  padding: 4px 12px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  
+  &.pending { background-color: #fff8e1; color: #ffae1f; }
+  &.resolved { background-color: #ecfdf5; color: #12b76a; }
+  &.converted { background-color: #ecf2ff; color: #5d87ff; }
+  &.closed { background-color: #f6f9fc; color: #5a6a85; }
+}
+
+/* Body Content */
+.dialog-body {
+  padding: 0 24px;
+}
+
+/* Grid Layout for Details */
+.info-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 32px; /* Space between columns */
+  margin-bottom: 24px;
+}
+
+.info-col {
+  flex: 1;
+  min-width: 140px;
+}
+
+/* Typography Helpers */
+.label {
+  display: block;
+  font-size: 12px;
+  font-weight: 500;
+  color: $text-muted;
+  margin-bottom: 8px;
+}
+
+.info-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 6px;
+
+  .icon-18 {
+    width: 18px;
+    height: 18px;
+  }
+  
+  .value {
+    font-size: 14px;
+    color: $text-dark;
+  }
+  
+  .f-w-600 { font-weight: 600; }
+  .text-primary { color: $primary-color; }
+  .text-muted { color: $text-muted; }
+}
+
+/* Ticket Specific Styles */
+.ticket-id {
+  font-size: 16px;
+  font-weight: 700;
+  color: $text-dark;
+  margin-bottom: 4px;
+}
+
+.ticket-date {
+  font-size: 13px;
+  color: $text-muted;
+  margin-bottom: 8px;
+}
+
+.category-badge {
+  display: inline-block;
+  background-color: #eff3f6;
+  color: #4b5563;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+/* Divider Line */
+.divider {
+  height: 1px;
+  background-color: $border-color;
+  margin: 0 0 24px 0;
+}
+
+/* Description Box */
+.description-section {
+  margin-bottom: 24px;
+}
+
+.description-box {
+  background-color: $bg-light;
+  border-radius: 8px;
+  padding: 16px;
+  font-size: 14px;
+  color: $text-dark;
+  line-height: 1.5;
+  white-space: pre-wrap; /* Preserves newlines */
+  border: 1px solid transparent;
+
+  &.admin-remarks {
+    background-color: #fdf2f2; /* Slight red tint for admin alerts if needed, or keep gray */
+    color: #5d6a85;
+  }
+}
+
+/* Footer */
+.dialog-footer {
+  padding: 16px 24px 24px;
+  display: flex;
+  justify-content: flex-end;
+}

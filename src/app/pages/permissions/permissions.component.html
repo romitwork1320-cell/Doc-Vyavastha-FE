@@ -1,0 +1,51 @@
+<mat-card class="cardWithShadow common-card">
+  <mat-card-content class="p-24">
+    <div class="row justify-content-between">
+      <div class="col-lg-4">
+        <mat-form-field appearance="outline" class="w-100 hide-hint">
+          <input matInput placeholder="Search Page" (keyup)="onFilterChange($any($event.target).value)" />
+          <mat-icon matSuffix><i-tabler name="search" class="icon-20"></i-tabler></mat-icon>
+        </mat-form-field>
+      </div>
+    </div>
+  </mat-card-content>
+</mat-card>
+
+<mat-card class="cardWithShadow common-card">
+  <mat-card-content class="p-24">
+    <div class="table-responsive">
+      <table mat-table [dataSource]="dataSource" class="w-100" matSort>
+
+        <ng-container matColumnDef="pageName">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header="PageName">Page</th>
+          <td mat-cell *matCellDef="let page" class="f-s-14 m-0">
+            {{ page.pageName }}
+          </td>
+        </ng-container>
+
+        <ng-container *ngFor="let role of roles" [matColumnDef]="role.roleName">
+          <th mat-header-cell *matHeaderCellDef>{{ role.roleName }}</th>
+          <td mat-cell *matCellDef="let page">
+            @if(permissions[page.pageId] && permissions[page.pageId][role.roleId]) {
+              <div class="permission-group">
+                <mat-checkbox [(ngModel)]="permissions[page.pageId][role.roleId].canView" [disabled]="!canEditPermissions">View</mat-checkbox>
+                <mat-checkbox [(ngModel)]="permissions[page.pageId][role.roleId].canAdd" [disabled]="!canEditPermissions">Add</mat-checkbox>
+                <mat-checkbox [(ngModel)]="permissions[page.pageId][role.roleId].canEdit" [disabled]="!canEditPermissions">Edit</mat-checkbox>
+                <mat-checkbox [(ngModel)]="permissions[page.pageId][role.roleId].canDelete" [disabled]="!canEditPermissions">Delete</mat-checkbox>
+              </div>
+            }
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+      </table>
+      
+      </div>
+    <div class="d-flex justify-content-end m-t-24">
+        <button mat-flat-button color="primary" [disabled]="isLoading || !canEditPermissions" (click)="saveChanges()">
+            Save Changes
+        </button>
+    </div>
+  </mat-card-content>
+</mat-card>

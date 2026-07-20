@@ -1,0 +1,17 @@
+<mat-card class="cardWithShadow">
+  <mat-card-content class="p-24 chart-card-content">
+    <mat-card-title>Total Ratio</mat-card-title>
+    <div id="chart" class="chart-container">
+      <apx-chart
+        [series]="chartOptions.series"
+        [chart]="chartOptions.chart"
+        [labels]="chartOptions.labels"
+        [colors]="chartOptions.colors"
+        [plotOptions]="chartOptions.plotOptions"
+        [dataLabels]="chartOptions.dataLabels"
+        [legend]="chartOptions.legend"
+        [tooltip]="chartOptions.tooltip"
+      ></apx-chart>
+    </div>
+  </mat-card-content>
+</mat-card>

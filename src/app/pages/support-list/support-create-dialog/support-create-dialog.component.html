@@ -1,0 +1,88 @@
+<div class="dialog-header d-flex justify-content-between align-items-center p-x-24 p-y-16">
+  <h2 mat-dialog-title class="m-0 f-s-20 f-w-600 d-flex align-items-center p-0">
+    <div class="header-icon-wrapper bg-light-primary m-r-12">
+      <i-tabler name="headset" class="icon-24 text-primary"></i-tabler>
+    </div>
+    Create Support Ticket
+  </h2>
+  <button mat-icon-button mat-dialog-close class="close-btn text-muted" tabindex="-1">
+    <i-tabler name="x" class="icon-20"></i-tabler>
+  </button>
+</div>
+
+<hr class="m-0 border-light" />
+
+<mat-dialog-content class="p-x-24 p-t-24 p-b-0 mat-typography custom-scrollbar">
+  <form [formGroup]="form" (ngSubmit)="submit()" id="ticketForm">
+    <div class="row">
+      
+      @if (isSystemAdmin) {
+        <div class="col-12 m-b-16">
+          <mat-label class="f-w-600 m-b-8 d-block">Select Company <span class="text-error">*</span></mat-label>
+          <mat-form-field appearance="outline" class="w-100" subscriptSizing="dynamic">
+            <i-tabler name="building-skyscraper" matPrefix class="icon-20 text-muted m-l-8 m-r-8"></i-tabler>
+            <mat-select formControlName="tenantId" placeholder="Select a company...">
+              @for (tenant of tenants; track tenant.id) {
+                <mat-option [value]="tenant.id">{{tenant.name}}</mat-option>
+              }
+            </mat-select>
+            <mat-error *ngIf="form.get('tenantId')?.hasError('required')">Company selection is required</mat-error>
+          </mat-form-field>
+        </div>
+      }
+
+      <div class="col-12 m-b-16">
+        <mat-label class="f-w-600 m-b-8 d-block">Subject <span class="text-error">*</span></mat-label>
+        <mat-form-field appearance="outline" class="w-100" subscriptSizing="dynamic">
+          <i-tabler name="heading" matPrefix class="icon-20 text-muted m-l-8 m-r-8"></i-tabler>
+          <input matInput formControlName="subject" placeholder="Brief summary of the issue">
+          <mat-error *ngIf="form.get('subject')?.hasError('required')">Subject is required</mat-error>
+        </mat-form-field>
+      </div>
+
+      <div class="col-md-6 m-b-16">
+        <mat-label class="f-w-600 m-b-8 d-block">Category <span class="text-error">*</span></mat-label>
+        <mat-form-field appearance="outline" class="w-100" subscriptSizing="dynamic">
+          <i-tabler name="category" matPrefix class="icon-20 text-muted m-l-8 m-r-8"></i-tabler>
+          <mat-select formControlName="category">
+            <mat-option *ngFor="let c of categories" [value]="c">{{c}}</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+
+      <div class="col-md-6 m-b-16">
+        <mat-label class="f-w-600 m-b-8 d-block">Priority <span class="text-error">*</span></mat-label>
+        <mat-form-field appearance="outline" class="w-100" subscriptSizing="dynamic">
+          <i-tabler name="alert-circle" matPrefix class="icon-20 text-muted m-l-8 m-r-8"></i-tabler>
+          <mat-select formControlName="priority">
+            <mat-option *ngFor="let p of priorities" [value]="p">
+              <span class="d-flex align-items-center">
+                <span class="dot-indicator m-r-8" [ngClass]="p | lowercase"></span>
+                {{p}}
+              </span>
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+
+      <div class="col-12 m-b-8">
+        <mat-label class="f-w-600 m-b-8 d-block">Description <span class="text-error">*</span></mat-label>
+        <mat-form-field appearance="outline" class="w-100" subscriptSizing="dynamic">
+          <textarea matInput formControlName="description" rows="5" placeholder="Please describe the issue in detail..." class="custom-textarea"></textarea>
+          <mat-error *ngIf="form.get('description')?.hasError('required')">Description is required</mat-error>
+        </mat-form-field>
+      </div>
+    </div>
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end" class="p-x-24 p-b-24 p-t-16 m-0">
+  <button mat-stroked-button color="warn" mat-dialog-close class="m-r-8 p-x-24">Cancel</button>
+  <button type="submit" form="ticketForm" mat-flat-button color="primary" class="p-x-24" [disabled]="isSubmitting || form.invalid">
+    <div class="d-flex align-items-center justify-content-center">
+      <mat-spinner *ngIf="isSubmitting" diameter="20" class="m-r-8" style="filter: brightness(0) invert(1);"></mat-spinner>
+      <i-tabler *ngIf="!isSubmitting" name="send" class="icon-18 m-r-8"></i-tabler>
+      {{ isSubmitting ? 'Submitting...' : 'Submit Ticket' }}
+    </div>
+  </button>
+</mat-dialog-actions>

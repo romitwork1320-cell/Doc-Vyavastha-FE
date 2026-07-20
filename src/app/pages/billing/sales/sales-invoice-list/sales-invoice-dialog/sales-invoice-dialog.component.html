@@ -1,0 +1,260 @@
+<div class="dialog-container" [formGroup]="invoiceForm">
+
+  <!-- ══════════ HEADER ══════════ -->
+  <div class="dialog-header">
+    <div class="header-content">
+      <div class="header-icon">
+        <i-tabler name="receipt" class="icon-22"></i-tabler>
+      </div>
+      <div>
+        <h2>{{ isEditMode ? 'Edit Sales Invoice' : 'New Sales Invoice' }}</h2>
+        <p>Record and manage your sales and customer invoices</p>
+      </div>
+    </div>
+    <div class="header-right">
+      <div class="invoice-no-badge" *ngIf="invoiceForm.get('documentNo')?.value">
+        <i-tabler name="hash" class="icon-14"></i-tabler>
+        {{ invoiceForm.get('documentNo')?.value }}
+      </div>
+      <button mat-icon-button mat-dialog-close tabindex="-1" class="close-btn">
+        <i-tabler name="x" class="icon-20"></i-tabler>
+      </button>
+    </div>
+  </div>
+
+  <!-- GST Alert -->
+  <div class="alert-banner info" *ngIf="invoiceForm.get('taxType')?.value !== 'NoTax'">
+    <i-tabler name="info-circle" class="icon-16"></i-tabler>
+    <span>GST invoice — ensure Customer and Company GSTINs are configured in Settings.</span>
+  </div>
+
+  <!-- ══════════ SCROLLABLE BODY ══════════ -->
+  <mat-dialog-content class="dialog-content-scroll">
+
+    <!-- Loading overlay -->
+    <div class="loading-overlay" *ngIf="isLoadingData">
+      <mat-spinner diameter="36"></mat-spinner>
+    </div>
+
+    <!-- ─── SECTION 1: Document Info ─── -->
+    <div class="form-card">
+      <div class="doc-main-layout">
+
+        <!-- Left: fields in 2×2 grid -->
+        <div class="doc-fields-grid">
+
+          <!-- Invoice Date -->
+          <mat-form-field appearance="outline" class="w-100">
+            <mat-label>Invoice Date</mat-label>
+            <input matInput [matDatepicker]="invoicePicker" formControlName="documentDate">
+            <mat-datepicker-toggle matSuffix [for]="invoicePicker"></mat-datepicker-toggle>
+            <mat-datepicker #invoicePicker></mat-datepicker>
+          </mat-form-field>
+
+          <!-- Payment Due Date -->
+          <mat-form-field appearance="outline" class="w-100">
+            <mat-label>Payment Due Date</mat-label>
+            <input matInput [matDatepicker]="duePicker" formControlName="dueDate">
+            <mat-datepicker-toggle matSuffix [for]="duePicker"></mat-datepicker-toggle>
+            <mat-datepicker #duePicker></mat-datepicker>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="w-100" subscriptSizing="dynamic">
+            <mat-label>Bill To (Customer)</mat-label>
+            <input matInput type="text" placeholder="Search or add contact" formControlName="contactName"
+                   [matAutocomplete]="autoContact" required />
+            <mat-autocomplete #autoContact="matAutocomplete" [displayWith]="displayContactName" (optionSelected)="onContactSelected($event)">
+              <ng-container *ngFor="let c of filteredContacts | async; trackBy: trackByContactId">
+                <mat-option *ngIf="c.id === -1" [value]="c" class="add-new-option">
+                  <i-tabler name="user-plus" class="icon-18 m-r-8"></i-tabler>
+                  <span>{{ c.name }}</span>
+                </mat-option>
+                <mat-option *ngIf="c.id !== -1" [value]="c">
+                  <div class="d-flex flex-column">
+                    <span class="f-w-500">{{ c.name }}</span>
+                    <span class="f-s-12 text-muted">{{ c.contactNo }}</span>
+                  </div>
+                </mat-option>
+              </ng-container>
+            </mat-autocomplete>
+            <div matSuffix class="d-flex align-items-center justify-content-center p-r-8">
+              <i-tabler name="search" class="icon-18 text-muted"></i-tabler>
+            </div>
+            <mat-error *ngIf="invoiceForm.get('contactName')?.invalid && invoiceForm.get('contactName')?.touched">
+              Required
+            </mat-error>
+          </mat-form-field>
+
+        </div>
+
+        <!-- Right: Customer info card -->
+        <div class="vendor-info-panel">
+          <div class="vendor-empty" *ngIf="!selectedContact">
+            <i-tabler name="user-circle" class="icon-28"></i-tabler>
+            <p>Select a customer to view details</p>
+          </div>
+          <div class="vendor-card" *ngIf="selectedContact">
+            <div class="vendor-card-header">
+              <div class="vendor-avatar">
+                {{ selectedContact.name?.charAt(0)?.toUpperCase() }}
+              </div>
+              <div class="vendor-card-info">
+                <div class="vendor-card-name">{{ selectedContact.name }}</div>
+                <div class="vendor-card-status">
+                  <span class="status-dot active"></span> Active Customer
+                </div>
+              </div>
+            </div>
+            <div class="vendor-card-details">
+              <div class="vendor-detail-row" *ngIf="selectedContact.contactNo">
+                <i-tabler name="phone" class="icon-15"></i-tabler>
+                <span>{{ selectedContact.contactNo }}</span>
+              </div>
+              <div class="vendor-detail-row" *ngIf="selectedContact.emailId">
+                <i-tabler name="mail" class="icon-15"></i-tabler>
+                <span>{{ selectedContact.emailId }}</span>
+              </div>
+              <div class="vendor-detail-row" *ngIf="!selectedContact.contactNo && !selectedContact.emailId">
+                <i-tabler name="info-circle" class="icon-15"></i-tabler>
+                <span class="text-muted">No contact details available</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ─── SECTION 2: Tax & Discount Settings ─── -->
+    <div class="form-card">
+      <div class="doc-fields-grid">
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Tax Configuration*</mat-label>
+          <mat-select formControlName="taxType">
+            <mat-option *ngFor="let type of taxTypes" [value]="type.value">{{ type.label }}</mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Discount Mode*</mat-label>
+          <mat-select formControlName="discountMode">
+            <mat-option *ngFor="let mode of discountModes" [value]="mode.value">{{ mode.label }}</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+    </div>
+
+    <!-- ─── SECTION 3: Line Items ─── -->
+    <div class="items-section">
+      <div class="items-header-row">
+        <div class="items-title">
+          <i-tabler name="list-details" class="icon-18"></i-tabler>
+          <span>Line Items</span>
+          <span class="item-count-badge" *ngIf="items.length > 0">{{ items.length }}</span>
+        </div>
+        <button mat-flat-button color="primary" class="add-item-btn" (click)="openItemDialog()">
+          <i-tabler name="plus" class="icon-16"></i-tabler>
+          Add Product
+        </button>
+      </div>
+
+      <div class="table-wrapper">
+        <table class="items-table w-100">
+          <thead>
+            <tr>
+              <th class="col-num">#</th>
+              <th class="col-product text-left">Product / Service</th>
+              <th class="col-money text-right">Qty</th>
+              <th class="col-money text-right">Rate (W/O Tax)</th>
+              <th class="col-money text-right">Discount</th>
+              <th class="col-money text-right">Amount</th>
+              <th class="col-actions text-center">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let item of items.controls; let i = index" class="item-row">
+              <td class="col-num text-muted">{{ i + 1 }}</td>
+              <td class="col-product">
+                <div class="item-name">{{ item.value.itemName }}</div>
+                <div class="item-desc" *ngIf="item.value.description">{{ item.value.description }}</div>
+              </td>
+              <td class="col-money text-right">{{ item.value.qty }}</td>
+              <td class="col-money text-right text-muted">₹{{ item.value.rateWithoutTax | number:'1.2-2' }}</td>
+              <td class="col-money text-right">
+                <span class="discount-badge" *ngIf="item.value.discountValue > 0">
+                  −{{ item.value.discountValue }}{{ item.value.discountType === '%' ? '%' : '₹' }}
+                </span>
+                <span class="text-muted" *ngIf="!(item.value.discountValue > 0)">—</span>
+              </td>
+              <td class="col-money text-right amount-cell">₹{{ item.value.totalAmount | number:'1.2-2' }}</td>
+              <td class="col-actions text-center">
+                <div class="action-btns">
+                  <button mat-icon-button (click)="openItemDialog(i)" matTooltip="Edit item">
+                    <i-tabler name="pencil" class="icon-16 text-primary"></i-tabler>
+                  </button>
+                  <button mat-icon-button (click)="removeItem(i)" matTooltip="Remove item">
+                    <i-tabler name="trash" class="icon-16 text-error"></i-tabler>
+                  </button>
+                </div>
+              </td>
+            </tr>
+            <!-- Empty state -->
+            <tr *ngIf="items.length === 0">
+              <td colspan="7" class="empty-state-cell">
+                <div class="empty-state">
+                  <i-tabler name="package-off" class="icon-36"></i-tabler>
+                  <p class="empty-title">No items added yet</p>
+                  <p class="empty-sub">Click "Add Product" above to start building this invoice.</p>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ─── SECTION 4: Summary ─── -->
+    <div class="summary-area">
+      <div class="notes-col">
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Internal Remarks</mat-label>
+          <textarea matInput formControlName="internalNotes" rows="4"
+                    placeholder="Any internal notes or delivery instructions..."></textarea>
+        </mat-form-field>
+      </div>
+      <div class="summary-col">
+        <div class="summary-card">
+          <div class="summary-row">
+            <span class="summary-label">Subtotal</span>
+            <span class="summary-value">₹ {{ invoiceForm.get('basicAmount')?.value | number:'1.2-2' }}</span>
+          </div>
+          <div class="summary-row">
+            <span class="summary-label">Round Off</span>
+            <input type="number" formControlName="roundOff" class="round-off-input">
+          </div>
+          <div class="summary-row total-row">
+            <span class="total-label">Total Payable</span>
+            <span class="total-value">₹{{ invoiceForm.get('netPayable')?.value | number:'1.2-2' }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════ FOOTER (inside content) ══════════ -->
+    <div class="dialog-footer">
+      <button mat-button mat-dialog-close class="discard-btn">Discard</button>
+      <button mat-flat-button color="primary" (click)="save()"
+              [disabled]="isSaving || invoiceForm.invalid || items.length === 0"
+              [matTooltip]="items.length === 0 ? 'Add at least one item to save' : ''"
+              matTooltipPosition="above"
+              class="save-btn">
+        <div class="btn-inner">
+          <mat-spinner *ngIf="isSaving" diameter="18" class="white-spinner"></mat-spinner>
+          <span>{{ isEditMode ? 'Update Invoice' : 'Confirm &amp; Save' }}</span>
+        </div>
+      </button>
+    </div>
+
+  </mat-dialog-content>
+
+</div>

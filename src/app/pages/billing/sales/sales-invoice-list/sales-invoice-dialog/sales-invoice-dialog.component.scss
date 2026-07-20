@@ -1,0 +1,510 @@
+/* ============================================================
+   SALES INVOICE DIALOG — STYLES
+   Same structure as purchase-invoice-dialog, amber accent
+   ============================================================ */
+
+// ─── Variables ───────────────────────────────────────────────
+$primary:    #5d87ff;
+$primary-bg: #ecf2ff;
+$border:     #e4e9f2;
+$text-dark:  #2a3547;
+$text-muted: #7c8fac;
+$success:    #13deb9;
+$error:      #fa896b;
+$surface:    #f7f9fc;
+$accent:     #ffae1f;       // sales amber accent
+$accent-bg:  #fef5e5;
+$radius-lg:  14px;
+$radius-md:  10px;
+$radius-sm:  6px;
+
+// ─── Host ────────────────────────────────────────────────────
+:host { display: block; }
+
+// ─── 1. Container ────────────────────────────────────────────
+.dialog-container {
+  display: flex;
+  flex-direction: column;
+  background: #fff;
+}
+
+// ─── 2. Header ───────────────────────────────────────────────
+.dialog-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 20px;
+  border-bottom: 1px solid $border;
+  background: #fff;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+  flex-shrink: 0;
+
+  .header-content {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+
+    .header-icon {
+      width: 42px;
+      height: 42px;
+      background: $accent-bg;
+      color: $accent;
+      border-radius: $radius-md;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    h2 {
+      margin: 0;
+      font-size: 17px;
+      font-weight: 700;
+      color: $text-dark;
+      line-height: 1.3;
+    }
+
+    p {
+      margin: 2px 0 0;
+      font-size: 12px;
+      color: $text-muted;
+    }
+  }
+
+  .header-right {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .invoice-no-badge {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 12px;
+    font-weight: 700;
+    background: $accent-bg;
+    color: $accent;
+    padding: 4px 12px;
+    border-radius: 20px;
+    border: 1px solid rgba($accent, 0.2);
+    font-family: 'Courier New', monospace;
+    letter-spacing: 0.5px;
+  }
+
+  .close-btn {
+    color: $text-muted;
+    &:hover { background: $surface; color: $text-dark; }
+  }
+}
+
+// ─── 3. Alert Banner ─────────────────────────────────────────
+.alert-banner {
+  display: flex;
+  align-items: center;
+  padding: 9px 20px;
+  gap: 10px;
+  font-size: 12.5px;
+  font-weight: 500;
+  flex-shrink: 0;
+
+  &.info {
+    background: $accent-bg;
+    color: $accent;
+    border-bottom: 1px solid rgba($accent, 0.15);
+  }
+}
+
+// ─── 4. Scrollable Content ────────────────────────────────────
+.dialog-content-scroll {
+  padding: 14px 20px !important;
+  margin: 0 !important;
+  max-height: 80vh;
+  position: relative;
+
+  &::-webkit-scrollbar { width: 5px; }
+  &::-webkit-scrollbar-track { background: transparent; }
+  &::-webkit-scrollbar-thumb { background: $border; border-radius: 10px; }
+}
+
+// Loading overlay
+.loading-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(255,255,255,0.75);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+  border-radius: $radius-lg;
+}
+
+// ─── 5. Form Cards ────────────────────────────────────────────
+.form-card {
+  background: $surface;
+  border: 1px solid $border;
+  border-radius: $radius-lg;
+  padding: 10px 14px;
+  margin-bottom: 10px;
+
+  // Suppress subscript space
+  ::ng-deep .mat-mdc-form-field-subscript-wrapper { display: none; }
+}
+
+// ─── 6. Doc-Info layout (mirrors Purchase — flexbox, not grid) ─
+.doc-main-layout {
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+}
+
+// 2×2 grid for form fields — flex:1 fills remaining space
+.doc-fields-grid {
+  flex: 1;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  min-width: 0;
+
+  .span-2 { grid-column: span 2; }
+}
+
+// Customer info panel — matches Purchase's vendor-info-panel exactly
+.vendor-info-panel {
+  flex: 0 0 240px;
+  min-height: 120px;
+  border: 1px solid $border;
+  border-radius: $radius-md;
+  overflow: hidden;
+  background: $surface;
+}
+
+.vendor-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 120px;
+  color: $text-muted;
+  opacity: 0.5;
+
+  p { font-size: 12px; margin: 6px 0 0; }
+}
+
+.vendor-card {
+  padding: 14px;
+
+  .vendor-card-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+  }
+
+  .vendor-avatar {
+    width: 38px;
+    height: 38px;
+    background: $accent-bg;
+    color: $accent;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+
+  .vendor-card-name {
+    font-size: 14px;
+    font-weight: 700;
+    color: $text-dark;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .vendor-card-status {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 11px;
+    color: $text-muted;
+    margin-top: 2px;
+
+    .status-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      &.active { background: $success; }
+    }
+  }
+
+  .vendor-card-details {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+
+    .vendor-detail-row {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      font-size: 12.5px;
+      color: $text-dark;
+
+      i-tabler { color: $text-muted; flex-shrink: 0; }
+      span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    }
+  }
+}
+
+// Suffix icons inside form fields
+.vendor-suffix {
+  display: flex;
+  align-items: center;
+
+  .text-success { color: $success; }
+}
+
+.field-suffix-icon {
+  width: 16px;
+  height: 16px;
+  color: $text-muted;
+}
+
+// Contact autocomplete option
+.contact-option {
+  display: flex;
+  flex-direction: column;
+
+  .contact-name { font-size: 14px; font-weight: 600; color: $text-dark; }
+  .contact-meta { font-size: 12px; color: $text-muted; }
+}
+
+// ─── 8. Items Section ─────────────────────────────────────────
+.items-section { margin-bottom: 10px; }
+
+.items-header-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+
+  .items-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    font-weight: 700;
+    color: $text-dark;
+
+    &::before {
+      content: '';
+      display: inline-block;
+      width: 3px;
+      height: 16px;
+      background: $accent;
+      border-radius: 2px;
+    }
+
+    .item-count-badge {
+      background: $accent-bg;
+      color: $accent;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: 20px;
+    }
+  }
+
+  .add-item-btn {
+    height: 34px;
+    padding: 0 14px;
+    font-size: 13px;
+    font-weight: 600;
+    border-radius: $radius-sm;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+}
+
+.table-wrapper {
+  border: 1px solid $border;
+  border-radius: $radius-md;
+  overflow: hidden;
+}
+
+.items-table {
+  width: 100%;
+  border-collapse: collapse;
+
+  thead tr {
+    background: $surface;
+    th {
+      padding: 8px 10px;
+      font-size: 11px;
+      font-weight: 700;
+      color: $text-muted;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      border-bottom: 1px solid $border;
+      white-space: nowrap;
+    }
+  }
+
+  tbody tr.item-row {
+    transition: background 0.15s;
+    &:hover { background: $accent-bg; }
+    &:not(:last-child) td { border-bottom: 1px solid $border; }
+
+    td {
+      padding: 6px 10px;
+      font-size: 13.5px;
+      color: $text-dark;
+      vertical-align: middle;
+    }
+  }
+
+  .col-num     { width: 44px; }
+  .col-product { }
+  .col-money   { width: 110px; }
+  .col-actions {
+    width: 80px;
+    white-space: nowrap;
+
+    .action-btns {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+  }
+
+  .item-name { font-weight: 600; }
+  .item-desc { font-size: 12px; color: $text-muted; margin-top: 2px; }
+  .discount-badge { font-size: 12px; font-weight: 600; color: $error; }
+  .amount-cell { font-weight: 700; }
+
+  .empty-state-cell {
+    padding: 20px 0 !important;
+    border-bottom: none !important;
+  }
+
+  .empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    color: $text-muted;
+    opacity: 0.6;
+
+    .empty-title { font-size: 13px; font-weight: 600; margin: 8px 0 2px; }
+    .empty-sub   { font-size: 11px; margin: 0; }
+  }
+}
+
+// ─── 9. Summary Area ──────────────────────────────────────────
+.summary-area {
+  display: flex;
+  gap: 14px;
+  margin-top: 4px;
+  align-items: flex-start;
+
+  .notes-col   { flex: 6; }
+  .summary-col { flex: 5; min-width: 240px; }
+}
+
+.notes-col ::ng-deep .mat-mdc-form-field-subscript-wrapper { display: none; }
+
+.summary-card {
+  background: $surface;
+  border: 1px solid $border;
+  border-radius: $radius-lg;
+  padding: 12px 16px;
+}
+
+.summary-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 5px 0;
+
+  &:not(:last-child) {
+    border-bottom: 1px solid $border;
+    margin-bottom: 4px;
+    padding-bottom: 8px;
+  }
+}
+
+.summary-label { font-size: 13px; color: $text-muted; }
+.summary-value { font-size: 13px; font-weight: 600; color: $text-dark; }
+
+.round-off-input {
+  border: 1px solid $border;
+  border-radius: $radius-sm;
+  padding: 4px 8px;
+  font-size: 13px;
+  font-weight: 600;
+  color: $text-dark;
+  width: 80px;
+  text-align: right;
+  outline: none;
+
+  &:focus {
+    border-color: $accent;
+    box-shadow: 0 0 0 2px rgba($accent, 0.1);
+  }
+}
+
+.total-row {
+  padding-top: 10px;
+  margin-top: 6px;
+  border-top: 2px solid $border !important;
+  border-bottom: none !important;
+}
+
+.total-label {
+  font-size: 14px;
+  font-weight: 700;
+  color: $text-dark;
+}
+
+.total-value {
+  font-size: 20px;
+  font-weight: 800;
+  color: $accent;
+  font-family: 'Courier New', monospace;
+  letter-spacing: -0.5px;
+}
+
+// ─── 10. Footer ───────────────────────────────────────────────
+.dialog-footer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+  padding: 12px 0 0;
+  margin-top: 8px;
+  border-top: 1px solid $border;
+  flex-shrink: 0;
+
+  .discard-btn {
+    font-weight: 600;
+    color: $text-muted;
+    border-radius: $radius-sm;
+  }
+
+  .save-btn {
+    border-radius: $radius-sm;
+    font-weight: 600;
+    height: 38px;
+    padding: 0 20px;
+
+    .btn-inner {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+  }
+}
+
+.white-spinner ::ng-deep circle { stroke: white !important; }

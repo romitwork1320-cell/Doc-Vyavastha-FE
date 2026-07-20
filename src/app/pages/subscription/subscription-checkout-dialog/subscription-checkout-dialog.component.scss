@@ -1,0 +1,34 @@
+.bg-light-primary { background-color: #ecf2ff; }
+.h-56 { height: 56px; }
+.w-100 { width: 100%; }
+.m-b-16 { margin-bottom: 16px; }
+.p-24 { padding: 24px; }
+.f-w-600 { font-weight: 600; }
+.text-primary { color: #635bff !important; }
+.checkout-container { max-width: 100%; overflow: hidden; }
+
+/* Wrapper to align items at the top so button matches input field */
+.promo-wrapper {
+    align-items: flex-start;
+}
+
+/* Force Button Height to match Material Outline Input (56px) */
+.apply-btn {
+    height: 56px !important;
+    min-width: 100px;
+    border-radius: 4px; /* Matches the input's boxy look */
+    font-weight: 600;
+    margin-top: 0px; /* Ensure no extra margin pushes it down */
+}
+
+/* Scrollable Container */
+.checkout-container {
+    max-height: 90vh;
+    overflow-y: auto;
+}
+
+.bg-light { background-color: #f8f9fa !important; }
+
+/* Text Utilities */
+.text-error { color: #fa896b !important; }
+.text-success { color: #13deb9 !important; }

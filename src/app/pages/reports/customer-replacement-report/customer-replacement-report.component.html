@@ -1,0 +1,42 @@
+<mat-card class="cardWithShadow common-card">
+<mat-card-content class="table-card-content common-content">
+    @if (isLoading && !reportData.length) {
+      <div class="loading-spinner">
+        <mat-spinner diameter="50"></mat-spinner>
+        <p>Loading report...</p>
+      </div>
+    } @else {
+      <div class="table-container" (scroll)="onScroll($event)">
+        <table mat-table [dataSource]="dataSource" class="w-100" matSort>
+          
+          <ng-container matColumnDef="#">
+            <th mat-header-cell *matHeaderCellDef class=" f-w-600">#</th>
+            <td mat-cell *matCellDef="let element; let i = index;">{{ i + 1 }}</td>
+          </ng-container>
+          <ng-container matColumnDef="name">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header="Name" class=" f-w-600">Customer Name</th>
+            <td mat-cell *matCellDef="let element">
+              <p class=" m-0">{{ element.name }}</p> </td>
+          </ng-container>
+          <ng-container matColumnDef="contactNo">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header="ContactNo" class=" f-w-600">Contact No</th>
+            <td mat-cell *matCellDef="let element" class="">{{ element.contactNo }}</td>
+          </ng-container>
+          <ng-container matColumnDef="replacementVolume">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header="ReplacementVolume" class=" f-w-600">Replacement Volume</th>
+            <td mat-cell *matCellDef="let element" class="">{{ element.replacementVolume }}</td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns;" (click)="openDetailsDialog(row)" class="cursor-pointer"></tr>
+
+          </table>
+        @if (isLoading) {
+          <div class="text-center p-24">
+            <mat-spinner diameter="30"></mat-spinner>
+          </div>
+        }
+      </div>
+    }
+  </mat-card-content>
+</mat-card>

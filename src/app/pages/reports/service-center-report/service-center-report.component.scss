@@ -1,0 +1,391 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  height: 100%;
+  min-height: 0;
+  overflow: hidden;
+}
+
+/* 2. Card Content: Flex column to stack Filter Row and Tabs */
+mat-card-content.common-content {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  height: 100%; /* Fill the card */
+  overflow: hidden; /* No scroll here */
+  padding: 0;
+}
+
+/* 3. Filter Row: Static height */
+.filter-row {
+  flex: 0 0 auto; /* Do not grow or shrink */
+  padding: 12px 24px 0 12px;
+  background: #fff;
+  z-index: 5;
+}
+
+/* 4. Tab Group: Fill the remaining space (Card Height - Filter Height) */
+mat-tab-group {
+  flex: 1 1 auto; /* Grow to fill space */
+  display: flex;
+  flex-direction: column;
+  min-height: 0; /* Allow shrinking */
+  overflow: hidden;
+}
+
+/* --- MATERIAL INTERNAL OVERRIDES --- */
+
+/* Wrapper (Header + Body) fills the Group */
+::ng-deep .mat-mdc-tab-body-wrapper {
+  flex: 1 1 100%;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  overflow: hidden;
+}
+
+/* Body fills the Wrapper */
+::ng-deep .mat-mdc-tab-body {
+  flex: 1 1 100%;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  overflow: hidden;
+}
+
+/* Content fills the Body */
+::ng-deep .mat-mdc-tab-body-content {
+  /* We use 100% here because the direct child is our .table-container */
+  height: 100%; 
+  overflow: hidden !important; /* Disable Material's default scroll */
+  display: flex;
+  flex-direction: column;
+}
+
+/* 5. Table Container: The Scroll Master */
+.table-container {
+  /* This ensures it fills the tab body exactly */
+  flex: 1 1 auto; 
+  height: 100%;
+  
+  /* This puts the scrollbar on the TABLE, not the page */
+  overflow-y: auto;
+  overflow-x: auto;
+  
+  min-height: 0;
+  display: block;
+}
+
+/* --- OTHER STYLES (Keep as is) --- */
+
+.loading-spinner {
+   flex-grow: 1;
+   display: flex;
+   flex-direction: column;
+   justify-content: center;
+   align-items: center;
+   min-height: 300px;
+}
+
+.loading-shade {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(255, 255, 255, 0.7);
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+}
+
+.mat-sort-header-container {
+  display: flex !important;
+  align-items: center;
+}
+
+.mat-column-select {
+  flex: 0 0 40px;
+  max-width: 40px;
+  padding-right: 0 !important;
+  padding-left: 10px !important;
+}
+
+.button-content {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.mat-mdc-table .mat-mdc-header-cell {
+  white-space: nowrap;
+}
+
+.truncate-text {
+  max-width: 200px; 
+  display: block;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.inline-spinner-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 10px;
+}
+
+.status-badge {
+  padding: 4px 6px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  display: inline-block;
+  line-height: 1.2;
+  white-space: nowrap;
+  text-align: center;
+  min-width: 70px;
+  
+  /* Base styles for outline look */
+  background-color: #ffffff; /* White background */
+  border: 1px solid transparent; /* Setup border */
+
+  /* --- Status Specific Colors (Border & Text only) --- */
+  
+  /* Pending - Orange/Yellow */
+  &.pending {
+    color: #f8c20a;
+    border-color: #f8c20a;
+  }
+
+  /* In Progress - Purple */
+  &.in-progress {
+    color: #7367f0;
+    border-color: #7367f0;
+  }
+
+  /* Ready - Cyan/Blue */
+  &.ready {
+    color: #16cdc7;
+    border-color: #16cdc7;
+  }
+
+  /* Completed - Green */
+  &.completed {
+    color: #36c76c;
+    border-color: #36c76c;
+  }
+
+  /* --- Product Status Colors --- */
+  
+  /* Repair - Cyan */
+  &.repair {
+    color: #00cfe8;
+    border-color: #00cfe8;
+  }
+
+  /* Replace - Purple */
+  &.replace {
+    color: #635bff;
+    border-color: #635bff;
+  }
+
+  /* Not Accepted - Red */
+  &.not-accepted {
+    color: #ea5455;
+    border-color: #ea5455;
+  }
+}
+
+.mat-mdc-table .mat-mdc-cell {
+  vertical-align: center;
+}
+
+/* --- Utilities --- */
+.gap-8 { gap: 8px; }
+.mt-1 { margin-top: 4px; }
+
+/* --- VIEW TOGGLES --- */
+.mobile-only { display: none !important; }
+.desktop-only { display: block; }
+
+/* ... (Keep all your existing desktop styles above this line) ... */
+
+
+/* ============================================================
+   MOBILE & TABLET VIEW TRANSFORMATION (Max-width: 960px)
+   ============================================================ */
+@media (max-width: 960px) {
+
+  /* 1. VIEW TOGGLES */
+  .mobile-only { display: flex !important; flex-direction: column; }
+  .desktop-only { display: none !important; }
+  
+  /* 2. HEADER: Hide Table Header */
+  .mat-mdc-table .mat-mdc-header-row {
+    display: none !important;
+  }
+
+  /* 3. FIX: STATUS TABS & DATE FILTER LAYOUT */
+  /* This stacks the tabs and date picker vertically on mobile */
+  .filter-row {
+    flex-direction: column !important;
+    align-items: stretch !important;
+    height: auto !important; 
+    padding: 0 !important;
+    background: #fff;
+    border-bottom: 1px solid #eee;
+  }
+
+  /* Force the Date Picker container to full width */
+  .filter-row > div {
+    width: 100% !important; 
+    padding: 10px 16px; 
+    box-sizing: border-box;
+  }
+
+  /* Ensure Tabs take full width and scroll horizontally */
+  mat-tab-group {
+    width: 100%;
+    max-width: 100vw;
+  }
+  
+  /* Adjust Tab Header to scroll nicely */
+  ::ng-deep .mat-mdc-tab-header {
+    width: 100%;
+    overflow-x: auto; /* Enable horizontal scrolling */
+  }
+
+  /* 4. ROW LAYOUT */
+  .mat-mdc-table .mat-mdc-row {
+    display: flex !important;
+    flex-direction: row;
+    align-items: center; 
+    padding: 12px 12px; /* Slightly reduced padding to fit checkbox */
+    border-bottom: 1px solid #eeeeee;
+    background: #ffffff;
+    min-height: 72px; 
+    max-width: 100%;
+    
+    position: relative;
+    overflow: hidden;
+  }
+  
+  /* Selected State */
+  .mat-mdc-table .mat-mdc-row:active,
+  .mat-mdc-table .mat-mdc-row:focus {
+    background-color: #f5f5f5 !important;
+  }
+
+  /* 5. FIX: CHECKBOX COLUMN ALIGNMENT */
+  .mat-mdc-table .mat-mdc-cell.mobile-select-col {
+    flex: 0 0 40px !important; /* Fixed width */
+    width: 40px !important;
+    padding: 0 !important;
+    border-bottom: none;
+    
+    /* Center the checkbox perfectly */
+    display: flex !important;
+    align-items: center !important;
+    justify-content: flex-start !important; 
+  }
+
+  /* 6. HIDE COLUMNS */
+  .mobile-hide {
+    display: none !important;
+  }
+
+  /* 7. MAIN LEFT COLUMN (Content) */
+  .mat-mdc-table .mat-mdc-cell.mobile-main-col {
+    flex: 1; 
+    width: 0; 
+    min-width: 0;
+    padding: 0 8px; /* Add small padding between checkbox and text */
+    border-bottom: none;
+    text-align: left;
+    
+    /* Center vertically */
+    display: flex;
+    flex-direction: column;
+    justify-content: center; 
+    
+    .mobile-stack {
+      flex-direction: column;
+      align-items: flex-start;
+      width: 100%;
+      max-width: 100%;
+      overflow: hidden;
+      
+      .truncate-text {
+         width: 100%;
+         white-space: nowrap;
+         overflow: hidden;
+         text-overflow: ellipsis;
+         display: block;
+      }
+    }
+  }
+
+  /* 8. MAIN RIGHT COLUMN (Status/Date) */
+  .mat-mdc-table .mat-mdc-cell.mobile-right-col {
+    flex: 0 0 auto;
+    width: auto;
+    padding: 0;
+    border-bottom: none;
+    text-align: right;
+    
+    display: flex !important;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-end;
+  }
+
+  /* --- SWIPE DRAWER --- */
+  .mat-mdc-table .mat-mdc-cell.mobile-action-drawer {
+    display: flex !important;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    right: 0;
+    width: 80px; 
+    
+    background-color: #f1f1f1;
+    border-left: 1px solid #ddd;
+    z-index: 10;
+    padding: 0;
+    
+    transform: translateX(100%);
+    transition: transform 0.2s ease-out;
+    
+    .mobile-drawer-content {
+       display: flex !important;
+       width: 100%;
+       height: 100%;
+       align-items: center;
+       justify-content: center;
+    }
+  }
+
+  .mobile-swipe-active .mobile-action-drawer {
+    transform: translateX(0);
+    box-shadow: -4px 0 8px rgba(0,0,0,0.1);
+  }
+
+  .mobile-action-btn {
+    background: #fff;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    
+    &.primary { color: #635bff; }
+  }
+}

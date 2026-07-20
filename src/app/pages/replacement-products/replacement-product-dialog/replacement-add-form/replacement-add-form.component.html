@@ -1,0 +1,231 @@
+<form [formGroup]="parentForm">
+  
+  <div class="customer-card m-b-24">
+    <div class="edit-form-row">
+      
+      <div class="edit-form-col border-end p-r-24">
+        <h4 class="f-s-15 f-w-700 text-dark m-b-16 d-flex align-items-center gap-8">
+          <i-tabler name="user" class="icon-20 text-primary"></i-tabler> Customer Details
+        </h4>
+        
+        <mat-form-field class="w-100" appearance="outline" subscriptSizing="dynamic">
+          <mat-label>Contact Name</mat-label>
+          <input matInput type="text" placeholder="Search or add contact" formControlName="contactSearchControl" [matAutocomplete]="autoContact" required />
+          
+          <mat-autocomplete #autoContact="matAutocomplete" [displayWith]="displayContactName">
+            <ng-container *ngFor="let contact of filteredContacts | async; trackBy: trackById">
+              <mat-option *ngIf="contact.id === -1" [value]="contact" class="add-new-option">
+                <i-tabler name="user-plus" class="icon-18 m-r-8"></i-tabler>
+                <span>{{ contact.name }}</span>
+              </mat-option>
+              <mat-option *ngIf="contact.id !== -1" [value]="contact">
+                <div class="d-flex flex-column">
+                   <span class="f-w-500">{{ contact.name }}</span>
+                   <span class="f-s-12 text-muted">{{ contact.contactNo }}</span>
+                </div>
+              </mat-option>
+            </ng-container>
+          </mat-autocomplete>
+
+          <div matSuffix class="d-flex align-items-center justify-content-center p-r-8">
+             <i-tabler name="search" class="icon-18 text-muted"></i-tabler>
+          </div>
+          <mat-error *ngIf="parentForm.get('contactSearchControl')?.invalid && parentForm.get('contactSearchControl')?.touched">
+            Required
+          </mat-error>
+        </mat-form-field>
+      </div>
+
+      <div class="edit-form-col p-l-24">
+        <h4 class="f-s-15 f-w-700 text-dark m-b-16 d-flex align-items-center gap-8">
+          <i-tabler name="address-book" class="icon-20 text-primary"></i-tabler> Contact Information
+        </h4>
+        
+        <div class="form-grid-2-col">
+          <mat-form-field class="w-100" appearance="outline" subscriptSizing="dynamic">
+            <mat-label>WhatsApp Number</mat-label>
+            <input matInput type="text" formControlName="contactNumberControl" placeholder="WhatsApp Number" class="font-mono" />
+            <div matSuffix class="d-flex align-items-center justify-content-center p-r-8">
+               <i-tabler name="brand-whatsapp" class="icon-18 text-muted"></i-tabler> 
+            </div>
+          </mat-form-field>
+
+          <mat-form-field class="w-100" appearance="outline" subscriptSizing="dynamic">
+            <mat-label>Contact Number</mat-label>
+            <input matInput type="text" formControlName="whatsAppNumberControl" placeholder="Contact Number" class="font-mono" />
+            <div matSuffix class="d-flex align-items-center justify-content-center p-r-8">
+               <i-tabler name="phone" class="icon-18 text-muted"></i-tabler>
+            </div>
+          </mat-form-field>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="replacement-products" formArrayName="replacedItems">
+    @for (itemGroup of replacedItems.controls; track itemGroup.get('_uniqueId')!.value; let i = $index) {
+      
+      <div [formGroupName]="i" class="product-card" [class.collapsed-card]="asReplacedItemFormGroup(itemGroup).isCollapsed">
+        
+        <div class="product-header" (click)="toggleCollapse(itemGroup)">
+          <div class="header-content flex-grow-1 d-flex align-items-center" style="overflow: hidden;">
+            <h3 class="m-0 f-s-14 f-w-600 white-space-nowrap">Product #{{ i + 1 }}</h3>
+            
+            @if (asReplacedItemFormGroup(itemGroup).isCollapsed) {
+              <div class="d-flex align-items-center text-muted f-s-13 m-l-16 truncate-cell-content">
+                 <span class="f-w-600 text-dark m-r-8">
+                   {{ getProductNameForHeader(itemGroup) }}
+                 </span>
+                 @if (itemGroup.get('serialNoControl')?.value) {
+                   <span class="font-mono bg-light-subtle p-l-4 p-r-4 rounded border">
+                     S/N: {{ displaySerialNumber(itemGroup.get('serialNoControl')?.value) || itemGroup.get('serialNoControl')?.value }}
+                   </span>
+                 }
+              </div>
+            }
+          </div>
+
+          <div class="d-flex align-items-center gap-8">
+             @if (itemGroup.get('isUnderWarrantyControl')?.value === false) {
+                <div class="warranty-warning header-warning m-r-8">
+                  <i-tabler name="alert-triangle" class="icon-18 text-warn"></i-tabler>
+                  <span class="f-s-12">Expired</span>
+                </div>
+             }
+
+             <button mat-icon-button color="primary" type="button" class="small-icon-btn action-btn"
+                     (click)="$event.stopPropagation(); requestDuplicateItem.emit(i)"
+                     matTooltip="Duplicate this item">
+                <i-tabler name="copy" class="icon-20 text-primary"></i-tabler>
+             </button>
+
+             <button mat-icon-button type="button" class="toggle-icon-button action-btn" (click)="$event.stopPropagation(); toggleCollapse(itemGroup)">
+                <i-tabler [name]="asReplacedItemFormGroup(itemGroup).isCollapsed ? 'chevron-down' : 'chevron-up'" class="icon-20 text-muted"></i-tabler>
+             </button>
+             
+             @if (replacedItems.length > 1) {
+               <button mat-icon-button color="warn" type="button" class="small-icon-btn action-btn" (click)="$event.stopPropagation(); requestRemoveItem.emit(i)">
+                 <i-tabler name="trash" class="icon-20 text-warn"></i-tabler>
+               </button>
+             }
+          </div>
+        </div>
+
+        @if (!asReplacedItemFormGroup(itemGroup).isCollapsed) {
+          <div class="form-content">
+            <div class="edit-form-row">
+                
+                <div class="edit-form-col border-end p-r-24">
+                   <h4 class="f-s-15 f-w-700 text-dark m-b-16">Product Information</h4>
+                   
+                   <div class="form-grid-2-col">
+                      <mat-form-field appearance="outline" class="w-100 span-2-col" subscriptSizing="dynamic">
+                        <mat-label>Product Name</mat-label>
+                        <input matInput type="text" placeholder="Search product" formControlName="productControl" [matAutocomplete]="productAuto" required />
+                        <mat-autocomplete #productAuto="matAutocomplete" [displayWith]="displayProductName">
+                          <ng-container *ngFor="let product of (asReplacedItemFormGroup(itemGroup).filteredProducts | async); trackBy: trackById">
+                            <mat-option *ngIf="product.id === -1" [value]="product" class="add-new-option">
+                              <i-tabler name="file-import" class="icon-18 m-r-8"></i-tabler><span>{{ product.name }}</span>
+                            </mat-option>
+                            <mat-option *ngIf="product.id !== -1" [value]="product">{{ product.name }}</mat-option>
+                          </ng-container>
+                        </mat-autocomplete>
+                        <mat-error *ngIf="itemGroup.get('productControl')?.invalid">Required</mat-error>
+                      </mat-form-field>
+
+                      <mat-form-field appearance="outline" class="w-100 span-2-col" subscriptSizing="dynamic">
+                        <mat-label>Serial No</mat-label>
+                        <input matInput type="text" placeholder="Search serial" formControlName="serialNoControl" [matAutocomplete]="serialAuto" required class="font-mono" />
+                        <mat-autocomplete #serialAuto="matAutocomplete" [displayWith]="displaySerialNumber">
+                          <mat-option *ngFor="let serialItem of (asReplacedItemFormGroup(itemGroup).filteredSerialNumbers | async)" [value]="serialItem">
+                            {{ serialItem.serialNo }}
+                          </mat-option>
+                        </mat-autocomplete>
+                        <mat-error *ngIf="itemGroup.get('serialNoControl')?.invalid">Required</mat-error>
+                      </mat-form-field>
+
+                      <mat-form-field appearance="outline" class="w-100 span-2-col" subscriptSizing="dynamic">
+                        <mat-label>Service Center</mat-label>
+                        <input matInput type="text" placeholder="Search center" formControlName="serviceCenterSearchControl" [matAutocomplete]="scAuto" required />
+                        <mat-autocomplete #scAuto="matAutocomplete" [displayWith]="displayServiceCenterName">
+                          <ng-container *ngFor="let center of (asReplacedItemFormGroup(itemGroup).filteredServiceCenters | async); trackBy: trackById">
+                            <mat-option *ngIf="center.id === -1" [value]="center" class="add-new-option">
+                              <i-tabler name="file-import" class="icon-18 m-r-8"></i-tabler><span>{{ center.name }}</span>
+                            </mat-option>
+                            <mat-option *ngIf="center.id !== -1" [value]="center">{{ center.name }}</mat-option>
+                          </ng-container>
+                        </mat-autocomplete>
+                        <mat-error *ngIf="itemGroup.get('serviceCenterSearchControl')?.invalid">Required</mat-error>
+                      </mat-form-field>
+                   </div>
+                </div>
+
+                <div class="edit-form-col p-l-24">
+                   <h4 class="f-s-15 f-w-700 text-dark m-b-16">Invoice & Warranty</h4>
+                   
+                   <div class="form-grid-2-col">
+                      <mat-form-field appearance="outline" class="w-100" subscriptSizing="dynamic">
+                        <mat-label>Invoice No</mat-label>
+                        <input matInput type="text" formControlName="invoiceNoControl" required class="font-mono" />
+                        <mat-error *ngIf="itemGroup.get('invoiceNoControl')?.invalid">Required</mat-error>
+                      </mat-form-field>
+
+                      <mat-form-field appearance="outline" class="w-100" subscriptSizing="dynamic">
+                        <mat-label>Invoice Date</mat-label>
+                        <input matInput [matDatepicker]="picker" formControlName="invoiceDateControl" required />
+                        <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                        <mat-datepicker #picker></mat-datepicker>
+                        <mat-error *ngIf="itemGroup.get('invoiceDateControl')?.invalid">Required</mat-error>
+                      </mat-form-field>
+
+                      <div class="span-2-col">
+                         @if(asReplacedItemFormGroup(itemGroup).isManualEntry) {
+                            <div class="warranty-combined-row">
+                               <mat-form-field appearance="outline" class="duration-field" subscriptSizing="dynamic">
+                                  <mat-label>Duration</mat-label>
+                                  <input matInput type="number" formControlName="manualWarrantyDurationControl" placeholder="0" min="0" />
+                               </mat-form-field>
+                               
+                               <div class="unit-toggle-container">
+                                  <mat-button-toggle-group formControlName="manualWarrantyUnitControl" class="warranty-toggle-group">
+                                     <mat-button-toggle value="Months">Months</mat-button-toggle>
+                                     <mat-button-toggle value="Years">Years</mat-button-toggle>
+                                  </mat-button-toggle-group>
+                               </div>
+
+                               <mat-form-field appearance="outline" class="end-date-field" subscriptSizing="dynamic">
+                                  <mat-label>Calc. End Date</mat-label>
+                                  <input matInput [value]="datePipe.transform(itemGroup.get('calculatedWarrantyEndDateControl')?.value, 'dd-MM-yyyy')" readonly class="readonly-input font-mono" />
+                                  <div matSuffix class="d-flex align-items-center justify-content-center p-r-8">
+                                     <i-tabler name="history" class="icon-18 text-muted"></i-tabler>
+                                  </div>
+                               </mat-form-field>
+                            </div>
+                         } @else {
+                            <mat-form-field appearance="outline" class="w-100" subscriptSizing="dynamic">
+                               <mat-label>Warranty Details</mat-label>
+                               <input matInput formControlName="warrantyDisplayControl" readonly class="readonly-input" />
+                               <div matSuffix class="d-flex align-items-center justify-content-center p-r-8">
+                                  <i-tabler name="file-text" class="icon-18 text-muted"></i-tabler>
+                               </div>
+                            </mat-form-field>
+                         }
+                      </div>
+                   </div>
+                </div>
+
+            </div>
+          </div>
+        }
+      </div>
+    }
+  </div>
+
+  <div class="d-flex justify-content-start mb-3 m-t-20">
+    <button mat-button type="button" class="btn-dashed" (click)="requestAddItem.emit()">
+      <i-tabler name="file-import" class="icon-18"></i-tabler> 
+      <span>Add Another Product</span>
+    </button>
+  </div>
+</form>

@@ -1,0 +1,26 @@
+<router-outlet></router-outlet>
+
+@if ((isLoggedIn$ | async) && (fabClickService.fabConfig$ | async); as config) {
+  <button 
+    mat-fab 
+    color="primary" 
+    class="global-floating-add-button"
+    [matMenuTriggerFor]="config.menu ? fabMenu : null"
+    (click)="!config.menu ? fabClickService.notifyFabClick() : null">
+    
+    <mat-icon>{{ config.icon }}</mat-icon>
+  </button>
+
+  <mat-menu #fabMenu="matMenu">
+    @if (config.menu) {
+      @for (item of config.menu; track item.id) {
+        <button mat-menu-item (click)="fabClickService.notifyMenuItemClick(item)">
+          <mat-icon>
+            <i-tabler [name]="item.icon" class="icon-20"></i-tabler>
+          </mat-icon>
+          <span>{{ item.name }}</span>
+        </button>
+      }
+    }
+  </mat-menu>
+}

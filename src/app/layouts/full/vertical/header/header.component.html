@@ -1,0 +1,320 @@
+<mat-toolbar class="topbar">
+  @if(!showToggle) {
+  <!-- Mobile / Tablet toggle -->
+  <button mat-mini-fab color="inherit" (click)="toggleMobileNav.emit()" class="d-flex justify-content-center">
+    <i-tabler name="menu-2" class="icon-20 d-flex"></i-tabler>
+  </button>
+  } @else {
+  <!-- Desktop toggle -->
+  <button mat-mini-fab color="inherit" (click)="toggleCollapsed.emit()" class="d-flex justify-content-center">
+    <i-tabler name="menu-2" class="icon-20 d-flex"></i-tabler>
+  </button>
+  }
+
+  <h3 class="page-title">
+    {{ pageTitleService.pageTitle$ | async }}
+  </h3>
+
+  <span class="flex-1-auto"></span>
+
+  <div class="d-none d-lg-flex"></div>
+
+  <div class="header-actions-wrapper">
+  @if (!isSubscriptionActive || daysRemaining <= 2) {
+    <a mat-flat-button color="warn" routerLink="/subscription" class="buy-now-btn blinking-btn"
+       matTooltip="Your plan is expired. Click to Renew.">
+       <div class="d-flex align-items-center gap-8">
+          <i-tabler name="alert-triangle" class="icon-18"></i-tabler>
+          <span class="f-w-700">BUY NOW</span>
+       </div>
+    </a>
+  }
+
+  <div class="desktop-actions">
+    @if(globalImportExportService.currentState$ | async; as actions) {
+      @if(actions.trash) {
+        <button mat-mini-fab color="warn" class="header-action-btn d-flex justify-content-center"
+          (click)="globalImportExportService.notifyTrashClick()" matTooltip="Recycle Bin">
+          <i-tabler name="recycle" class="icon-20 d-flex"></i-tabler>
+        </button>
+      }
+      
+      @if(actions.import) {
+      <button mat-mini-fab color="inherit" class="header-action-btn d-flex justify-content-center"
+        (click)="globalImportExportService.notifyImportClick()" matTooltip="Import Data">
+        <i-tabler name="file-import" class="icon-20 d-flex"></i-tabler>
+      </button>
+      }
+
+      @if(actions.export) {
+        @if(globalImportExportService.exportState$ | async; as exportState) {
+        <button mat-mini-fab color="inherit" class="header-action-btn d-flex justify-content-center"
+          [disabled]="exportState.isExporting" (click)="globalImportExportService.notifyExportClick()"
+          matTooltip="Export as Excel">
+          @if (!exportState.isExporting) {
+            <i-tabler name="file-spreadsheet" class="icon-20 d-flex"></i-tabler>
+          } @else {
+            <mat-progress-spinner [diameter]="20" mode="determinate" [value]="exportState.progress"></mat-progress-spinner>
+          }
+        </button>
+        } 
+      }
+
+      @if (actions.customAction; as customAction) {
+        <button mat-flat-button color="primary" class="header-custom-action-btn"
+          [disabled]="customAction.disabled" (click)="globalImportExportService.notifyCustomActionClick()">
+          <div class="d-flex align-items-center">
+            <i-tabler [name]="customAction.icon" class="icon-20 m-r-8"></i-tabler>
+            <span>{{ customAction.text }}</span>
+          </div>
+        </button>
+      }
+    } 
+  </div>
+
+  @if(globalImportExportService.currentState$ | async; as actions) {
+    @if(actions.trash || actions.import || actions.export || actions.customAction) {
+      <button mat-mini-fab color="inherit" class="header-action-btn mobile-more-btn d-flex justify-content-center" 
+              [matMenuTriggerFor]="mobileActionMenu" aria-label="More Options">
+        <i-tabler name="dots-vertical" class="icon-20 d-flex"></i-tabler>
+      </button>
+      
+      <mat-menu #mobileActionMenu="matMenu" class="cardWithShadow">
+        @if(actions.trash) {
+          <button mat-menu-item (click)="globalImportExportService.notifyTrashClick()">
+            <i-tabler name="recycle" class="icon-18 m-r-8 text-error"></i-tabler><span>Recycle Bin</span>
+          </button>
+        }
+        @if(actions.import) {
+          <button mat-menu-item (click)="globalImportExportService.notifyImportClick()">
+            <i-tabler name="file-import" class="icon-18 m-r-8"></i-tabler><span>Import Data</span>
+          </button>
+        }
+        @if(actions.export) {
+          <button mat-menu-item (click)="globalImportExportService.notifyExportClick()">
+            <i-tabler name="file-spreadsheet" class="icon-18 m-r-8"></i-tabler><span>Export as Excel</span>
+          </button>
+        }
+        @if (actions.customAction; as customAction) {
+          <button mat-menu-item [disabled]="customAction.disabled" (click)="globalImportExportService.notifyCustomActionClick()">
+            <i-tabler [name]="customAction.icon" class="icon-18 m-r-8 text-primary"></i-tabler><span>{{ customAction.text }}</span>
+          </button>
+        }
+      </mat-menu>
+    }
+  }
+
+  @if(globalFilterService.filterMenu$ | async; as filterMenu) {
+      <button mat-mini-fab [color]="(globalFilterService.isFilterActive$ | async) ? 'primary' : 'inherit'"
+        class="header-action-btn d-flex justify-content-center" [matMenuTriggerFor]="filterMenu"
+        matTooltip="Filter Results">
+        <i-tabler [name]="(globalFilterService.isFilterActive$ | async) ? 'filter-filled' : 'filter'" class="icon-20 d-flex">
+        </i-tabler>
+      </button>
+  }
+
+  @if (branches.length > 1) {
+    <div class="branch-switcher m-r-16 d-flex align-items-center">
+      <i-tabler name="building" class="icon-20 text-muted m-r-8"></i-tabler>
+      <mat-form-field appearance="outline" class="hide-hint branch-select m-0 p-0" subscriptSizing="dynamic">
+        <mat-select [(value)]="activeBranchId" (selectionChange)="onBranchChange($event.value)">
+          <mat-option *ngFor="let branch of branches" [value]="branch.id">
+            {{ branch.name }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+  }
+
+  <button mat-mini-fab color="inherit" class="header-action-btn notification-btn d-flex justify-content-center" 
+          [matMenuTriggerFor]="notificationMenu" matTooltip="Notifications">
+    <i-tabler name="bell" class="icon-20 d-flex" 
+              [matBadge]="unreadCount" matBadgeColor="warn" 
+              [matBadgeHidden]="unreadCount === 0"></i-tabler>
+  </button>
+</div>
+  
+  <mat-menu #notificationMenu="matMenu" class="topbar-dd cardWithShadow modern-notification-menu" xPosition="before">
+    <div class="notification-header">
+      <h6 class="m-0 f-s-16 f-w-600 text-dark">Notifications</h6>
+      @if(unreadCount > 0) {
+        <span class="badge-pill bg-light-primary text-primary">{{ unreadCount }} new</span>
+      }
+    </div>
+
+    <div class="notification-list custom-scrollbar">
+      @if (unreadNotifications.length === 0) {
+        <div class="empty-state">
+          <div class="empty-icon-bg shadow-sm">
+            <i-tabler name="bell" class="icon-32"></i-tabler>
+          </div>
+          <h6 class="m-0 f-w-600 text-dark f-s-15">All caught up!</h6>
+          <span class="text-muted f-s-13 m-t-4">You have no new notifications.</span>
+        </div>
+      } @else {
+        @for (notif of unreadNotifications; track notif.id) {
+          <button mat-menu-item class="notification-item" (click)="onNotificationClick(notif, $event)">
+            <div class="d-flex align-items-start gap-16">
+              
+              <div class="notification-icon bg-light-primary text-primary">
+                <i-tabler [name]="notif.title.includes('Ticket') ? 'ticket' : 'message-dots'" 
+                          class="icon-20 d-flex">
+                </i-tabler>
+              </div>
+              <div class="notification-content">
+                <div class="d-flex justify-content-between align-items-start m-b-4">
+                  <h6 class="m-0 f-s-14 f-w-600 text-dark lh-sm p-r-8">{{ notif.title }}</h6>
+                  <span class="text-muted f-s-11 whitespace-nowrap">{{ notif.createdAt | date:'shortTime' }}</span>
+                </div>
+                <span class="notification-message text-muted f-s-13">{{ notif.message }}</span>
+              </div>
+            </div>
+          </button>
+        }
+      }
+    </div>
+  </mat-menu>
+
+  @if(globalSearchService.showSearch$ | async) {
+  <div class="search-wrapper" [class.search-open]="isSearchOpen">
+    
+    <button mat-mini-fab color="inherit" class="header-action-btn mobile-search-trigger d-flex justify-content-center" 
+      (click)="searchInput.focus()" aria-label="Open Search">
+      <i-tabler name="search" class="icon-20 d-flex"></i-tabler>
+    </button>
+
+    <mat-form-field appearance="outline" class="global-search-field hide-hint">
+      
+      <i-tabler name="search" class="icon-20 d-flex search-icon" matPrefix></i-tabler>
+
+      <input 
+        #searchInput 
+        matInput 
+        [placeholder]="(globalSearchService.placeholder$ | async) ?? 'Search...'"
+        [formControl]="searchControl" 
+        (focus)="onSearchFocus()" 
+        (blur)="onSearchBlur()" 
+        aria-label="Global Search"
+        [matAutocomplete]="auto"
+      />
+
+      <mat-progress-spinner 
+        *ngIf="isSearchLoading" 
+        matSuffix 
+        mode="indeterminate" 
+        diameter="20"
+        class="m-r-8">
+      </mat-progress-spinner>
+
+      <div class="search-shortcut" matSuffix *ngIf="!isSearchOpen && !searchControl.value">R</div>
+
+      <button 
+          mat-icon-button 
+          matSuffix 
+          *ngIf="(isSearchOpen || searchControl.value) && !isSearchLoading" 
+          class="search-closer"
+          (mousedown)="clearSearch($event)" 
+          (touchstart)="clearSearch($event)" 
+          aria-label="Close Search">
+          <i-tabler name="circle-x" class="icon-20 d-flex"></i-tabler>
+      </button>
+
+      <mat-autocomplete #auto="matAutocomplete" 
+                        (optionSelected)="onOptionSelected($event)" 
+                        [displayWith]="displayFn" 
+                        class="global-search-panel custom-scrollbar" 
+                        panelWidth="400px">
+
+        @for (group of searchGroups; track group.category) {
+          <mat-optgroup [label]="group.category">
+            @for (item of group.items; track item.id) {
+              <mat-option [value]="item" class="search-result-item">
+                <div class="result-content">
+                  <div class="result-row-top">
+                      <span class="product-name" 
+                            [class.full-width]="item.category === 'Product' || item.category === 'ServiceCenter'"
+                            [matTooltip]="item.productName + (item.centerName ? ' | ' + item.centerName : '')">
+                        @if(item.category === 'Contact') { {{ item.contactName }} } @else { {{ item.productName }} }
+                      </span>
+                      @if(item.category === 'Replacement') {
+                        <span class="status-badge-small {{ (item.status || '').toLowerCase().split(' ').join('') }}">
+                          {{ item.status }}
+                        </span>
+                      }
+                  </div>
+                  <div class="result-row-bottom">
+                      <div class="customer-info" 
+                           [matTooltip]="item.category === 'Contact' ? 'Phone: ' + (item.whatsAppNo || '-') : (item.category === 'Replacement' ? 'Inv: ' + (item.invoiceNo || '-') : '')">
+                        <span class="name-text">
+                          @if(item.category === 'Contact') { {{ item.whatsAppNo }} } 
+                          @else if(item.category === 'Replacement') { {{ item.contactName }} }
+                        </span>
+                        <span *ngIf="item.category === 'Replacement' && item.invoiceNo" class="invoice-text text-muted">
+                          ({{item.invoiceNo}})
+                        </span>
+                      </div>
+                      @if(item.category === 'Replacement') {
+                        <span class="serial-no" 
+                              [matTooltip]="'Old: ' + item.serialNo + (item.newSerialNo ? ' | New: ' + item.newSerialNo : '')">
+                          S/N: {{ item.serialNo }}{{ item.newSerialNo ? ' / ' + item.newSerialNo : '' }}
+                        </span>
+                      }
+                  </div>
+                </div>
+              </mat-option>
+            }
+          </mat-optgroup>
+        }
+        @if (!isSearchLoading && searchGroups.length === 0 && (searchControl.value || '').length >= 3) {
+          <mat-option disabled class="no-records-option">No records found</mat-option>
+        }
+      </mat-autocomplete>
+    </mat-form-field>
+  </div>
+  }
+
+  <button mat-fab extended color="inherit" [matMenuTriggerFor]="profilemenu" aria-label="Notifications" class="d-flex justify-content-center profile-btn-dd">
+    <div class="d-flex align-items-center gap-4">
+      <div class="user-initials-avatar icon-35 rounded-circle">
+        {{ userName.charAt(0) | uppercase }}
+      </div>
+      <i-tabler name="chevron-down" class="icon-12"></i-tabler>
+    </div>
+  </button>
+
+  <mat-menu #profilemenu="matMenu" class="topbar-dd cardWithShadow">
+    <div class="p-x-32 p-y-16">
+      <div class="d-flex align-items-center p-b-24 b-b-1 m-t-16">
+        <div class="user-initials-avatar large rounded-circle">
+          {{ userName.charAt(0) | uppercase }}
+        </div>
+        <div class="m-l-16">
+          <h6 class="f-s-14 f-w-600 m-0 mat-subtitle-1 d-flex align-items-center">
+            {{ userName }}
+          </h6>
+          <span class="f-s-12">{{ userRole }}</span>
+        </div>
+      </div>
+    </div>
+    <div class="p-x-32 p-b-16">
+      @for(profile of profiledd; track profile.title) { @if (profile.link) {
+      <a mat-menu-item class="p-8 text-decoration-none d-block text-hover-primary" [routerLink]="profile.link">
+        <div class="d-flex align-items-center">
+          <h5 class="f-s-14 f-w-600 m-0 textprimary mat-subtitle-1 hover-text">
+            {{ profile.title }}
+          </h5>
+        </div>
+      </a>
+      } @else {
+      <button mat-menu-item class="p-8 text-decoration-none d-block text-hover-primary w-100"
+        (click)="profile.title === 'Sign Out' ? onLogout() : null">
+        <div class="d-flex align-items-center">
+          <h5 class="f-s-14 f-w-600 m-0 textprimary mat-subtitle-1 hover-text">
+            {{ profile.title }}
+          </h5>
+        </div>
+      </button>
+      } }
+    </div>
+  </mat-menu>
+</mat-toolbar>

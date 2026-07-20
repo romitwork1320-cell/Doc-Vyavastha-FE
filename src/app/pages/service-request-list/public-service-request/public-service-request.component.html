@@ -1,0 +1,120 @@
+<div class="public-wrapper">
+  <div class="public-container">
+    
+    <div class="text-center m-b-24 fade-in-down">
+      <div class="logo-area m-b-16">
+        <div class="logo-circle">
+          <i-tabler name="lifebuoy" class="icon-40 text-primary"></i-tabler>
+        </div>
+      </div>
+
+      <h1 class="company-title" *ngIf="companyName">{{ companyName }}</h1>
+
+      <h2 class="f-w-700 m-b-4 text-dark" [ngClass]="{'f-s-20': companyName}">
+        How can we help?
+      </h2>
+      <p class="text-muted f-s-16">Choose a category to get started.</p>
+    </div>
+
+    <mat-card class="cardWithShadow shadow-xl overflow-visible">
+      <mat-card-content class="p-32">
+
+        <div *ngIf="submitted" class="text-center p-y-24 scale-in-center">
+          <div class="success-ring m-b-24">
+            <i-tabler name="check" class="icon-48 text-success"></i-tabler>
+          </div>
+          <h2 class="f-w-700 m-b-8">Request Received!</h2>
+          <p class="text-muted m-b-24">We've assigned a ticket ID to your case.</p>
+          
+          <div class="ticket-box m-b-32">
+            <span class="text-muted small d-block m-b-4">TICKET ID</span>
+            <span class="f-s-28 f-w-700 text-primary letter-spacing-2">{{ ticketCode }}</span>
+          </div>
+          
+          <button mat-flat-button color="primary" class="w-100 py-24 rounded-pill" (click)="resetForm()">
+            Submit Another Request
+          </button>
+        </div>
+
+        <form *ngIf="!submitted" [formGroup]="requestForm" (ngSubmit)="onSubmit()" class="fade-in">
+          
+          <div class="category-grid m-b-24">
+            @for (cat of categories; track cat.name) {
+              <div class="category-card" 
+                   [class.selected]="selectedCategory === cat.name"
+                   (click)="selectCategory(cat.name)">
+                <div class="icon-box">
+                  <i-tabler [name]="cat.icon" class="cat-icon"></i-tabler>
+                </div>
+                <span class="cat-label">{{ cat.label }}</span>
+                
+                <div class="check-badge" *ngIf="selectedCategory === cat.name">
+                  <i-tabler name="check" class="icon-14"></i-tabler>
+                </div>
+              </div>
+            }
+          </div>
+
+          <div *ngIf="requestForm.get('category')?.touched && requestForm.get('category')?.hasError('required')" 
+               class="error-banner m-b-16 fade-in">
+            <i-tabler name="alert-circle" class="icon-18 m-r-8"></i-tabler>
+            Please select a category above.
+          </div>
+
+          <div class="form-details" [class.expanded]="selectedCategory">
+            
+            <div class="form-header m-b-16">
+              <span class="divider"></span>
+              <span class="text-muted f-s-12 f-w-600 text-uppercase">Tell us more</span>
+              <span class="divider"></span>
+            </div>
+
+            <div class="row">
+              <div class="col-12 m-b-16">
+                <mat-form-field appearance="outline" class="w-100 custom-field">
+                  <mat-label>Your Name</mat-label>
+                  <input matInput formControlName="guestName" />
+                  <mat-icon matPrefix class="m-r-8 text-muted"><i-tabler name="user" class="icon-20"></i-tabler></mat-icon>
+                  <mat-error *ngIf="requestForm.get('guestName')?.hasError('required')">Required</mat-error>
+                </mat-form-field>
+              </div>
+
+              <div class="col-12 m-b-16">
+                <mat-form-field appearance="outline" class="w-100 custom-field">
+                  <mat-label>Mobile Number</mat-label>
+                  <input matInput type="tel" formControlName="guestPhone" maxlength="12" />
+                  <mat-icon matPrefix class="m-r-8 text-muted"><i-tabler name="phone" class="icon-20"></i-tabler></mat-icon>
+                  <mat-error *ngIf="requestForm.get('guestPhone')?.hasError('required')">Required</mat-error>
+                  <mat-error *ngIf="requestForm.get('guestPhone')?.hasError('pattern')">Invalid Format</mat-error>
+                </mat-form-field>
+              </div>
+
+              <div class="col-12 m-b-24">
+                <mat-form-field appearance="outline" class="w-100 custom-field">
+                  <mat-label>What's happening?</mat-label>
+                  <textarea matInput formControlName="description" rows="3"></textarea>
+                  <mat-error *ngIf="requestForm.get('description')?.hasError('required')">Required</mat-error>
+                </mat-form-field>
+              </div>
+
+              <div class="col-12">
+                <button mat-flat-button color="primary" class="w-100 py-24 rounded-pill shadow-btn" type="submit" [disabled]="isLoading">
+                  <span *ngIf="!isLoading" class="d-flex align-items-center justify-content-center">
+                    Submit Request <i-tabler name="send" class="icon-18 m-l-8"></i-tabler>
+                  </span>
+                  <mat-spinner *ngIf="isLoading" diameter="24" class="m-auto custom-spinner"></mat-spinner>
+                </button>
+              </div>
+            </div>
+          </div>
+
+        </form>
+      </mat-card-content>
+    </mat-card>
+
+    <div class="text-center m-t-32">
+      <span class="badge-light">Powered by Replezy Support</span>
+    </div>
+
+  </div>
+</div>

@@ -1,0 +1,60 @@
+<mat-card class="cardWithShadow common-card">
+<mat-card-content class="table-card-content common-content">
+    
+    @if (isLoading && !dataSource.data.length) {
+      <div class="loading-spinner">
+        <mat-spinner diameter="50"></mat-spinner>
+        <p>Loading images...</p>
+      </div>
+    } @else {
+      <div class="table-container">
+        <table mat-table [dataSource]="dataSource" class="w-100">
+          
+          <ng-container matColumnDef="#">
+            <th mat-header-cell *matHeaderCellDef class="f-s-14  f-w-600">#</th>
+            <td mat-cell *matCellDef="let element; let i = index;">{{ i + 1 }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="image">
+            <th mat-header-cell *matHeaderCellDef class="f-s-14  f-w-600">Image</th>
+            <td mat-cell *matCellDef="let element">
+              <img [src]="'./assets/images/publicity/' + element.filePath" [alt]="element.title" class="table-image" />
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="title">
+            <th mat-header-cell *matHeaderCellDef class="f-s-14  f-w-600">Title</th>
+            <td mat-cell *matCellDef="let element">{{ element.title }}</td>
+          </ng-container>
+          <ng-container matColumnDef="link">
+            <th mat-header-cell *matHeaderCellDef class="f-s-14  f-w-600">Link (URL)</th>
+            <td mat-cell *matCellDef="let element" class="f-s-14">{{ element.link }}</td>
+          </ng-container>
+          <ng-container matColumnDef="uploadedOn">
+            <th mat-header-cell *matHeaderCellDef class="f-s-14  f-w-600">Uploaded On</th>
+            <td mat-cell *matCellDef="let element">{{ element?.uploadedOn ? (element.uploadedOn | date:'dd-MM-yyyy') : 'N/A' }}</td>
+          </ng-container>
+          <ng-container matColumnDef="action">
+            <th mat-header-cell *matHeaderCellDef class="f-s-14  f-w-600">Action</th>
+            <td mat-cell *matCellDef="let element" class="action-link">
+              <a (click)="$event.stopPropagation(); openDialog('Delete', element)" class="m-r-10 cursor-pointer text-error">
+                <i-tabler name="trash" class="icon-18"></i-tabler>
+              </a>
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+          
+          <tr class="mat-row" *matNoDataRow>
+            <td class="mat-cell text-center" [attr.colspan]="displayedColumns.length">
+              <div class="p-24 d-flex flex-column align-items-center justify-content-center">
+                <p class="f-s-14  m-0">No publicity images found.</p>
+              </div>
+            </td>
+          </tr>
+        </table>
+      </div>
+    }
+  </mat-card-content>
+</mat-card>

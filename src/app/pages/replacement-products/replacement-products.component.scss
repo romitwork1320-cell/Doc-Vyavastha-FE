@@ -1,0 +1,634 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  height: 100%;
+  min-height: 0;
+}
+
+mat-card.cardWithShadow {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  padding: 0 !important;
+
+  /* Ensure card doesn't overflow */
+  overflow: hidden;
+}
+
+mat-card-content {
+  // Makes the content area grow to fill the card
+  flex-grow: 1;
+
+  // Makes the content area a flex container for the table
+  display: flex;
+  flex-direction: column;
+
+  // Fixes a flexbox overflow bug
+  min-height: 0;
+
+  // Re-adds the padding we removed from the card
+  padding: 24px;
+
+  // CHANGE THIS: 'hidden' prevents the card from growing, forcing the child to scroll
+  overflow: hidden;
+}
+
+.table-container {
+  flex-grow: 1;
+  /* This is the ONLY place that should scroll */
+  overflow-y: auto;
+  overflow-x: hidden;
+  min-height: 0;
+}
+
+.mat-mdc-header-row {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  /* Ensure it stays above rows */
+  background-color: white;
+}
+
+/* --- All your other styles --- */
+
+.icon-container {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.icon-container a {
+  cursor: pointer;
+  color: inherit;
+}
+
+.action-link {
+  text-align: left;
+}
+
+.mat-mdc-row {
+  cursor: pointer;
+}
+
+.inline-spinner-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 10px;
+}
+
+.mat-sort-header-container {
+  display: flex !important;
+  align-items: center;
+}
+
+.card-heading {
+  margin-block-start: 0 !important;
+  margin-block-end: 0 !important;
+}
+
+.primary-gt {
+  background: linear-gradient(180deg, #635bff1f 0, #635bff08);
+}
+
+.warning-gt {
+  background: linear-gradient(180deg, #fff2001f 0, #fff20008);
+}
+
+.accent-gt {
+  background: linear-gradient(180deg, #00d4ff1f 0, #00d4ff08);
+}
+
+.error-gt {
+  background: linear-gradient(180deg, #ff1b6b1f 0, #ff1b6b08);
+}
+
+.success-gt {
+  background: linear-gradient(180deg, #00ff871f 0, #00ff8708);
+}
+
+.truncate-cell-content {
+  display: block;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 200px;
+}
+
+.mat-mdc-table {
+  .mat-mdc-cell.mat-column-ContactName {
+    max-width: 200px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}
+
+mat-card-content.table-card-content {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  padding: 0;
+  /* Remove padding if you want full edge-to-edge */
+  overflow: hidden;
+}
+
+.loading-spinner {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  min-height: 300px;
+  /* Ensures spinner is visible */
+
+  p {
+    margin-top: 16px;
+    font-size: 16px;
+  }
+}
+
+/* Styles for the status filter menu in the header
+*/
+.active-filter {
+  // A light primary background for the active item
+  background-color: rgba(99, 91, 255, 0.08);
+  font-weight: 600;
+}
+
+// Text colors for menu items and inline icons (matched to badge borders)
+.text-warning {
+  color: #f8c20a !important;
+}
+
+.text-primary {
+  color: #7367f0 !important;
+}
+
+.text-accent {
+  color: #16cdc7 !important;
+}
+
+.text-success {
+  color: #36c76c !important;
+}
+
+// Ensure menu icons are aligned
+.mat-mdc-menu-item [class*="icon-"] {
+  vertical-align: middle;
+}
+
+/* Add these styles to the bottom of your SCSS file */
+
+/* ... existing styles ... */
+
+.status-badge {
+  padding: 4px 6px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  display: inline-block;
+  line-height: 1.2;
+  white-space: nowrap;
+  text-align: center;
+  min-width: 70px;
+
+  /* Base styles for outline look */
+  background-color: #ffffff;
+  /* White background */
+  border: 1px solid transparent;
+  /* Setup border */
+
+  /* --- Status Specific Colors (Border & Text only) --- */
+
+  /* Pending - Orange/Yellow */
+  &.pending {
+    color: #f8c20a;
+    border-color: #f8c20a;
+  }
+
+  /* In Progress - Purple */
+  &.in-progress {
+    color: #7367f0;
+    border-color: #7367f0;
+  }
+
+  /* Ready - Cyan/Blue */
+  &.ready {
+    color: #16cdc7;
+    border-color: #16cdc7;
+  }
+
+  /* Completed - Green */
+  &.completed {
+    color: #36c76c;
+    border-color: #36c76c;
+  }
+
+  /* Fallbacks */
+  &.repair {
+    color: #00cfe8;
+    border-color: #00cfe8;
+  }
+
+  &.replace {
+    color: #635bff;
+    border-color: #635bff;
+  }
+
+  &.not-accepted {
+    color: #ea5455;
+    border-color: #ea5455;
+  }
+}
+
+/* --- Icon Sizes --- */
+.icon-22 {
+  width: 22px;
+  height: 22px;
+  font-size: 22px;
+  /* Ensures tabler icon scales correctly */
+}
+
+/* --- Hover Actions Visibility & Layout --- */
+.hover-actions {
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.2s ease-in-out;
+
+  /* Layout settings for the inline icons */
+  gap: 12px;
+  /* Space between Link and PDF icons */
+  margin-right: 8px;
+  /* Space between inline icons and the 3-dots button */
+}
+
+/* Show inline icons when hovering the ROW */
+.mat-mdc-row:hover .hover-actions {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* Ensure inline icons are aligned */
+.hover-actions a {
+  display: flex;
+  align-items: center;
+  transition: transform 0.1s ease;
+}
+
+/* Optional: Add a slight hover effect to the icons themselves */
+.hover-actions a:hover {
+  transform: scale(1.1);
+}
+
+/* --- Colors for Menu & Inline Icons --- */
+.text-info {
+  color: #000000 !important;
+}
+
+.text-error {
+  color: #ea5455 !important;
+}
+
+.m-r-8 {
+  margin-right: 8px;
+}
+
+
+/* --- UTILITIES (Global) --- */
+.gap-8 {
+  gap: 8px;
+}
+
+.mt-1 {
+  margin-top: 4px;
+}
+
+.mb-1 {
+  margin-bottom: 4px;
+}
+
+/* Default State (Desktop) */
+.mobile-stack {
+  display: none;
+}
+
+.desktop-only {
+  display: block;
+}
+
+.mobile-drawer-content {
+  display: none;
+}
+
+@media (max-width: 960px) {
+
+  /* 1. VISIBILITY TOGGLES */
+  .mobile-hide {
+    display: none !important;
+  }
+
+  .desktop-only {
+    display: none !important;
+  }
+
+  .mobile-stack {
+    display: flex !important;
+  }
+
+  /* 2. HEADER: Hide */
+  .mat-mdc-table .mat-mdc-header-row {
+    display: none !important;
+  }
+
+  /* 3. ROW LAYOUT */
+  .mat-mdc-table .mat-mdc-row {
+    display: flex !important;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 16px;
+    border-bottom: 1px solid #eeeeee;
+    background: #ffffff;
+    min-height: 72px;
+    /* Increased height for stack */
+    max-width: 100%;
+
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* Selected State */
+  .mat-mdc-table .mat-mdc-row:active,
+  .mat-mdc-table .mat-mdc-row:focus {
+    background-color: #f5f5f5 !important;
+  }
+
+  /* 4. MAIN LEFT COLUMN (Name + No + Date) */
+  /* This targets the 'InvertNo' column cell on mobile */
+  .mat-mdc-table .mat-mdc-cell.mobile-main-col {
+    flex: 1;
+    /* Take all available space */
+    width: 0;
+    min-width: 0;
+    padding: 0;
+    padding-right: 12px;
+    border-bottom: none;
+    text-align: left;
+
+    .mobile-stack {
+      flex-direction: column;
+      align-items: flex-start;
+      width: 100%;
+
+      .truncate-text {
+        width: 100%;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        display: block;
+      }
+    }
+  }
+
+  /* 5. MAIN RIGHT COLUMN (Status Only) */
+  /* This targets the 'GroupStatus' column cell on mobile */
+  .mat-mdc-table .mat-mdc-cell.mobile-right-col {
+    flex: 0 0 auto;
+    /* Only take space needed for badge */
+    width: auto;
+    padding: 0;
+    border-bottom: none;
+    text-align: right;
+
+    /* Ensure badge is aligned right */
+    display: flex !important;
+    justify-content: flex-end;
+    align-items: center;
+  }
+
+  /* --- SWIPE DRAWER --- */
+  .mat-mdc-table .mat-mdc-cell.mat-column-action.mobile-action-drawer {
+    display: flex !important;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    right: 0;
+    width: 180px;
+
+    background-color: #f1f1f1;
+    border-left: 1px solid #ddd;
+    z-index: 10;
+    padding: 0;
+
+    transform: translateX(100%);
+    transition: transform 0.2s ease-out;
+
+    .desktop-actions {
+      display: none !important;
+    }
+
+    .mobile-drawer-content {
+      display: flex !important;
+      width: 100%;
+      height: 100%;
+      align-items: center;
+      justify-content: space-evenly;
+    }
+  }
+
+  /* Trigger */
+  .mobile-swipe-active .mobile-action-drawer {
+    transform: translateX(0);
+    box-shadow: -4px 0 8px rgba(0, 0, 0, 0.1);
+  }
+
+  /* Buttons */
+  .mobile-action-btn {
+    background: #fff;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+
+    &.info {
+      color: #00cfe8;
+    }
+
+    &.primary {
+      color: #635bff;
+    }
+
+    &.delete {
+      color: #e53935;
+    }
+
+    &.warning {
+      color: #f8c20a;
+    }
+
+    /* Yellow for Pickup */
+    &.success {
+      color: #36c76c;
+    }
+
+    /* Green for Ready */
+  }
+
+  .table-container {
+    /* Ensures the last row clears the 56px FAB + standard margin */
+    padding-bottom: 80px !important;
+  }
+}
+
+/* =======================================
+   TYPOGRAPHY & TABLE STYLING
+   ======================================= */
+
+/* 1. Table Headers (Replaces f-s-14 and f-w-600) */
+.mat-mdc-header-cell {
+  font-size: 14px !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.5px;
+}
+
+/* 2. Table Body Cells (Replaces f-s-14) */
+.mat-mdc-cell {
+  font-size: 14px !important;
+  font-weight: 400;
+}
+
+/* 3. Mobile Stack Typography (The Name and Date block on mobile) */
+@media (max-width: 960px) {
+  .mobile-stack {
+
+    /* The Contact Name (Primary Info) */
+    .text-dark {
+      font-size: 16px !important;
+      font-weight: 600 !important;
+      line-height: 1.4;
+      display: block;
+      margin-bottom: 2px;
+    }
+
+    .text-muted {
+      font-size: 13px !important;
+      font-weight: 400;
+    }
+
+    .text-muted span {
+      display: inline-flex;
+      align-items: center;
+    }
+  }
+}
+
+.mat-mdc-menu-item {
+  font-size: 14px !important;
+
+  .icon-18 {
+    width: 18px;
+    height: 18px;
+    font-size: 18px;
+    vertical-align: middle;
+  }
+}
+
+/* 5. Tooltip text size (Optional, but good for consistency) */
+.mat-mdc-tooltip {
+  font-size: 12px !important;
+}
+
+/* =======================================
+   HELPER CLASSES (In case styles.css is missing them)
+   ======================================= */
+.f-w-600 {
+  font-weight: 600 !important;
+}
+
+.f-w-500 {
+  font-weight: 500 !important;
+}
+
+/* =======================================
+   PROGRESS BADGE (For Multi-Product Rows)
+   ======================================= */
+.progress-badge {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+  overflow: hidden;
+  padding: 4px 6px;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.2;
+  white-space: nowrap;
+  text-align: center;
+  min-width: 140px;
+  background-color: #ffffff;
+  border: 1px solid transparent;
+  z-index: 1;
+
+  .progress-fill {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: var(--progress, 0%);
+    z-index: -1;
+    transition: width 0.3s ease;
+  }
+
+  .progress-text {
+    z-index: 2;
+  }
+
+  /* High-Contrast Colors for Readability */
+  &.pending {
+    color: darken(#f8c20a, 35%);
+    /* Deep, readable text */
+    border-color: #f8c20a;
+
+    .progress-fill {
+      background-color: rgba(#f8c20a, 0.25);
+    }
+  }
+
+  &.in-progress {
+    color: darken(#7367f0, 15%);
+    /* Deep, readable text */
+    border-color: #7367f0;
+
+    .progress-fill {
+      background-color: rgba(#7367f0, 0.2);
+    }
+  }
+
+  &.ready {
+    color: darken(#16cdc7, 30%);
+    /* Deep, readable text */
+    border-color: #16cdc7;
+
+    .progress-fill {
+      background-color: rgba(#16cdc7, 0.25);
+    }
+  }
+
+  &.completed {
+    color: darken(#36c76c, 25%);
+    /* Deep, readable text */
+    border-color: #36c76c;
+
+    .progress-fill {
+      background-color: rgba(#36c76c, 0.25);
+    }
+  }
+}

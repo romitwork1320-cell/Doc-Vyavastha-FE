@@ -1,0 +1,163 @@
+@if (isLoading) {
+  <div class="p-24 text-center text-muted">Loading Fee Data...</div>
+} @else {
+  <div class="p-24">
+    <!-- Summary Cards -->
+    <div class="summary-grid">
+      <div class="summary-card">
+        <span class="summary-label">Total Fee</span>
+        <span class="summary-val">₹{{ totalFee() | number:'1.0-0' }}</span>
+      </div>
+      <div class="summary-card">
+        <span class="summary-label">Total Discount</span>
+        <span class="summary-val">₹{{ totalDiscount() | number:'1.0-0' }}</span>
+      </div>
+      <div class="summary-card">
+        <span class="summary-label">Net Fee</span>
+        <span class="summary-val">₹{{ netFee() | number:'1.0-0' }}</span>
+      </div>
+      <div class="summary-card">
+        <span class="summary-label">Total Collected</span>
+        <span class="summary-val val-success">₹{{ totalCollected() | number:'1.0-0' }}</span>
+      </div>
+      <div class="summary-card">
+        <span class="summary-label">Total Pending</span>
+        <span class="summary-val val-warning">₹{{ totalPending() | number:'1.0-0' }}</span>
+      </div>
+      <div class="summary-card">
+        <span class="summary-label">Fee Plans</span>
+        <span class="summary-val val-info">{{ totalPlans() }}</span>
+      </div>
+      <div class="summary-card">
+        <span class="summary-label">Payments</span>
+        <span class="summary-val val-info">{{ totalPayments() }}</span>
+      </div>
+    </div>
+
+    <!-- Section 1: Fee Plans -->
+    <div class="section-header">
+      <h4 class="section-title">Fee Plans</h4>
+      <button class="btn-add" (click)="openPlanDialog()" *ngIf="authService.hasPermission('/fee-plans', 'CanAdd')">
+        <i-tabler name="plus" style="width:16px;height:16px"></i-tabler> Add Fee Plan
+      </button>
+    </div>
+    
+    @if (plans().length === 0) {
+      <div class="p-y-24 text-center text-muted border rounded m-b-32 bg-light">No fee plans configured for this student.</div>
+    } @else {
+      <table class="fee-table">
+        <thead>
+          <tr>
+            <th width="15%">Fee Name</th>
+            <th width="10%" class="text-right">Total Fee</th>
+            <th width="10%" class="text-right">Discount</th>
+            <th width="10%" class="text-right">Net Fee</th>
+            <th width="12%" class="text-right">Collected</th>
+            <th width="12%" class="text-right">Pending</th>
+            <th width="10%">Status</th>
+            <th width="15%">Created By</th>
+            <th width="6%"></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let p of plans()">
+            <td style="font-weight:600">{{ p.feeTypeName }}</td>
+            <td class="text-right">₹{{ p.totalAmount | number:'1.0-0' }}</td>
+            <td class="text-right text-muted">
+              <span *ngIf="(p.discountAmount || 0) > 0">₹{{ p.discountAmount | number:'1.0-0' }}</span>
+              <span *ngIf="!(p.discountAmount || 0)">-</span>
+            </td>
+            <td class="text-right">₹{{ (p.totalAmount - (p.discountAmount || 0)) | number:'1.0-0' }}</td>
+            <td class="text-right text-success">₹{{ p.collected | number:'1.0-0' }}</td>
+            <td class="text-right text-warning font-weight-bold">₹{{ p.pending | number:'1.0-0' }}</td>
+            <td>
+              <span class="status-badge" 
+                    [ngClass]="{'status-pending': p.status === 'Pending', 'status-partial': p.status === 'Partially Paid', 'status-paid': p.status === 'Paid'}">
+                {{ p.status }}
+              </span>
+            </td>
+            <td>
+              <div class="d-flex flex-column">
+                <span class="f-w-600 f-s-13">{{ p.createdByName || '-' }}</span>
+              </div>
+            </td>
+            <td>
+              <div class="action-btns" *ngIf="authService.hasPermission('/fee-plans', 'CanDelete')">
+                <button class="icon-btn text-red" title="Delete" (click)="deletePlan(p.id)">
+                  <i-tabler name="trash" style="width:16px;height:16px"></i-tabler>
+                </button>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    }
+
+    <!-- Section 2: Payments -->
+    <div class="section-header">
+      <h4 class="section-title">Payment History</h4>
+      <div class="d-flex align-items-center gap-2">
+        <button class="btn-outline-primary d-flex align-items-center gap-1 bg-white border rounded p-x-12 p-y-4 cursor-pointer" 
+                style="height: 36px;"
+                (click)="downloadConsolidatedReceipt()" 
+                *ngIf="payments().length > 0">
+          <i-tabler name="printer" style="width:16px;height:16px"></i-tabler> 
+          {{ selectedPayments().size > 0 ? 'Download Selected (' + selectedPayments().size + ')' : 'Download All' }}
+        </button>
+        <button class="btn-add" (click)="openPaymentDialog()" [disabled]="plans().length === 0" [title]="plans().length === 0 ? 'Create a fee plan first' : ''" *ngIf="authService.hasPermission('/payments', 'CanAdd')">
+          <i-tabler name="receipt" style="width:16px;height:16px"></i-tabler> Record Payment
+        </button>
+      </div>
+    </div>
+
+    @if (payments().length === 0) {
+      <div class="p-y-24 text-center text-muted border rounded bg-light">No payments recorded.</div>
+    } @else {
+      <table class="fee-table">
+        <thead>
+          <tr>
+            <th width="4%">
+              <mat-checkbox (change)="toggleAllPayments()" [checked]="isAllSelected()"></mat-checkbox>
+            </th>
+            <th width="13%">Receipt No</th>
+            <th width="13%">Payment No</th>
+            <th width="12%">Date</th>
+            <th width="15%">Fee Type</th>
+            <th width="12%">Method</th>
+            <th width="10%" class="text-right">Amount</th>
+            <th width="15%">Created By</th>
+            <th width="6%"></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let pay of payments()" [class.bg-light]="selectedPayments().has(pay.id)">
+            <td>
+              <mat-checkbox (change)="togglePaymentSelection(pay.id)" [checked]="selectedPayments().has(pay.id)"></mat-checkbox>
+            </td>
+            <td style="font-family: monospace; font-weight:600">{{ pay.receiptNumber }}</td>
+            <td style="font-family: monospace; color:#64748b">{{ pay.paymentNumber }}</td>
+            <td>{{ pay.paymentDate | date:'dd MMM yyyy' }}</td>
+            <td>{{ pay.feeTypeName }}</td>
+            <td>{{ pay.paymentMethod }} <small *ngIf="pay.referenceNumber" class="text-muted d-block">{{pay.referenceNumber}}</small></td>
+            <td class="text-right text-success font-weight-bold">₹{{ pay.amount | number:'1.0-0' }}</td>
+            <td>
+              <div class="d-flex flex-column">
+                <span class="f-w-600 f-s-13">{{ pay.createdByName || '-' }}</span>
+              </div>
+            </td>
+            <td>
+              <div class="action-btns">
+                <button class="icon-btn text-info" title="Download Receipt" (click)="downloadReceipt(pay)">
+                  <i-tabler name="printer" style="width:16px;height:16px"></i-tabler>
+                </button>
+                <button class="icon-btn text-red" title="Delete" (click)="deletePayment(pay.id)" *ngIf="authService.hasPermission('/payments', 'CanDelete')">
+                  <i-tabler name="trash" style="width:16px;height:16px"></i-tabler>
+                </button>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    }
+  </div>
+}

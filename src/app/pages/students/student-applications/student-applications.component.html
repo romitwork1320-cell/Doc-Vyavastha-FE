@@ -1,0 +1,119 @@
+<div class="leads-page common-card">
+  <!-- Stats & Search Row -->
+  <div class="stat-row">
+    <div class="stat-chip" [class.active]="filterStatus === ''" (click)="filterStatus = ''">
+      All <span class="chip-count">{{ applications().length }}</span>
+    </div>
+    <div *ngFor="let s of availableStatuses()" class="stat-chip" [class.active]="filterStatus === s.id" (click)="filterStatus = s.id">
+      {{ s.name }} <span class="chip-count">{{ count(s.id) }}</span>
+    </div>
+    <div style="flex:1"></div>
+    <div class="search-box">
+      <i-tabler name="search" style="width:16px;height:16px;color:#94a3b8"></i-tabler>
+      <input [(ngModel)]="searchQuery" (keyup.enter)="onSearch()" placeholder="Search applications..." class="search-input"/>
+    </div>
+    <button mat-flat-button color="primary" (click)="exportCSV()" [disabled]="isExporting" style="border-radius: 8px; height: 36px; margin-left: 8px;">
+      {{ isExporting ? 'Exporting...' : 'Export CSV' }}
+    </button>
+  </div>
+
+  <!-- Table Card -->
+  <div class="table-card common-content">
+    <div class="common-table-container">
+      <table class="leads-table">
+        <thead>
+          <tr>
+            <th>Application No.</th>
+            <th>Student</th>
+            <th>Type</th>
+            <th>College</th>
+            <th>Applied Date</th>
+            <th>Status</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          @if (isLoading) {
+            <tr><td colspan="6" class="text-center p-24">Loading...</td></tr>
+          } @else {
+            <tr *ngFor="let app of filteredApps" class="table-row" (click)="goToDetails(app.id)" style="cursor: pointer;">
+              <td>
+                <div style="font-family: monospace; font-size: 14px; color: #0f172a; font-weight: 600;">
+                  {{ app.applicationNumber || 'N/A' }}
+                </div>
+              </td>
+              <td>
+                <div class="lead-cell">
+                  <div class="lead-avatar" [style.background]="avatarColor(app.studentName)">{{ app.studentName[0] }}</div>
+                  <div>
+                    <div style="font-weight: 600; font-size: 13px; color: #0f172a;">{{ app.studentName }}</div>
+                    <div style="color: #64748b; font-size: 12px;">{{ app.studentCode }}</div>
+                  </div>
+                </div>
+              </td>
+              <td><div style="color: #64748b; font-size: 13px;">{{ app.typeName }}</div></td>
+              <td><div style="font-weight: 500; font-size: 13px; color: #0f172a;">{{ app.collegeNamesString }}</div></td>
+              <td><div style="color: #64748b; font-size: 13px;">{{ app.appliedDate | date:'dd-MM-yyyy' }}</div></td>
+              <td>
+                <span class="badge" [style.background]="app.statusColor + '20'" [style.color]="app.statusColor">
+                  {{ app.statusName }}
+                </span>
+              </td>
+              <td>
+                <div class="action-btns">
+                  <button class="icon-btn" title="Edit" (click)="openDialog(app); $event.stopPropagation()" *ngIf="authService.hasPermission('/student-applications', 'CanEdit')">
+                    <i-tabler name="pencil" style="width:15px;height:15px"></i-tabler>
+                  </button>
+                  <button class="icon-btn" title="Delete" (click)="deleteItem(app.id); $event.stopPropagation()" *ngIf="authService.hasPermission('/student-applications', 'CanDelete')">
+                    <i-tabler name="trash" class="text-red" style="width:15px;height:15px"></i-tabler>
+                  </button>
+                </div>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+      
+      @if (!isLoading && filteredApps.length === 0) {
+        <div class="empty-state">
+          <i-tabler name="mood-empty" style="width:40px;height:40px;color:#cbd5e1"></i-tabler>
+          <p>No applications found.</p>
+        </div>
+      }
+    </div>
+    
+    <div class="custom-paginator">
+      <div class="paginator-left">
+        <div>
+          Showing <span class="font-semibold">{{ totalCount === 0 ? 0 : (pageIndex * pageSize) + 1 }}-{{ Math.min((pageIndex + 1) * pageSize, totalCount) }}</span> of <span class="font-semibold">{{ totalCount }}</span> applications
+        </div>
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <span>Show:</span>
+          <select [value]="pageSize" (change)="onPageSizeChange($event)" class="page-size-select">
+            <option [value]="10">10</option>
+            <option [value]="20">20</option>
+            <option [value]="50">50</option>
+            <option [value]="100">100</option>
+          </select>
+        </div>
+      </div>
+      <div class="paginator-right">
+        <button class="page-btn" [disabled]="pageIndex === 0" (click)="prevPage()">
+          <i-tabler name="chevron-left" style="width:16px;height:16px"></i-tabler>
+        </button>
+        
+        <button *ngFor="let p of pages" 
+                class="page-btn" 
+                [class.active]="p === pageIndex + 1"
+                [class.dots]="p === '...'"
+                (click)="goToPage(p)">
+          {{ p }}
+        </button>
+        
+        <button class="page-btn" [disabled]="pageIndex >= totalPages - 1" (click)="nextPage()">
+          <i-tabler name="chevron-right" style="width:16px;height:16px"></i-tabler>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

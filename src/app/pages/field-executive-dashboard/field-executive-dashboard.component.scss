@@ -1,0 +1,150 @@
+/* --- Shared Layout Styles --- */
+:host {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  height: 100%;
+  min-height: 0;
+}
+
+mat-card.cardWithShadow {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  padding: 0 !important;
+  overflow: hidden; 
+}
+
+mat-card-content.table-card-content {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  padding: 0;
+  overflow: hidden;
+}
+
+.table-container {
+  flex-grow: 1;
+  overflow-y: auto; 
+  overflow-x: hidden;
+  min-height: 0;
+}
+
+/* --- Status Badges --- */
+.status-badge {
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+  
+  &.pending { color: #f8c20a; border: 1px solid #f8c20a; background: #fff; }
+  &.in-progress { color: #7367f0; border: 1px solid #7367f0; background: #fff; }
+  &.ready { color: #16cdc7; border: 1px solid #16cdc7; background: #fff; }
+  &.completed { color: #36c76c; border: 1px solid #36c76c; background: #fff; }
+}
+
+/* ============================================================
+   MOBILE VIEW TRANSFORMATION (Max-width: 960px)
+   ============================================================ */
+
+.mobile-only { display: none !important; }
+.flex-shrink-0 { flex-shrink: 0 !important; } /* Helper for icons */
+
+@media (max-width: 960px) {
+  
+  /* 1. HIDE HEADER & INDEX */
+  .mat-mdc-table .mat-mdc-header-row,
+  .col-index {
+    display: none !important;
+  }
+
+  /* 2. ROW LAYOUT */
+  .mat-mdc-table .mat-mdc-row {
+    display: flex !important;
+    flex-direction: row;
+    align-items: center; 
+    justify-content: space-between;
+    padding: 12px 16px;
+    padding-right: 8px;
+    border-bottom: 1px solid #eeeeee;
+    background: #ffffff;
+    
+    height: auto !important;      
+    min-height: 80px !important;  
+  }
+
+  /* 3. HIDE DESKTOP COLUMNS */
+  .mat-mdc-table .mat-mdc-cell.mat-column-ProductName,
+  .mat-mdc-table .mat-mdc-cell.mat-column-ServiceCenterName,
+  .mat-mdc-table .mat-mdc-cell.mat-column-Status {
+    display: none !important;
+  }
+  
+  .mobile-hide { display: none !important; }
+  .mobile-only { display: block !important; }
+
+  /* 4. PRIMARY DATA (InvertNo) - Contains Split Layout */
+  .mat-mdc-table .mat-mdc-cell.mat-column-InvertNo {
+    flex: 1;                
+    width: 0;               
+    min-width: 0;
+    padding: 0;
+    padding-right: 12px;    
+    border-bottom: none;
+    text-align: left;
+    
+    height: auto !important; 
+    align-self: stretch;     
+    display: flex;
+    align-items: center;    
+  }
+
+  /* 5. ACTION COLUMN - Right Aligned */
+  .mat-mdc-table .mat-mdc-cell.mat-column-Action {
+    flex: 0 0 auto;         
+    width: auto;
+    padding: 0;
+    border-bottom: none;
+    
+    display: flex !important;
+    justify-content: flex-end !important;
+    align-items: center !important;
+  }
+
+  /* Override inner alignment */
+  .mat-mdc-table .mat-mdc-cell.mat-column-Action > div {
+      justify-content: flex-end !important;
+  }
+
+  /* BUTTON STYLES */
+  .action-btn {
+    min-width: 40px !important;
+    width: 40px !important;
+    height: 40px !important;
+    padding: 0 !important;
+    border-radius: 50% !important;
+    margin: 0 !important;
+    
+    .icon-18 { margin: 0; } 
+    &.m-l-8 { margin-left: 0 !important; margin-top: 8px; } 
+  }
+
+  .mat-column-Action .d-flex {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .status-badge.scale-down {
+    padding: 2px 6px;
+    font-size: 10px;
+    line-height: 12px;
+    height: fit-content;
+    width: fit-content !important; /* Forces badge to wrap text tightly */
+    max-width: 100%;
+    display: inline-block;
+    white-space: nowrap;
+  }
+}

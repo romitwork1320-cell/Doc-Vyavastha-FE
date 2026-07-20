@@ -1,0 +1,33 @@
+<div class="dialog-header p-24 d-flex align-items-center justify-content-between border-bottom">
+  <div class="d-flex align-items-center gap-12">
+    <div [class]="config.iconBg + ' ' + config.iconColor + ' rounded p-8 d-flex align-items-center justify-content-center'">
+      <i-tabler [name]="config.icon" class="icon-24"></i-tabler>
+    </div>
+    <h4 class="mat-headline-6 m-0">{{ data.title }}</h4>
+  </div>
+  <button mat-icon-button (click)="dialogRef.close(false)" class="close-btn text-muted">
+    <i-tabler name="x" class="icon-20"></i-tabler>
+  </button>
+</div>
+
+<div class="p-24">
+  <h6 class="f-s-16 f-w-500 m-b-16 m-t-0 lh-base">
+    {{ data.message }}
+  </h6>
+
+  @if (data.subMessage) {
+    <div [class]="config.infoBoxBg + ' rounded p-16 d-flex align-items-center gap-12'">
+       <i-tabler name="info-circle" [class]="'icon-24 flex-shrink-0 ' + config.infoBoxText"></i-tabler>
+       <div [class]="config.infoBoxText + ' f-s-14 lh-sm'">
+         {{ data.subMessage }}
+       </div>
+    </div>
+  }
+</div>
+
+<div mat-dialog-actions class="p-x-24 p-b-24 d-flex justify-content-end">
+  <button mat-flat-button [color]="data.confirmButtonColor" (click)="dialogRef.close(true)">
+    {{ data.confirmButtonText }}
+  </button>
+  <button mat-button (click)="dialogRef.close(false)" class="m-l-8">Cancel</button>
+</div>
