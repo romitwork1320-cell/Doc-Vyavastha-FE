@@ -1,0 +1,30 @@
+<h2 mat-dialog-title>Invite Client</h2>
+<mat-dialog-content class="p-t-24">
+  <p class="text-muted m-b-24 f-s-14">
+    Send an invitation to a client. If they don't have an account, they will be prompted to create one.
+  </p>
+
+  <form class="d-flex flex-column gap-16">
+    <mat-form-field appearance="outline" class="w-100">
+      <mat-label>Email Address</mat-label>
+      <input type="email" matInput [(ngModel)]="email" name="email" placeholder="client@example.com">
+    </mat-form-field>
+    
+    <mat-form-field appearance="outline" class="w-100">
+      <mat-label>Phone Number (Optional)</mat-label>
+      <input type="tel" matInput [(ngModel)]="phone" name="phone" placeholder="+1234567890">
+    </mat-form-field>
+  </form>
+
+  @if (error) {
+    <div class="p-16 bg-light-error text-error rounded m-t-8 f-s-14">
+      {{ error }}
+    </div>
+  }
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+  <button mat-button mat-dialog-close [disabled]="isSending">Cancel</button>
+  <button mat-flat-button color="primary" (click)="sendInvite()" [disabled]="isSending || (!email && !phone)">
+    {{ isSending ? 'Sending...' : 'Send Invite' }}
+  </button>
+</mat-dialog-actions>

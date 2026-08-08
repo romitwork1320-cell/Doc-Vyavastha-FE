@@ -29,7 +29,7 @@
         <span class="label">Ticket Info</span>
         
         <div class="ticket-id">{{data.ticketCode}}</div>
-        <div class="ticket-date">{{data.createdOn | date:'mediumDate'}}, {{data.createdOn | date:'mediumTime'}}</div>
+        <div class="ticket-date">{{data.createdOn | date:'MMM d, y, h:mm a'}}, {{data.createdOn | date:'mediumTime'}}</div>
         
         <span class="category-badge">{{data.category}}</span>
       </div>

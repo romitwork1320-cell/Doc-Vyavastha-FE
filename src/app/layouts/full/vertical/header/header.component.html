@@ -113,18 +113,7 @@
       </button>
   }
 
-  @if (branches.length > 1) {
-    <div class="branch-switcher m-r-16 d-flex align-items-center">
-      <i-tabler name="building" class="icon-20 text-muted m-r-8"></i-tabler>
-      <mat-form-field appearance="outline" class="hide-hint branch-select m-0 p-0" subscriptSizing="dynamic">
-        <mat-select [(value)]="activeBranchId" (selectionChange)="onBranchChange($event.value)">
-          <mat-option *ngFor="let branch of branches" [value]="branch.id">
-            {{ branch.name }}
-          </mat-option>
-        </mat-select>
-      </mat-form-field>
-    </div>
-  }
+
 
   <button mat-mini-fab color="inherit" class="header-action-btn notification-btn d-flex justify-content-center" 
           [matMenuTriggerFor]="notificationMenu" matTooltip="Notifications">
@@ -297,24 +286,26 @@
       </div>
     </div>
     <div class="p-x-32 p-b-16">
-      @for(profile of profiledd; track profile.title) { @if (profile.link) {
-      <a mat-menu-item class="p-8 text-decoration-none d-block text-hover-primary" [routerLink]="profile.link">
-        <div class="d-flex align-items-center">
-          <h5 class="f-s-14 f-w-600 m-0 textprimary mat-subtitle-1 hover-text">
-            {{ profile.title }}
-          </h5>
-        </div>
-      </a>
-      } @else {
-      <button mat-menu-item class="p-8 text-decoration-none d-block text-hover-primary w-100"
-        (click)="profile.title === 'Sign Out' ? onLogout() : null">
-        <div class="d-flex align-items-center">
-          <h5 class="f-s-14 f-w-600 m-0 textprimary mat-subtitle-1 hover-text">
-            {{ profile.title }}
-          </h5>
-        </div>
-      </button>
-      } }
+      @for(profile of profiledd; track profile.title) { 
+        @if (profile.link) {
+          <a mat-menu-item class="p-8 text-decoration-none d-block text-hover-primary" [routerLink]="profile.link">
+            <div class="d-flex align-items-center">
+              <h5 class="f-s-14 f-w-600 m-0 textprimary mat-subtitle-1 hover-text">
+                {{ profile.title }}
+              </h5>
+            </div>
+          </a>
+        } @else {
+          <button mat-menu-item class="p-8 text-decoration-none d-block text-hover-primary w-100"
+            (click)="profile.title === 'Sign Out' ? onLogout() : null">
+            <div class="d-flex align-items-center">
+              <h5 class="f-s-14 f-w-600 m-0 textprimary mat-subtitle-1 hover-text">
+                {{ profile.title }}
+              </h5>
+            </div>
+          </button>
+        } 
+      }
     </div>
   </mat-menu>
 </mat-toolbar>

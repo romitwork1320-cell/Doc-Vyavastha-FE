@@ -10,33 +10,6 @@
 }
 
 /* Make the single card fill the host */
-mat-card.cardWithShadow {
-  flex-grow: 1;
-  display: flex;
-  flex-direction: column;
-  min-height: 0;
-  position: relative; /* For loading, etc. */
-  z-index: 1;
-}
-
-/* Card content holding the tab group */
-mat-card-content.p-0 {
-  display: flex;
-  flex-direction: column;
-  flex-grow: 1;
-  min-height: 0;
-  padding: 0;
-  border-radius: inherit; 
-}
-
-/* Make the tab group fill the card content */
-mat-tab-group {
-  display: flex;
-  flex-direction: column;
-  flex-grow: 1;
-  min-height: 0;
-}
-
 /* Tab body sizing fixes */
 ::ng-deep .mat-mdc-tab-body-wrapper { flex-grow: 1; min-height: 0; }
 ::ng-deep .mat-mdc-tab-body-content { height: 100%; display: flex; flex-direction: column; }

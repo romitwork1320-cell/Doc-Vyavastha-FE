@@ -1,0 +1,141 @@
+<div mat-dialog-title class="m-0 p-24 p-b-16 d-flex justify-content-between align-items-center w-100 border-0">
+  <div style="width: 40px;"></div>
+  <h2 class="m-0 p-0 f-w-600 f-s-20 text-dark text-center">Review Document</h2>
+  <button mat-icon-button mat-dialog-close tabindex="-1" class="bg-light text-muted d-flex align-items-center justify-content-center" style="border-radius: 50%; width: 40px; height: 40px; flex-shrink: 0;">
+    <i-tabler name="x" class="icon-18"></i-tabler>
+  </button>
+</div>
+
+<mat-dialog-content class="p-x-24 p-b-24 p-t-0" style="max-width: 680px; overflow-x: hidden;">
+  <div class="m-b-24 d-flex justify-content-between align-items-start">
+    <div>
+      <div class="f-w-600 f-s-18 m-b-4 text-dark">{{ data.documentName }}</div>
+      <div class="text-muted f-s-14 m-b-16">{{ data.description || 'No description provided.' }}</div>
+      <div class="f-w-500 f-s-14 text-dark">Submitter Name: <span class="font-weight-normal text-muted">Unknown</span></div>
+    </div>
+    <div class="p-l-24 border-left" style="border-left-color: #e5e7eb !important;">
+      <span class="p-x-12 p-y-6 rounded-pill f-s-13 f-w-500 d-inline-flex align-items-center gap-4" 
+            style="border: 1px solid;"
+            [ngClass]="{
+              'bg-light-warning text-warning border-warning': data.currentStatus === 'PENDING',
+              'bg-light-info text-info border-info': data.currentStatus === 'UPLOADED',
+              'bg-light-success text-success border-success': data.currentStatus === 'APPROVED',
+              'bg-light-error text-error border-error': data.currentStatus === 'REJECTED'
+            }">
+        <i-tabler name="check" class="icon-16" *ngIf="data.currentStatus === 'APPROVED'"></i-tabler>
+        <i-tabler name="clock" class="icon-16" *ngIf="data.currentStatus === 'PENDING'"></i-tabler>
+        <i-tabler name="upload" class="icon-16" *ngIf="data.currentStatus === 'UPLOADED'"></i-tabler>
+        <i-tabler name="x" class="icon-16" *ngIf="data.currentStatus === 'REJECTED'"></i-tabler>
+        Current Status: {{ data.currentStatus }}
+      </span>
+    </div>
+  </div>
+
+  <h3 class="f-w-600 f-s-18 m-b-16 text-dark">Version History</h3>
+  <div *ngIf="!data.versions || data.versions.length === 0" class="text-muted text-center p-y-32 bg-light rounded" style="border: 1px dashed #e5e7eb;">
+    <i-tabler name="clock" class="icon-32 m-b-8" style="opacity: 0.5;"></i-tabler>
+    <div>No versions have been uploaded yet.</div>
+  </div>
+
+  <div *ngIf="data.versions && data.versions.length > 0" class="d-flex gap-16" style="flex-direction: column;">
+    <div *ngFor="let v of data.versions; let isFirst = first" 
+         class="rounded p-16"
+         [ngClass]="{'bg-light-primary': isFirst, 'bg-light': !isFirst}"
+         style="border: 1px solid #e5e7eb;">
+      
+      <div class="d-flex align-items-start justify-content-between m-b-16">
+        <div>
+          <div class="f-w-600 f-s-16 text-dark m-b-8">
+            Submission {{ v.VersionNumber || v.version_number }}
+          </div>
+          <div class="text-muted f-s-13 d-flex align-items-center gap-8">
+            {{ (v.CreatedAt || v.created_at) | date:'medium' }}
+            <span class="text-muted">|</span>
+            <div class="d-flex align-items-center gap-4">
+              <i-tabler name="user" class="icon-16"></i-tabler>
+              {{ v.UploadedByClient || v.uploaded_by_client ? 'Client Upload' : 'Advocate Upload' }}
+            </div>
+          </div>
+        </div>
+        
+        <div class="d-flex align-items-center gap-12">
+          <span *ngIf="isFirst" class="bg-primary text-white rounded-pill p-x-12 p-y-4 f-s-11 tracking-wider f-w-500" style="background-color: #4a148c !important;">LATEST</span>
+          <div class="d-flex align-items-center gap-8">
+             <div class="bg-light-primary text-primary rounded-circle d-flex align-items-center justify-content-center" style="width: 24px; height: 24px; overflow: hidden;">
+                <i-tabler name="user" class="icon-14"></i-tabler>
+             </div>
+             <span class="f-s-14 f-w-500 text-dark">{{ v.UploadedByClient || v.uploaded_by_client ? 'Client Upload' : 'Advocate Upload' }}</span>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Files List -->
+      <div class="d-flex gap-8" style="flex-direction: column;">
+        <div *ngFor="let file of v.files" class="d-flex align-items-center justify-content-between p-16 rounded bg-white border" style="border-color: #e5e7eb !important;">
+          <div class="d-flex align-items-center gap-16 flex-grow-1 overflow-hidden">
+            <i-tabler name="file" class="icon-24 text-muted"></i-tabler>
+            <span class="f-s-15 f-w-500 text-dark text-truncate" [title]="file.document_name || file.DocumentName">{{ file.document_name || file.DocumentName }}</span>
+          </div>
+          <div class="d-flex gap-8 flex-shrink-0">
+            <button mat-icon-button class="text-muted" (click)="viewFile(v, file)" matTooltip="View File">
+              <i-tabler name="eye" class="icon-24"></i-tabler>
+            </button>
+            <button mat-icon-button class="text-muted" (click)="downloadFile(v, file)" matTooltip="Download File">
+              <i-tabler name="download" class="icon-24"></i-tabler>
+            </button>
+          </div>
+        </div>
+      </div>
+      
+      <div class="text-right text-muted f-s-12 m-t-12" *ngIf="isFirst">
+        {{ (v.CreatedAt || v.created_at) | date:'medium' }}
+      </div>
+    </div>
+  </div>
+
+  <!-- Rejection Input Area -->
+  <div *ngIf="isRejecting" class="m-t-24 p-16 bg-light-error rounded" style="border: 1px solid #fa896b;">
+    <div class="f-w-600 text-error m-b-8 d-flex align-items-center gap-8">
+      <i-tabler name="alert-circle" class="icon-18"></i-tabler> Reason for Rejection
+    </div>
+    <mat-form-field appearance="outline" class="w-100 m-b-0" subscriptSizing="dynamic">
+      <textarea matInput [(ngModel)]="rejectionReason" placeholder="Please explain why this document is being rejected..." rows="3"></textarea>
+    </mat-form-field>
+  </div>
+</mat-dialog-content>
+
+<div mat-dialog-actions class="p-x-24 p-y-16 d-flex justify-content-center gap-16">
+  <!-- Default State -->
+  <ng-container *ngIf="!isRejecting">
+    <button mat-stroked-button mat-dialog-close class="rounded-pill p-x-24" [disabled]="submitting">Close</button>
+    <ng-container *ngIf="data.isOrganization">
+      <button mat-flat-button class="rounded-pill p-x-32 bg-error text-white f-w-500" style="background-color: #b71c1c !important;" (click)="reject()" [disabled]="submitting || !data.versions || data.versions.length === 0">Reject</button>
+      <button mat-flat-button class="rounded-pill p-x-32 bg-success text-white f-w-500" style="background-color: #2e7d32 !important;" (click)="approve()" [disabled]="submitting || !data.versions || data.versions.length === 0">
+        {{ submitting ? 'Processing...' : 'Approve' }}
+      </button>
+    </ng-container>
+  </ng-container>
+
+  <!-- Rejecting State -->
+  <ng-container *ngIf="isRejecting">
+    <button mat-stroked-button (click)="cancelReject()" class="rounded-pill p-x-24" [disabled]="submitting">Cancel</button>
+    <button mat-flat-button class="rounded-pill p-x-32 bg-error text-white f-w-500" style="background-color: #b71c1c !important;" (click)="confirmReject()" [disabled]="!rejectionReason.trim() || submitting">
+      {{ submitting ? 'Rejecting...' : 'Confirm Rejection' }}
+    </button>
+  </ng-container>
+</div>
+
+<!-- Access Revoked Template -->
+<ng-template #accessRevokedTemplate>
+  <div class="text-center p-24">
+    <div class="d-inline-flex align-items-center justify-content-center bg-light-error text-error rounded-circle m-b-16" style="width: 64px; height: 64px;">
+      <mat-icon style="font-size: 32px; width: 32px; height: 32px;">gpp_bad</mat-icon>
+    </div>
+    <h2 class="mat-headline-6 f-w-600 m-b-8">Access Revoked</h2>
+    <p class="mat-body-1 text-muted m-b-24">
+      The client has removed your access from this document.<br>
+      To view this document, please contact the client to grant access again.
+    </p>
+    <button mat-flat-button color="primary" mat-dialog-close class="w-100">Understood</button>
+  </div>
+</ng-template>

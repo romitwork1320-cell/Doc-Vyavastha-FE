@@ -1,13 +1,17 @@
-<h2 class="f-w-500" mat-dialog-title><strong>{{action}} User</strong></h2>
+<h2 mat-dialog-title class="d-flex justify-content-between align-items-center m-0 p-24 p-b-16">
+  <span class="f-w-600 f-s-20 text-dark">{{action}} User</span>
+  <button mat-icon-button (click)="closeDialog()" class="bg-light text-muted" style="border-radius: 8px;">
+    <mat-icon>close</mat-icon>
+  </button>
+</h2>
 
 @if(action !== 'Delete') {
-<mat-dialog-content class="p-t-10" style="max-width: 600px;">
-  <form #userForm="ngForm" autocomplete="off">
+<mat-dialog-content class="p-x-24 p-b-24 p-t-0" style="max-width: 600px;">
+  <form #userForm="ngForm" autocomplete="off" class="p-t-8">
     <div class="row">
-      
       <div class="col-lg-12 m-b-16">
-        <mat-form-field appearance="outline" class="w-100">
-          <mat-label>Email</mat-label>
+        <label class="mat-subtitle-2 f-w-600 m-b-8 d-block text-dark">Email <span class="text-error">*</span></label>
+        <mat-form-field appearance="outline" class="w-100" subscriptSizing="dynamic">
           <input 
             type="email" 
             matInput 
@@ -18,18 +22,18 @@
             placeholder="user@example.com" 
             [disabled]="!canEdit || action === 'Update'"
             #username="ngModel" />
-            <mat-error *ngIf="username.errors?.['required'] && username.touched">
-            Email is required.
-          </mat-error>
-          <mat-error *ngIf="username.errors?.['email'] && username.touched">
-            Please enter a valid email address.
-          </mat-error>
+          @if (username.errors?.['required'] && username.touched) {
+            <mat-error>Email is required</mat-error>
+          }
+          @if (username.errors?.['email'] && username.touched) {
+            <mat-error>Please enter a valid email address</mat-error>
+          }
         </mat-form-field>
       </div>
 
       <div class="col-lg-6 m-b-16">
-        <mat-form-field appearance="outline" class="w-100">
-          <mat-label>First Name</mat-label>
+        <label class="mat-subtitle-2 f-w-600 m-b-8 d-block text-dark">First Name</label>
+        <mat-form-field appearance="outline" class="w-100" subscriptSizing="dynamic">
           <input 
             matInput 
             name="firstName" 
@@ -40,8 +44,8 @@
       </div>
 
       <div class="col-lg-6 m-b-16">
-        <mat-form-field appearance="outline" class="w-100">
-          <mat-label>Last Name</mat-label>
+        <label class="mat-subtitle-2 f-w-600 m-b-8 d-block text-dark">Last Name</label>
+        <mat-form-field appearance="outline" class="w-100" subscriptSizing="dynamic">
           <input 
             matInput 
             name="lastName" 
@@ -52,8 +56,8 @@
       </div>
 
       <div class="col-lg-12 m-b-16">
-        <mat-form-field appearance="outline" class="w-100">
-          <mat-label>Phone Number</mat-label>
+        <label class="mat-subtitle-2 f-w-600 m-b-8 d-block text-dark">Phone Number</label>
+        <mat-form-field appearance="outline" class="w-100" subscriptSizing="dynamic">
           <input 
             matInput 
             name="contactNumber" 
@@ -64,58 +68,45 @@
       </div>
 
       <div class="col-lg-12 m-b-16">
-        <mat-form-field appearance="outline" class="w-100">
-          <mat-label>Role</mat-label>
-          <mat-select required name="role" [(ngModel)]="local_data.role" placeholder="Role" [disabled]="!canEdit">
+        <label class="mat-subtitle-2 f-w-600 m-b-8 d-block text-dark">Role <span class="text-error">*</span></label>
+        <mat-form-field appearance="outline" class="w-100" subscriptSizing="dynamic">
+          <mat-select required name="role" [(ngModel)]="local_data.role" placeholder="Select Role" [disabled]="!canEdit">
             <mat-option value="Admin">Admin</mat-option>
             <mat-option value="Staff">Staff</mat-option>
             <mat-option value="Viewer">Viewer</mat-option>
           </mat-select>
-          <mat-error *ngIf="userForm.controls['role']?.errors?.['required'] && userForm.controls['role']?.touched">
-            Role is required.
-          </mat-error>
+          @if (userForm.controls['role']?.errors?.['required'] && userForm.controls['role'].touched) {
+            <mat-error>Role is required.</mat-error>
+          }
         </mat-form-field>
       </div>
-      <div class="col-lg-12 m-b-16">
-        <mat-form-field appearance="outline" class="w-100">
-          <mat-label>Assigned Branches</mat-label>
-          <mat-select multiple name="branches" [(ngModel)]="selectedBranches" placeholder="Select Branches" [disabled]="!canEdit">
-            @for (branch of branches; track branch.id) {
-              <mat-option [value]="branch.id">{{ branch.name }}</mat-option>
-            }
-          </mat-select>
-          <mat-hint *ngIf="isLoadingBranches">Loading branches...</mat-hint>
-        </mat-form-field>
-      </div>
+
+
       
       @if(action === 'Update') {
-        <div class="col-lg-12 m-b-16">
+        <div class="col-lg-12 m-b-16 p-t-8">
           <mat-checkbox color="primary" name="isActive" [(ngModel)]="local_data.isActive" [disabled]="!canEdit">
             Is Active
           </mat-checkbox>
         </div>
       }
-
-    </div>
-    
-    <div mat-dialog-actions class="d-flex justify-content-end p-0">
-      <button mat-flat-button color="primary" [disabled]="!userForm.valid || !canEdit" (click)="doAction()"> 
-        {{action}}
-      </button>
-      <button mat-button class="m-l-8" (click)="closeDialog()">
-        Cancel
-      </button>
     </div>
   </form>
 </mat-dialog-content>
+<div mat-dialog-actions class="p-24 p-t-0 d-flex justify-content-end gap-12 border-t">
+  <button mat-stroked-button (click)="closeDialog()">Cancel</button>
+  <button mat-flat-button color="primary" [disabled]="!userForm.valid || !canEdit" (click)="doAction()">
+    {{action}} User
+  </button>
+</div>
 } @else {
-  <div class="p-x-24">
-    <p>Are you sure you want to delete user <span class="f-w-600">{{local_data.username}}</span>?</p>
-  </div>
-  <div mat-dialog-actions class="p-x-24 p-b-24 d-flex justify-content-end">
-    <button mat-flat-button color="warn" [disabled]="!canEdit" (click)="doAction()">
-      {{action}}
-    </button>
-    <button mat-button (click)="closeDialog()" class="m-l-8">Cancel</button>
-  </div>
+<mat-dialog-content class="p-x-24 p-b-24 p-t-0" style="max-width: 400px;">
+  <p class="f-s-16 m-0 m-t-8">Are you sure you want to delete user <span class="f-w-600">{{local_data.username}}</span>?</p>
+</mat-dialog-content>
+<div mat-dialog-actions class="p-24 p-t-0 d-flex justify-content-end gap-12 border-t">
+  <button mat-stroked-button (click)="closeDialog()">Cancel</button>
+  <button mat-flat-button color="warn" [disabled]="!canEdit" (click)="doAction()">
+    Delete User
+  </button>
+</div>
 }

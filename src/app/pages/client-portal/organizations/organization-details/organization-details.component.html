@@ -1,0 +1,171 @@
+<div class="p-24">
+  <!-- Header -->
+  <div class="d-flex align-items-center m-b-24 gap-16">
+    <button mat-icon-button class="text-muted" routerLink="/dashboard/client-organizations">
+      <i-tabler name="arrow-left" class="icon-24"></i-tabler>
+    </button>
+    <div>
+      <h1 class="zenxius-page-title m-b-4">
+        @if (isLoadingOrg) {
+          Loading Organization...
+        } @else if (organization) {
+          {{ organization.tenantName }}
+        } @else {
+          Organization Details
+        }
+      </h1>
+      <div class="zenxius-page-subtitle">View organization details and your related applications</div>
+    </div>
+  </div>
+
+  @if (orgError) {
+    <div class="zenxius-card m-b-24 p-24 text-error bg-light-error">
+      {{ orgError }}
+    </div>
+  }
+
+  @if (organization) {
+    <!-- Organization Meta Card -->
+    <div class="zenxius-card m-b-24">
+      <div class="p-24 row">
+        <!-- Organization Profile -->
+        <div class="col-md-7 d-flex flex-column justify-content-center border-right" [class.border-right]="true" style="border-right-color: #e5e7eb !important;">
+          <div class="text-muted f-s-13 f-w-500 text-uppercase m-b-16 tracking-wider">Organization Details</div>
+          
+          <div class="d-flex align-items-start gap-16">
+            <div class="bg-light-primary text-primary rounded-circle d-flex align-items-center justify-content-center f-w-600 f-s-24" style="width: 64px; height: 64px; flex-shrink: 0;">
+              {{ organization.tenantName?.charAt(0)?.toUpperCase() || 'O' }}
+            </div>
+            <div class="flex-grow-1">
+              <div class="f-w-600 f-s-18 text-dark m-b-12">{{ organization.tenantName || 'Unknown Organization' }}</div>
+              
+              <div class="row m-b-4">
+                <div class="col-sm-6 d-flex align-items-center gap-8 text-muted f-s-13 m-b-8" *ngIf="organization.contactEmail">
+                  <i-tabler name="mail" class="icon-16 text-primary"></i-tabler> 
+                  <span class="text-truncate" style="max-width: 180px;" [title]="organization.contactEmail">{{ organization.contactEmail }}</span>
+                </div>
+                <div class="col-sm-6 d-flex align-items-center gap-8 text-muted f-s-13 m-b-8" *ngIf="organization.contactPhone">
+                  <i-tabler name="phone" class="icon-16 text-primary"></i-tabler> 
+                  <span>{{ organization.contactPhone }}</span>
+                </div>
+              </div>
+              
+              <div class="d-flex align-items-start gap-8 text-muted f-s-13" *ngIf="organization.addressLine1 || organization.city">
+                <i-tabler name="map-pin" class="icon-16 text-primary m-t-2" style="flex-shrink: 0;"></i-tabler> 
+                <div>
+                  <div *ngIf="organization.addressLine1">{{ organization.addressLine1 }}</div>
+                  <div *ngIf="organization.addressLine2">{{ organization.addressLine2 }}</div>
+                  <div>
+                    {{ organization.city ? organization.city + ',' : '' }} 
+                    {{ organization.state }} 
+                    {{ organization.postalCode }}
+                  </div>
+                  <div *ngIf="organization.country">{{ organization.country }}</div>
+                </div>
+              </div>
+
+              <div *ngIf="!organization.contactEmail && !organization.contactPhone && !organization.addressLine1 && !organization.city" class="text-muted f-s-13">
+                No additional contact details provided by the organization.
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Connection Status -->
+        <div class="col-md-5 p-l-24 d-flex flex-column justify-content-center">
+          <div class="text-muted f-s-13 f-w-500 text-uppercase m-b-16 tracking-wider">Connection Status</div>
+          
+          <div class="d-flex align-items-center gap-16 m-b-16">
+            <div class="rounded-circle d-flex align-items-center justify-content-center" style="width: 48px; height: 48px;"
+                 [ngClass]="{'bg-light-success text-success': organization.status !== 'BLOCKED', 'bg-light-error text-error': organization.status === 'BLOCKED'}">
+              <mat-icon>{{ organization.status === 'BLOCKED' ? 'block' : 'verified_user' }}</mat-icon>
+            </div>
+            <div>
+              <div class="f-w-600 f-s-16 m-b-4" 
+                  [ngClass]="{'text-success': organization.status !== 'BLOCKED', 'text-error': organization.status === 'BLOCKED'}">
+                {{ organization.status === 'BLOCKED' ? 'Blocked' : 'Active Connection' }}
+              </div>
+              <div class="text-muted f-s-13">Connected on {{ organization.createdAt | date:'MMMM d, y, h:mm a' }}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Applications Section -->
+    <div class="zenxius-card">
+      <div class="p-24 border-bottom">
+        <h4 class="mat-subtitle-1 f-s-16 f-w-600 m-b-0">Applications</h4>
+      </div>
+      
+      <div class="p-0">
+        @if (isLoadingApps) {
+          <div class="p-24 d-flex justify-content-center">
+            <mat-spinner diameter="40"></mat-spinner>
+          </div>
+        } @else if (appError) {
+          <div class="p-24 text-center text-error">{{ appError }}</div>
+        } @else if (applications.length === 0) {
+          <div class="p-24 text-center text-muted">
+            <i-tabler name="folder-off" class="icon-48 m-b-16 text-gray-300"></i-tabler>
+            <p>No applications found for this organization.</p>
+          </div>
+        } @else {
+          <div class="table-container">
+            <table mat-table [dataSource]="applications" class="w-100">
+              
+              <ng-container matColumnDef="appNumber">
+                <th mat-header-cell *matHeaderCellDef class="f-w-500 text-muted f-s-13" style="padding-left: 24px;"> App Number </th>
+                <td mat-cell *matCellDef="let app" class="mat-body-1" style="padding-left: 24px;">
+                  <span class="f-w-600 text-primary">{{ app.ApplicationNumber || app.applicationNumber || app.id || app.ID }}</span>
+                </td>
+              </ng-container>
+
+              <ng-container matColumnDef="title">
+                <th mat-header-cell *matHeaderCellDef class="f-w-500 text-muted f-s-13"> Title </th>
+                <td mat-cell *matCellDef="let app">
+                  <h6 class="mat-subtitle-1 f-s-14 f-w-500 m-b-0">{{ app.Title || app.title }}</h6>
+                </td>
+              </ng-container>
+
+              <ng-container matColumnDef="status">
+                <th mat-header-cell *matHeaderCellDef class="f-w-500 text-muted f-s-13"> Status </th>
+                <td mat-cell *matCellDef="let app">
+                  <span class="p-x-12 p-y-4 rounded-pill f-w-600 f-s-12 d-inline-block text-center"
+                    [ngClass]="{
+                      'bg-light-primary text-primary': (app.Status || app.status) === 'DRAFT',
+                      'bg-light-warning text-warning': (app.Status || app.status) === 'PENDING' || (app.Status || app.status) === 'IN_PROGRESS' || (app.Status || app.status) === 'In_progress',
+                      'bg-light-info text-info': (app.Status || app.status) === 'IN_REVIEW' || (app.Status || app.status) === 'OPEN' || (app.Status || app.status) === 'Open',
+                      'bg-light-success text-success': (app.Status || app.status) === 'APPROVED' || (app.Status || app.status) === 'COMPLETED' || (app.Status || app.status) === 'Completed',
+                      'bg-light-error text-error': (app.Status || app.status) === 'REJECTED' || (app.Status || app.status) === 'ARCHIVED'
+                    }">
+                    {{ (app.Status || app.status) | titlecase }}
+                  </span>
+                </td>
+              </ng-container>
+
+              <ng-container matColumnDef="createdAt">
+                <th mat-header-cell *matHeaderCellDef class="f-w-500 text-muted f-s-13"> Created Date </th>
+                <td mat-cell *matCellDef="let app">
+                  <span class="text-muted f-s-13">{{ (app.CreatedAt || app.createdAt) | date:'MMM d, y, h:mm a' }}</span>
+                </td>
+              </ng-container>
+
+              <ng-container matColumnDef="actions">
+                <th mat-header-cell *matHeaderCellDef class="f-w-500 text-muted f-s-13 text-right" style="padding-right: 24px;"> Actions </th>
+                <td mat-cell *matCellDef="let app" class="text-right" style="padding-right: 24px;">
+                  <button mat-button color="primary" class="zenxius-btn-white" [routerLink]="['/dashboard/applications', (app.ID || app.id)]" [queryParams]="{ tenantId: tenantId }" style="height: 32px; font-size: 13px;">
+                    <mat-icon style="font-size: 16px; width: 16px; height: 16px;">visibility</mat-icon> View Application
+                  </button>
+                </td>
+              </ng-container>
+
+              <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+              <tr mat-row *matRowDef="let row; columns: displayedColumns;" [routerLink]="['/dashboard/applications', (row.ID || row.id)]" [queryParams]="{ tenantId: tenantId }" style="cursor: pointer;" class="hover-row"></tr>
+            </table>
+          </div>
+        }
+      </div>
+    </div>
+  }
+</div>

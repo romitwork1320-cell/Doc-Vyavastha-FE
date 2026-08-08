@@ -20,7 +20,7 @@ import { of, Observable, Subject } from 'rxjs';
 import { BillingService, BillingDocumentDto } from '../../../../../services/billing.service';
 import { ContactService, Contact } from '../../../../../services/contacts.service';
 import { BillingItemDialogComponent } from './billing-item-dialog/billing-item-dialog.component';
-import { ContactDialogComponent } from '../../../../contacts/contact-dialog/contact-dialog.component';
+// import { ContactDialogComponent } from '../../../../contacts/contact-dialog/contact-dialog.component';
 
 @Component({
   selector: 'app-purchase-invoice-dialog',
@@ -205,29 +205,29 @@ export class PurchaseInvoiceDialogComponent implements OnInit {
   trackByContactId(index: number, contact: any): number { return contact.id; }
 
   openNewContactDialog(name: string): void {
-    const dialogRef = this.dialog.open(ContactDialogComponent, {
-      width: '400px',
-      data: { action: 'Add', contact: { name: name } }
-    });
+    // const dialogRef = this.dialog.open(ContactDialogComponent, {
+    //   width: '400px',
+    //   data: { action: 'Add', contact: { name: name } }
+    // });
 
-    dialogRef.afterClosed().subscribe((result) => {
-      if (result) {
-        // Refresh contacts list
-        this.contactService.getContacts({
-          pageIndex: 1, pageSize: 10000, filter: '', sortColumn: 'Name', sortDirection: 'asc'
-        }).subscribe(res => {
-          this.allContacts = res.data || [];
-          // Select the newly created contact
-          const newContact = this.allContacts.find(c => c.name === result.name);
-          if (newContact) {
-            this.invoiceForm.get('contactName')?.setValue(newContact);
-          }
-        });
-      } else {
-        // Reset if cancelled
-        this.invoiceForm.get('contactName')?.setValue('');
-      }
-    });
+    // dialogRef.afterClosed().subscribe((result) => {
+    //   if (result) {
+    //     // Refresh contacts list
+    //     this.contactService.getContacts({
+    //       pageIndex: 1, pageSize: 10000, filter: '', sortColumn: 'Name', sortDirection: 'asc'
+    //     }).subscribe(res => {
+    //       this.allContacts = res.data || [];
+    //       // Select the newly created contact
+    //       const newContact = this.allContacts.find(c => c.name === result.name);
+    //       if (newContact) {
+    //         this.invoiceForm.get('contactName')?.setValue(newContact);
+    //       }
+    //     });
+    //   } else {
+    //     // Reset if cancelled
+    //     this.invoiceForm.get('contactName')?.setValue('');
+    //   }
+    // });
   }
 
   onContactSelected(event: any) {

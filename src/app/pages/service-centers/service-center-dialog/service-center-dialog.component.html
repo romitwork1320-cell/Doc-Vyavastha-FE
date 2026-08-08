@@ -9,7 +9,7 @@
         <mat-form-field appearance="outline" class="w-100">
           <mat-label>Service Center Name</mat-label>
           <input type="text" matInput required id="name" name="name" [(ngModel)]="local_data.name" placeholder="Service Center Name" />
-          @if (serviceCenterForm.controls['name']?.hasError('required') && serviceCenterForm.controls['name']?.touched) {
+          @if (serviceCenterForm.controls['name'].hasError('required') && serviceCenterForm.controls['name'].touched) {
             <mat-error>Name is required.</mat-error>
           }
         </mat-form-field>
@@ -30,7 +30,7 @@
           <mat-label>Address</mat-label>
           <textarea matInput required id="address" name="address" [(ngModel)]="local_data.address"
             placeholder="Service Center Address" rows="3"></textarea>
-          @if (serviceCenterForm.controls['address']?.hasError('required') && serviceCenterForm.controls['address']?.touched) {
+          @if (serviceCenterForm.controls['address'].hasError('required') && serviceCenterForm.controls['address'].touched) {
             <mat-error>Address is required.</mat-error>
           }
         </mat-form-field>

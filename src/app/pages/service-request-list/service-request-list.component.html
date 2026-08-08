@@ -41,7 +41,7 @@
           <ng-container matColumnDef="RequestDate">
             <th mat-header-cell *matHeaderCellDef mat-sort-header="RequestDate" class="f-w-600 mobile-hide">Date</th>
             <td mat-cell *matCellDef="let element" class="date-cell mobile-hide">
-              {{ element.createdOn | date:'dd-MM-yyyy' }}
+              {{ element.createdOn | date:'dd-MM-yyyy, hh:mm a' }}
             </td>
           </ng-container>
 
@@ -55,7 +55,7 @@
                 <div class="d-flex align-items-center gap-8 mt-1 text-muted">
                   <span class="f-w-500">{{element.ticketCode}}</span>
                   <span>|</span>
-                  <span>{{ element.createdOn | date:'dd-MM-yyyy' }}</span>
+                  <span>{{ element.createdOn | date:'dd-MM-yyyy, hh:mm a' }}</span>
                 </div>
                 <div class="mt-1">
                    <span class="f-s-12 bg-light rounded p-x-8">{{element.category}}</span>

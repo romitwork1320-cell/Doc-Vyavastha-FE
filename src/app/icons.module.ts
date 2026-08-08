@@ -1,6 +1,10 @@
 import { NgModule } from '@angular/core';
 import { TablerIconsModule } from 'angular-tabler-icons';
 import {
+  // --- Missing missing ones ---
+  IconChartBar,
+  IconSunHigh,
+  IconFileCertificate,
   // --- Sidebar Icons (You already had these) ---
   IconLayoutDashboard,
   IconTruckDelivery,
@@ -175,7 +179,10 @@ const icons = {
   IconFolderOpen,
   IconCategory,
   IconListNumbers,
-  IconStatusChange
+  IconStatusChange,
+  IconChartBar,
+  IconSunHigh,
+  IconFileCertificate
 };
 
 @NgModule({

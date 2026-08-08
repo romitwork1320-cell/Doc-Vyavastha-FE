@@ -1,0 +1,26 @@
+<h2 mat-dialog-title>Add Document Requirement</h2>
+<mat-dialog-content class="mat-typography p-y-24">
+  <form [formGroup]="reqForm" class="d-flex flex-column gap-16">
+    <mat-form-field appearance="outline" class="w-100" color="primary">
+      <mat-label>Document Name</mat-label>
+      <input matInput formControlName="document_name" placeholder="e.g. Passport Copy" />
+      <mat-error *ngIf="reqForm.get('document_name')?.hasError('required')">
+        Document Name is required.
+      </mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="w-100" color="primary">
+      <mat-label>Description (Optional)</mat-label>
+      <textarea matInput formControlName="description" rows="3" placeholder="Additional instructions for the client..."></textarea>
+    </mat-form-field>
+  </form>
+</mat-dialog-content>
+<mat-dialog-actions align="end" class="p-b-24 p-x-24">
+  <button mat-button (click)="onNoClick()" [disabled]="isLoading">Cancel</button>
+  <button mat-flat-button color="primary" (click)="save()" [disabled]="reqForm.invalid || isLoading">
+    <div class="d-flex align-items-center gap-8">
+      <mat-spinner diameter="20" *ngIf="isLoading"></mat-spinner>
+      Add Requirement
+    </div>
+  </button>
+</mat-dialog-actions>

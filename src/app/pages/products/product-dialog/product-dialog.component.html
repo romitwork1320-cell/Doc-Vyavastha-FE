@@ -10,7 +10,7 @@
         <mat-form-field appearance="outline" class="w-100">
           <mat-label>Product Name</mat-label>
           <input type="text" matInput required id="name" name="name" [(ngModel)]="local_data.name" placeholder="Product Name" />
-          @if (productForm.controls['name']?.errors?.['required'] && productForm.controls['name']?.touched) {
+          @if (productForm.controls['name'].hasError('required') && productForm.controls['name'].touched) {
             <mat-error>
               Name is required.
             </mat-error>

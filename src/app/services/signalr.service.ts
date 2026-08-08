@@ -28,10 +28,8 @@ export class SignalRService {
   constructor(private authService: AuthService) { }
 
   public startConnection = () => {
-    if (this.hubConnection) {
-      return;
-    }
-
+    // Disabled for Doc Vyavastha
+    return;
     const currentToken = this.authService.getAccessToken();
 
     if (!currentToken) {

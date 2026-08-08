@@ -31,6 +31,7 @@ export class MyProfileComponent implements OnInit {
   profileForm: FormGroup;
   isLoading = false;
   canEditCompany = false;
+  isClient = false;
 
   // --- Logo Changes ---
   selectedLogoFile: File | null = null;
@@ -69,6 +70,7 @@ export class MyProfileComponent implements OnInit {
   ngOnInit(): void {
     const userRole = this.authService.getUserRole();
     this.canEditCompany = userRole === 'Admin' || userRole === 'Owner';
+    this.isClient = userRole === 'Client';
     // Form setup (your code is correct)
     this.profileForm = this.fb.group({
       companyProfile: this.fb.group({
@@ -94,6 +96,7 @@ export class MyProfileComponent implements OnInit {
         lastName: ['', [Validators.required]],
         jobTitle: [''],
         contactNumber: [''],
+        connectionCode: [{ value: '', disabled: true }],
       }),
     });
 

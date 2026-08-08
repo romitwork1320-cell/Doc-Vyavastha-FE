@@ -28,9 +28,9 @@ export class BrandingComponent {
   options = this.settings.getOptions();
 
   companyLogoUrl$: Observable<string>;
-  
-  defaultLogoUrl = './assets/images/logos/logo.png'; 
-  
+
+  defaultLogoUrl = './assets/images/logos/logo.png';
+
   private profileService = inject(ProfileService);
 
   constructor(private settings: CoreService) {

@@ -1,0 +1,88 @@
+<h2 mat-dialog-title class="m-0 p-24 p-b-16 d-flex justify-content-between align-items-center border-bottom">
+  <span class="f-w-600 f-s-18 text-dark">{{ isEditMode ? 'Edit Application Template' : 'Add Application Template' }}</span>
+  <button mat-icon-button mat-dialog-close tabindex="-1" class="d-flex justify-content-center align-items-center bg-light text-muted" style="width: 32px; height: 32px; border-radius: 8px;">
+    <i-tabler name="x" class="icon-18"></i-tabler>
+  </button>
+</h2>
+
+<mat-dialog-content class="p-x-24 p-b-24 p-t-0" style="max-width: 600px; overflow-x: hidden;">
+  <form [formGroup]="form" class="p-t-8" autocomplete="off">
+    <div class="row">
+      <!-- Template Info -->
+      <div class="col-lg-12 m-b-16">
+        <label class="mat-subtitle-2 f-w-600 m-b-8 d-block text-dark">Template Name <span class="text-error">*</span></label>
+        <mat-form-field appearance="outline" class="w-100" subscriptSizing="dynamic">
+          <input matInput formControlName="name" placeholder="Ex: Rent Agreement">
+        </mat-form-field>
+      </div>
+
+      <div class="col-lg-12 m-b-16">
+        <label class="mat-subtitle-2 f-w-600 m-b-8 d-block text-dark">Description</label>
+        <mat-form-field appearance="outline" class="w-100" subscriptSizing="dynamic">
+          <textarea matInput formControlName="description" rows="2" placeholder="Enter template description..."></textarea>
+        </mat-form-field>
+      </div>
+      
+      <div class="col-lg-12 m-b-16">
+        <mat-divider></mat-divider>
+      </div>
+
+      <!-- Required Documents -->
+      <div class="col-lg-12">
+        <h3 class="f-w-600 f-s-16 m-b-16 text-dark">Required Documents</h3>
+
+        <div formArrayName="documents">
+          <div *ngFor="let doc of documents.controls; let i=index" [formGroupName]="i" class="p-16 border rounded bg-white m-b-16 position-relative shadow-none" style="border-color: #e5eaef !important;">
+            
+            <button *ngIf="documents.controls.length > 1" type="button" class="position-absolute d-flex align-items-center justify-content-center bg-light-error text-error border-error" style="right: -10px; top: -10px; border: 1px solid; border-radius: 50%; width: 24px; height: 24px; cursor: pointer; padding: 0; box-shadow: 0 2px 4px rgba(239,68,68,0.2);" (click)="removeDocument(i)">
+              <i-tabler name="x" class="icon-14"></i-tabler>
+            </button>
+
+            <div class="row align-items-center">
+              <div class="col-md-8 m-b-0">
+                <label class="mat-subtitle-2 f-w-600 m-b-8 d-block text-dark">Select Document Type <span class="text-error">*</span></label>
+                <mat-form-field appearance="outline" class="w-100" subscriptSizing="dynamic">
+                  <mat-select formControlName="document_type_id" placeholder="Choose a document">
+                    <mat-option *ngFor="let mdt of masterDocumentTypes" [value]="mdt.id">
+                      {{ mdt.name }}
+                    </mat-option>
+                  </mat-select>
+                </mat-form-field>
+              </div>
+
+              <div class="col-md-4 d-flex align-items-center" style="padding-top: 28px;">
+                <div class="form-check m-b-0">
+                  <input class="form-check-input cursor-pointer" type="checkbox" formControlName="is_required" [id]="'req-'+i" style="width: 18px; height: 18px;">
+                  <label class="form-check-label cursor-pointer f-w-500 m-l-8 text-dark" [for]="'req-'+i" style="padding-top: 2px;">
+                    Required
+                  </label>
+                </div>
+              </div>
+            </div>
+            
+          </div>
+          
+          <!-- Empty state -->
+          <div *ngIf="documents.length === 0" class="text-center p-y-24">
+            <p class="text-muted m-0">No documents added to this template.</p>
+          </div>
+        </div>
+
+        <button mat-stroked-button color="primary" type="button" class="w-100 p-y-12 m-t-8" (click)="addDocument()" style="border: 1px dashed #5d87ff; background-color: #f6f8fb;">
+          <div class="d-flex align-items-center justify-content-center gap-4 text-primary">
+            <i-tabler name="plus" class="icon-18"></i-tabler> 
+            <span class="f-w-600">Add Document</span>
+          </div>
+        </button>
+
+      </div>
+    </div>
+  </form>
+</mat-dialog-content>
+
+<div mat-dialog-actions class="p-24 p-t-0 d-flex justify-content-end gap-12 border-t">
+  <button mat-stroked-button mat-dialog-close [disabled]="submitting">Cancel</button>
+  <button mat-flat-button color="primary" [disabled]="form.invalid || submitting" (click)="onSubmit()">
+    {{ isEditMode ? 'Save Changes' : 'Create Template' }}
+  </button>
+</div>

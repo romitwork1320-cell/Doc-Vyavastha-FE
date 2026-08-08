@@ -1,5 +1,24 @@
-<mat-card class="cardWithShadow common-card">
-  <mat-card-content class="p-0 common-content">
+<div class="p-24">
+  <div class="d-flex justify-content-between align-items-end m-b-24">
+    <div>
+      <h1 class="zenxius-page-title">Teams & Users</h1>
+      <div class="zenxius-page-subtitle">Manage your organization's staff and their permissions.</div>
+    </div>
+    <div class="d-flex gap-16 align-items-center">
+      <button *ngIf="selectedTabIndex === 0" mat-button class="zenxius-btn-primary" (click)="openUserDialog('Add')">
+        <span class="d-flex align-items-center">
+          <i-tabler name="plus" class="icon-18 m-r-8"></i-tabler> Add User
+        </span>
+      </button>
+      <button *ngIf="selectedTabIndex === 1" mat-button class="zenxius-btn-primary" [disabled]="isLoadingPermissions || !canEditPermissions" (click)="savePermissions()">
+        <span class="d-flex align-items-center">
+          <i-tabler name="device-floppy" class="icon-18 m-r-8"></i-tabler> Save Changes
+        </span>
+      </button>
+    </div>
+  </div>
+
+  <div class="zenxius-card p-0">
     <mat-tab-group mat-stretch-tabs="false"
                    animationDuration="0ms"
                    class="theme-tab label-padding"
@@ -12,7 +31,8 @@
           </div>
         </ng-template>
         <ng-template matTabContent>
-          <div class="p-24"> @if (isLoadingUsers && !users.length) {
+          <div class="p-24"> 
+            @if (isLoadingUsers && !users.length) {
               <div class="loading-spinner p-24">
                 <mat-spinner diameter="50"></mat-spinner>
                 <p>Loading users...</p>
@@ -21,98 +41,67 @@
                <div class="table-container" #tableContainer (scroll)="onScroll($event)">
                  <table mat-table [dataSource]="usersDataSource" class="w-100" matSort #usersSort="matSort">
                    <ng-container matColumnDef="#">
-                     <th mat-header-cell *matHeaderCellDef class="f-s-14  f-w-600">#</th>
-                     <td mat-cell *matCellDef="let element; let i = index;">{{ (usersCurrentPage > 0 ? (usersCurrentPage -1) * usersPageSize : 0) + i + 1 }}</td>
+                     <th mat-header-cell *matHeaderCellDef class="f-s-14 f-w-600 border-bottom">#</th>
+                     <td mat-cell *matCellDef="let element; let i = index;" class="border-bottom">{{ (usersCurrentPage > 0 ? (usersCurrentPage -1) * usersPageSize : 0) + i + 1 }}</td>
                    </ng-container>
+                   
                    <ng-container matColumnDef="name">
-                     <th mat-header-cell *matHeaderCellDef mat-sort-header="firstName" class="f-s-14  f-w-600">Name</th>
-                     <td mat-cell *matCellDef="let element">
+                     <th mat-header-cell *matHeaderCellDef mat-sort-header="firstName" class="f-s-14 f-w-600 border-bottom">Name</th>
+                     <td mat-cell *matCellDef="let element" class="border-bottom">
                        <p class="mat-subtitle-1 f-s-14 m-0 f-w-600">{{ element.firstName || '' }} {{ element.lastName || '' }}</p>
                        <p class="mat-body-1 f-s-12 m-0 text-muted" *ngIf="element.contactNumber">{{ element.contactNumber }}</p>
                      </td>
                    </ng-container>
+                   
                    <ng-container matColumnDef="username">
-                     <th mat-header-cell *matHeaderCellDef mat-sort-header="username" class="f-s-14  f-w-600">Username</th>
-                     <td mat-cell *matCellDef="let element">
-                       <p class="mat-subtitle-1 f-s-14  m-0">{{ element.username }}</p> </td>
+                     <th mat-header-cell *matHeaderCellDef mat-sort-header="username" class="f-s-14 f-w-600 border-bottom">Username</th>
+                     <td mat-cell *matCellDef="let element" class="border-bottom">
+                       <p class="mat-subtitle-1 f-s-14 m-0">{{ element.username }}</p> 
+                     </td>
                    </ng-container>
+                   
                    <ng-container matColumnDef="role">
-                     <th mat-header-cell *matHeaderCellDef mat-sort-header="role" class="f-s-14  f-w-600">Role</th>
-                     <td mat-cell *matCellDef="let element" class="f-s-14">{{ element.role }}</td>
+                     <th mat-header-cell *matHeaderCellDef mat-sort-header="role" class="f-s-14 f-w-600 border-bottom">Role</th>
+                     <td mat-cell *matCellDef="let element" class="f-s-14 border-bottom">{{ element.role }}</td>
                    </ng-container>
+                   
                    <ng-container matColumnDef="action">
-                    <th mat-header-cell *matHeaderCellDef class="f-s-14 f-w-600 text-right p-r-24">Action</th>
-                    
-                    <td mat-cell *matCellDef="let element" class="action-link mobile-action-drawer">
-                      
-                      <div class="desktop-actions">
-                        
-                        <div class="hover-actions">
-                          
-                          <a *ngIf="canEditPermissions" 
-                             (click)="$event.stopPropagation(); openPermissionDialog(element)" 
-                             class="cursor-pointer text-accent"
-                             matTooltip="Manage Page Access">
-                             <i-tabler name="key" class="icon-22"></i-tabler>
-                          </a>
-
-                          <a 
-                             (click)="$event.stopPropagation(); openUserDialog('Delete', element)" 
-                             class="cursor-pointer text-error" 
-                             matTooltip="Delete User">
-                             <i-tabler name="trash" class="icon-22"></i-tabler>
-                          </a>
-
-                        </div>
-
-                        <button mat-icon-button [matMenuTriggerFor]="actionMenu" (click)="$event.stopPropagation()">
-                          <i-tabler name="dots-vertical" class="icon-18"></i-tabler>
+                    <th mat-header-cell *matHeaderCellDef class="f-s-14 f-w-600 text-right p-r-24 border-bottom">Action</th>
+                    <td mat-cell *matCellDef="let element" class="action-link text-right p-r-24 border-bottom">
+                      <button mat-icon-button [matMenuTriggerFor]="actionMenu" (click)="$event.stopPropagation()">
+                        <i-tabler name="dots-vertical" class="icon-18"></i-tabler>
+                      </button>
+                      <mat-menu #actionMenu="matMenu" xPosition="before">
+                        <button mat-menu-item [disableIfNoPermission]="'CanEdit'" (click)="openUserDialog('Update', element)">
+                          <i-tabler name="edit" class="icon-18 m-r-8 text-primary"></i-tabler><span>Edit</span>
                         </button>
-                        
-                        <mat-menu #actionMenu="matMenu" xPosition="before">
-                          
-                          <button mat-menu-item [disableIfNoPermission]="'CanEdit'" (click)="openUserDialog('Update', element)">
-                            <i-tabler name="edit" class="icon-18 m-r-8 text-primary"></i-tabler><span>Edit</span>
-                          </button>
-                          
-                          <button mat-menu-item *ngIf="canEditPermissions" (click)="openPermissionDialog(element)">
-                             <i-tabler name="key" class="icon-18 m-r-8 text-accent"></i-tabler><span>Permissions</span>
-                          </button>
-
-                          <button mat-menu-item [disableIfNoPermission]="'CanDelete'" (click)="openUserDialog('Delete', element)">
-                            <i-tabler name="trash" class="icon-18 m-r-8 text-error"></i-tabler><span>Delete</span>
-                          </button>
-                        </mat-menu>
-                      </div>
-
-                      <div class="mobile-drawer-content">
-                        <a [disableIfNoPermission]="'CanDelete'" 
-                           (click)="$event.stopPropagation(); openUserDialog('Delete', element)" 
-                           class="mobile-action-btn delete">
-                          <i-tabler name="trash" class="icon-18"></i-tabler>
-                        </a>
-                      </div>
-
+                        <button mat-menu-item *ngIf="canEditPermissions" (click)="openPermissionDialog(element)">
+                           <i-tabler name="key" class="icon-18 m-r-8 text-accent"></i-tabler><span>Permissions</span>
+                        </button>
+                        <button mat-menu-item [disableIfNoPermission]="'CanDelete'" (click)="openUserDialog('Delete', element)">
+                          <i-tabler name="trash" class="icon-18 m-r-8 text-error"></i-tabler><span>Delete</span>
+                        </button>
+                      </mat-menu>
                     </td>
                   </ng-container>
 
                    <tr mat-header-row *matHeaderRowDef="userDisplayedColumns; sticky: true"></tr>
                    <tr mat-row *matRowDef="let row; columns: userDisplayedColumns;" (click)="openUserDialog('Update', row)"></tr>
                    <tr class="mat-row" *matNoDataRow>
-                     </tr>
+                   </tr>
                  </table>
                  @if (isLoadingUsers && users.length > 0) {
-                      <div class="inline-spinner-container">
-                        <mat-spinner diameter="40"></mat-spinner>
-                      </div>
-                    }
-                    </div>
-                  }
+                  <div class="inline-spinner-container">
+                    <mat-spinner diameter="40"></mat-spinner>
+                  </div>
+                 }
+               </div>
+            }
           </div>
         </ng-template>
       </mat-tab>
 
-      <mat-tab>
+      <mat-tab *ngIf="canEditPermissions">
         <ng-template mat-tab-label>
           <div class="d-flex align-items-center">
             <i-tabler name="lock-access" class="icon-20 m-r-8"></i-tabler>
@@ -127,8 +116,7 @@
                 <p>Loading permissions...</p>
               </div>
             } @else {
-              
-              <div class="d-flex align-items-center flex-wrap gap-16 m-b-20 p-16 bg-light-gray rounded-sm">
+              <div class="d-flex align-items-center flex-wrap gap-16 m-b-20 p-16 bg-light-gray rounded-sm zenxius-legend">
                 <span class="f-w-600 f-s-14 m-r-8">Legend:</span>
                 
                 <div class="d-flex align-items-center gap-8">
@@ -156,47 +144,44 @@
                 <table mat-table [dataSource]="permissionsDataSource" class="w-100 permissions-table" matSort #permissionsSort="matSort">
                   
                   <ng-container matColumnDef="pageName">
-                    <th mat-header-cell *matHeaderCellDef mat-sort-header="PageName" class="f-s-14 f-w-600">Module / Page</th>
-                    <td mat-cell *matCellDef="let page">
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header="PageName" class="f-s-14 f-w-600 border-bottom">Module / Page</th>
+                    <td mat-cell *matCellDef="let page" class="border-bottom">
                       <span class="f-s-14">{{ page.pageName }}</span>
                     </td>
                   </ng-container>
 
                   <ng-container *ngFor="let role of roles" [matColumnDef]="role.roleName">
-                    <th mat-header-cell *matHeaderCellDef class="text-center f-s-14 f-w-600">{{ role.roleName }}</th>
-                    <td mat-cell *matCellDef="let page" class="text-center">
+                    <th mat-header-cell *matHeaderCellDef class="text-center f-s-14 f-w-600 border-bottom">{{ role.roleName }}</th>
+                    <td mat-cell *matCellDef="let page" class="text-center border-bottom">
                       
                       @if(permissions[page.pageId] && permissions[page.pageId][role.roleId]; as perm) {
-                        <div class="permission-toggle-group">
+                        <div class="permission-toggle-group justify-content-center">
                           
                           <div class="perm-icon view" 
                                [class.active]="perm.canView" 
                                [class.disabled]="!canEditPermissions"
-                               (click)="canEditPermissions ? (perm.canView = !perm.canView) : null"
-                               matTooltip="Can View">
-                            <i-tabler name="eye" class="icon-20"></i-tabler>
+                               (click)="togglePermission(perm, 'canView')">
+                            <i-tabler name="eye" class="icon-18"></i-tabler>
                           </div>
 
                           <div class="perm-icon add" 
                                [class.active]="perm.canAdd" 
                                [class.disabled]="!canEditPermissions"
-                               (click)="canEditPermissions ? (perm.canAdd = !perm.canAdd) : null"
-                               matTooltip="Can Add">
-                            <i-tabler name="square-plus" class="icon-20"></i-tabler>
+                               (click)="togglePermission(perm, 'canAdd')">
+                            <i-tabler name="plus" class="icon-18"></i-tabler>
                           </div>
 
                           <div class="perm-icon edit" 
                                [class.active]="perm.canEdit" 
                                [class.disabled]="!canEditPermissions"
-                               (click)="canEditPermissions ? (perm.canEdit = !perm.canEdit) : null"
-                               matTooltip="Can Edit">
-                            <i-tabler name="pencil" class="icon-20"></i-tabler>
+                               (click)="togglePermission(perm, 'canEdit')">
+                            <i-tabler name="pencil" class="icon-18"></i-tabler>
                           </div>
 
                           <div class="perm-icon delete" 
                                [class.active]="perm.canDelete" 
                                [class.disabled]="!canEditPermissions"
-                               (click)="canEditPermissions ? (perm.canDelete = !perm.canDelete) : null"
+                               (click)="togglePermission(perm, 'canDelete')"
                                matTooltip="Can Delete">
                             <i-tabler name="trash" class="icon-20"></i-tabler>
                           </div>
@@ -210,16 +195,10 @@
                   <tr mat-row *matRowDef="let row; columns: permissionsDisplayedColumns;" class="permission-row"></tr>
                 </table>
               </div>
-
-              <div class="d-flex justify-content-end m-t-24">
-                <button mat-flat-button color="primary" [disabled]="isLoadingPermissions || !canEditPermissions" (click)="savePermissions()">
-                  Save Changes
-                </button>
-              </div>
             }
           </div>
         </ng-template>
       </mat-tab>
     </mat-tab-group>
-  </mat-card-content>
-</mat-card>
+  </div>
+</div>

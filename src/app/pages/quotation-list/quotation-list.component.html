@@ -89,7 +89,7 @@
                     <div class="d-flex align-items-center gap-8 mt-1 text-muted">
                         <span class="f-w-500">{{ row.customerName }}</span>
                         <span *ngIf="row.createdOn">|</span>
-                        <span>{{ row.createdOn | date:'dd-MM-yyyy' }}</span>
+                        <span>{{ row.createdOn | date:'dd-MM-yyyy, hh:mm a' }}</span>
                     </div>
                 </div>
              </td>
@@ -115,7 +115,7 @@
           <ng-container matColumnDef="date">
              <th mat-header-cell *matHeaderCellDef mat-sort-header="CreatedOn" class="f-w-600 mobile-hide">Date</th>
              <td mat-cell *matCellDef="let row" class="text-muted mobile-hide">
-               {{ row.createdOn | date:'dd-MM-yyyy' }}
+               {{ row.createdOn | date:'dd-MM-yyyy, hh:mm a' }}
              </td>
           </ng-container>
 

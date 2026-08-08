@@ -1,0 +1,37 @@
+<h2 mat-dialog-title class="m-0 p-24 p-b-16 d-flex justify-content-between align-items-center border-bottom">
+  <span class="f-w-600 f-s-18 text-dark">{{ isEditMode ? 'Edit Organization Type' : 'Add Organization Type' }}</span>
+  <button mat-icon-button mat-dialog-close tabindex="-1" class="d-flex justify-content-center align-items-center bg-light text-muted" style="width: 32px; height: 32px; border-radius: 8px;">
+    <i-tabler name="x" class="icon-18"></i-tabler>
+  </button>
+</h2>
+
+<mat-dialog-content class="p-x-24 p-b-24 p-t-0" style="max-width: 540px; overflow-x: hidden;">
+  <form [formGroup]="form" class="p-t-8" autocomplete="off">
+    <div class="row">
+      
+      <!-- Name Field -->
+      <div class="col-lg-12 m-b-16">
+        <label class="mat-subtitle-2 f-w-600 m-b-8 d-block">Organization Type Name <span class="text-error">*</span></label>
+        <mat-form-field appearance="outline" class="w-100" subscriptSizing="dynamic">
+          <input matInput formControlName="name" placeholder="Ex: Advocate">
+        </mat-form-field>
+      </div>
+
+      <!-- Description Field -->
+      <div class="col-lg-12">
+        <label class="mat-subtitle-2 f-w-600 m-b-8 d-block">Description</label>
+        <mat-form-field appearance="outline" class="w-100" subscriptSizing="dynamic">
+          <textarea matInput formControlName="description" rows="3" placeholder="Enter description..."></textarea>
+        </mat-form-field>
+      </div>
+
+    </div>
+  </form>
+</mat-dialog-content>
+
+<div mat-dialog-actions class="p-24 p-t-0 d-flex justify-content-end gap-12 border-t">
+  <button mat-stroked-button mat-dialog-close [disabled]="submitting">Cancel</button>
+  <button mat-flat-button color="primary" [disabled]="form.invalid || submitting" (click)="onSubmit()">
+    {{ isEditMode ? 'Save Changes' : 'Create Type' }}
+  </button>
+</div>

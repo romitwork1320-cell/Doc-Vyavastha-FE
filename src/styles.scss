@@ -89,22 +89,26 @@ iframe#credential_picker_container {
 .sidebarNav,
 .mat-drawer-inner-container,
 .sidebar-list {
-  background-color: #f3f3f3 !important;
+  background-color: #ffffff !important;
 }
 
 .topbar {
-  background-color: #f3f3f3 !important;
+  background-color: #ffffff !important;
   box-shadow: none !important;
+  border-bottom: 1px solid #e5e7eb;
 }
 
 .mat-drawer-content,
 .contentWrapper,
 .body-wrapper {
-  background-color: #f3f3f3 !important;
+  background-color: #f8fafc !important;
 }
 
 .cardWithShadow {
   background-color: #ffffff !important;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  box-shadow: none !important;
 }
 
 /* ==================================================================
@@ -178,19 +182,13 @@ iframe#credential_picker_container {
 }
 
 .mat-mdc-table tbody .mat-mdc-row:hover {
-  /* Option 1: Standard Light Gray (Clean & Professional) */
-  background-color: #f3f3f3 !important;
-
-  /* Option 2: Light Blue Tint (Matches your Blue Theme) */
-  /* background-color: #eff2ff !important; */
-
+  background-color: #f8fafc !important;
   transition: background-color 0.2s ease-in-out;
 }
 
 .mat-mdc-table .mat-mdc-header-row .mat-mdc-header-cell,
 .mat-mdc-table .mat-mdc-row .mat-mdc-cell {
-  /* Make the border darker */
-  border-bottom-color: #ececec !important;
+  border-bottom: 1px solid #f3f4f6 !important;
 }
 
 
@@ -266,15 +264,18 @@ iframe#credential_picker_container {
 
 /* 1. Table Headers (Replaces f-s-14 and f-w-600) */
 .mat-mdc-header-cell {
-  font-size: 14px !important;
-  font-weight: 600 !important;
+  font-size: 13px !important;
+  font-weight: 500 !important;
+  color: #6b7280 !important;
   letter-spacing: 0.5px;
+  background-color: #ffffff !important;
 }
 
 /* 2. Table Body Cells (Replaces f-s-14) */
 .mat-mdc-cell {
   font-size: 14px !important;
   font-weight: 400;
+  color: #111827 !important;
 }
 
 /* 3. Mobile Stack Typography (The Name and Date block on mobile) */
@@ -400,4 +401,216 @@ body .mat-mdc-form-field .mat-mdc-text-field-wrapper.mdc-text-field {
     color: #5d87ff;
     vertical-align: middle;
   }
+}
+
+/* =======================================
+   ZENXIUS STATUS CHIP OVERRIDES
+   ======================================= */
+.bg-light-success {
+  background-color: #ecfdf5 !important;
+}
+.text-success {
+  color: #10b981 !important;
+}
+.bg-light-warning {
+  background-color: #fffbeb !important;
+}
+.text-warning {
+  color: #f59e0b !important;
+}
+.bg-light-error {
+  background-color: #fef2f2 !important;
+}
+.text-error {
+  color: #ef4444 !important;
+}
+.bg-light-primary {
+  background-color: #f0fdfa !important; /* Soft version of primary if they want green, or keep light blue #eff6ff */
+}
+.bg-light-info {
+  background-color: #f0f9ff !important;
+}
+.text-info {
+  color: #0ea5e9 !important;
+}
+.bg-light-accent {
+  background-color: #f3f4f6 !important;
+}
+.text-accent {
+  color: #4b5563 !important;
+}
+
+/* =======================================
+   ZENXIUS LAYOUT & INPUT ELEMENTS
+   ======================================= */
+
+.zenxius-select-wrapper {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+}
+
+.zenxius-select-wrapper .select-chevron {
+  position: absolute;
+  right: 12px;
+  pointer-events: none;
+  color: #6b7280;
+}
+
+.zenxius-select {
+  appearance: none;
+  background-color: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 8px 36px 8px 12px;
+  font-size: 14px;
+  color: #374151;
+  cursor: pointer;
+  outline: none;
+  min-width: 120px;
+}
+.zenxius-select:focus {
+  border-color: #10b981;
+}
+
+.zenxius-search-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.zenxius-search-wrapper .search-icon {
+  position: absolute;
+  left: 12px;
+  color: #9ca3af;
+}
+
+.zenxius-search-input {
+  background-color: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 8px 12px 8px 36px;
+  font-size: 14px;
+  color: #374151;
+  outline: none;
+  width: 250px;
+}
+.zenxius-search-input:focus {
+  border-color: #10b981;
+}
+
+.zenxius-btn-white {
+  background-color: #ffffff !important;
+  border: 1px solid #e5e7eb !important;
+  color: #374151 !important;
+  border-radius: 8px !important;
+  box-shadow: none !important;
+  font-weight: 500 !important;
+}
+
+.zenxius-btn-primary {
+  background-color: #bbf7d0 !important; /* light green */
+  color: #166534 !important; /* dark green text */
+  border-radius: 8px !important;
+  border: 1px solid transparent !important;
+  box-shadow: none !important;
+  font-weight: 600 !important;
+
+  &:hover {
+    background-color: #86efac !important;
+  }
+
+  &:disabled {
+    opacity: 0.5 !important;
+    cursor: not-allowed !important;
+  }
+}
+
+/* Override MatCard to remove internal padding to give edge-to-edge feel */
+.zenxius-card {
+  padding: 0 !important;
+  border: 1px solid #f3f4f6 !important;
+  border-radius: 12px !important;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05) !important;
+}
+
+.zenxius-page-title {
+  font-size: 24px;
+  font-weight: 600;
+  color: #111827;
+  margin-bottom: 4px;
+}
+.zenxius-page-subtitle {
+  font-size: 14px;
+  color: #6b7280;
+}
+
+/* =======================================
+   ZENXIUS TABLE STYLES
+   ======================================= */
+.mat-mdc-table {
+  /* Set base font for the table */
+  font-family: inherit !important;
+}
+
+.mat-mdc-header-row {
+  background-color: #f9fafb !important;
+  border-top: 1px solid #e5e7eb !important;
+  border-bottom: 1px solid #e5e7eb !important;
+  min-height: 48px !important;
+}
+
+.mat-mdc-header-cell {
+  background-color: #f9fafb !important;
+  color: #6b7280 !important;
+  font-size: 13px !important;
+  font-weight: 500 !important;
+  border-bottom: none !important; /* Border handled by the row */
+}
+
+.mat-mdc-row {
+  border-bottom: 1px solid #f3f4f6 !important;
+}
+.mat-mdc-row:hover {
+  background-color: #f9fafb !important;
+}
+
+.mat-mdc-cell {
+  border-bottom: none !important; /* Border handled by row */
+  color: #374151 !important;
+}
+
+/* Zenxius Card overriding to give it a solid background */
+.zenxius-card {
+  background-color: #ffffff !important;
+}
+
+/* Zenxius Paginator Clean Up */
+.mat-mdc-paginator {
+  background-color: transparent !important;
+  border-top: 1px solid #f3f4f6 !important;
+}
+.mat-mdc-paginator-page-size-label {
+  display: none !important;
+}
+.zenxius-toggle-group {
+  border: 1px solid #e5e7eb !important;
+  border-radius: 8px !important;
+  background-color: #ffffff !important;
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  height: 40px;
+  align-items: center;
+}
+.zenxius-toggle-group .mat-button-toggle-appearance-standard {
+  background-color: transparent !important;
+  color: #6b7280 !important;
+  font-weight: 500;
+  border-left: 1px solid #e5e7eb;
+}
+.zenxius-toggle-group .mat-button-toggle-appearance-standard:first-child {
+  border-left: none;
+}
+.zenxius-toggle-group .mat-button-toggle-checked {
+  background-color: #f3f4f6 !important;
+  color: #111827 !important;
 }

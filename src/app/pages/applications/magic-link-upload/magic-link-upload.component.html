@@ -1,0 +1,211 @@
+<div class="blank-layout-container bg-light-primary d-flex align-items-center justify-content-center w-100" style="min-height: 100vh;">
+  <div class="w-100 p-24" style="max-width: 800px; padding-bottom: 100px !important;">
+    
+    <mat-card class="cardWithShadow p-24 text-center" *ngIf="loading">
+      <mat-card-content class="d-flex flex-column align-items-center justify-content-center p-y-48">
+        <mat-spinner diameter="40"></mat-spinner>
+        <p class="mat-subtitle-1 m-t-16">Loading your secure application portal...</p>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="cardWithShadow p-24 text-center" *ngIf="!loading && error">
+      <mat-card-content class="p-y-48">
+        <i-tabler name="alert-circle" class="text-error" style="width: 64px; height: 64px;"></i-tabler>
+        <h2 class="mat-headline-6 m-t-16 m-b-8">Access Denied</h2>
+        <p class="mat-subtitle-1 text-muted">{{ error }}</p>
+      </mat-card-content>
+    </mat-card>
+
+    <div *ngIf="!loading && !error && magicLinkData">
+      <div class="text-center m-b-32">
+        <h1 class="mat-headline-4 f-w-600 m-b-8">{{ magicLinkData.application.title }}</h1>
+        <p class="mat-subtitle-1 text-muted">Please provide the requested documents below.</p>
+      </div>
+
+      <div class="d-flex flex-column gap-24">
+        <mat-card class="cardWithShadow" *ngFor="let req of magicLinkData.requirements">
+          <mat-card-content class="p-24">
+            
+            <div class="d-flex justify-content-between align-items-start">
+              <div class="w-100">
+                <div class="d-flex align-items-center gap-12 m-b-8">
+                  <h3 class="mat-subtitle-1 f-w-600 m-0 f-s-18">{{ req.document_name }}</h3>
+                  <span class="bg-light-primary text-primary rounded f-w-600 p-4 p-x-8 f-s-12" *ngIf="req.status === 'PENDING'">Pending Upload</span>
+                  <span class="bg-light-success text-success rounded f-w-600 p-4 p-x-8 f-s-12" *ngIf="req.status === 'UPLOADED' || req.status === 'APPROVED'">Uploaded</span>
+                  <span class="bg-light-error text-error rounded f-w-600 p-4 p-x-8 f-s-12" *ngIf="req.status === 'REJECTED'">Changes Requested</span>
+                </div>
+                <p class="mat-body-1 text-muted m-b-16" *ngIf="req.description">{{ req.description }}</p>
+                
+                <div *ngIf="req.status === 'REJECTED'" class="bg-light-error p-16 rounded m-b-16">
+                  <span class="d-block f-w-600 text-error m-b-4">Reason for Rejection:</span>
+                  <span class="text-dark">{{ req.rejection_reason }}</span>
+                </div>
+
+                <!-- Previous Uploads -->
+                <div *ngIf="req.versions && req.versions.length > 0" class="m-b-16">
+                  <div class="mat-subtitle-2 f-w-600 m-b-8">Previous Uploads</div>
+                  <div class="d-flex flex-column gap-12">
+                    <div *ngFor="let v of req.versions" class="p-12 rounded bg-light-primary border border-primary">
+                      <div class="f-w-600 f-s-14 m-b-8 d-flex align-items-center gap-8">
+                        <i-tabler name="folder" class="icon-18 text-primary"></i-tabler>
+                        Submission {{ v.version_number }}
+                        <span class="text-muted f-s-12 f-w-400 ms-auto">{{ v.created_at | date:'M/d/yy, h:mm a' }}</span>
+                      </div>
+                      <div class="d-flex flex-column gap-4">
+                        <div *ngFor="let file of v.files" class="d-flex align-items-center gap-8 f-s-12 p-l-24">
+                          <i-tabler name="file" class="icon-14 text-muted"></i-tabler>
+                          <span class="text-dark text-truncate">{{ file.document_name }}</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Staged Files List -->
+                <div *ngIf="stagedFiles[req.id] && stagedFiles[req.id].length > 0" class="m-t-24 m-b-16">
+                  <div class="mat-subtitle-2 f-w-600 m-b-8 text-success">Ready to Submit</div>
+                  <div class="d-flex flex-column gap-8">
+                    <div *ngFor="let sfile of stagedFiles[req.id]; let i = index" class="d-flex align-items-center justify-content-between p-12 rounded bg-light-success border border-success">
+                      <div class="d-flex align-items-center gap-8 text-truncate">
+                        <i-tabler name="file-upload" class="icon-18 text-success"></i-tabler>
+                        <span class="f-s-14 text-dark text-truncate">{{ sfile.name }}</span>
+                      </div>
+                      <button mat-icon-button color="warn" (click)="removeStagedFile(req.id, i)" [disabled]="isSubmitting">
+                        <i-tabler name="x" class="icon-18"></i-tabler>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Staged Vault Files -->
+                <div *ngIf="stagedVaultFiles[req.id] && stagedVaultFiles[req.id].length > 0" class="m-t-24 m-b-16">
+                  <div class="mat-subtitle-2 f-w-600 m-b-8 text-success">Ready to Submit from Vault</div>
+                  <div class="d-flex flex-column gap-8">
+                    <div *ngFor="let sfile of stagedVaultFiles[req.id]; let i = index" class="d-flex align-items-center justify-content-between p-12 rounded bg-light-success border border-success">
+                      <div class="d-flex align-items-center gap-8 text-truncate">
+                        <i-tabler name="cloud-upload" class="icon-18 text-success"></i-tabler>
+                        <span class="f-s-14 text-dark text-truncate">{{ sfile.file_name }}</span>
+                      </div>
+                      <button mat-icon-button color="warn" (click)="removeStagedVaultFile(req.id, i)" [disabled]="isSubmitting">
+                        <i-tabler name="x" class="icon-18"></i-tabler>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Add Files Button -->
+                <div class="m-t-16 d-flex gap-16 align-items-center" *ngIf="req.status === 'PENDING' || req.status === 'REJECTED'">
+                  <input type="file" multiple #fileInput class="d-none" (change)="onFileSelected($event, req.id)">
+                  <button mat-stroked-button color="primary" [disabled]="isSubmitting" (click)="fileInput.click()">
+                    <div class="d-flex align-items-center gap-8">
+                      <i-tabler name="upload" class="icon-18"></i-tabler>
+                      Upload New
+                    </div>
+                  </button>
+                  <span class="text-muted f-s-12">OR</span>
+                  <button mat-flat-button color="accent" [disabled]="isSubmitting" (click)="openVaultSelection(req.id)">
+                    <div class="d-flex align-items-center gap-8">
+                      <i-tabler name="cloud" class="icon-18"></i-tabler>
+                      Select from Vault
+                    </div>
+                  </button>
+                </div>
+
+              </div>
+            </div>
+
+          </mat-card-content>
+        </mat-card>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Sticky Bottom Submit Bar -->
+  <div *ngIf="!loading && !error && hasStagedFiles()" class="position-fixed bottom-0 start-0 w-100 bg-surface shadow-sm border-top" style="z-index: 100;">
+    <div class="w-100 mx-auto d-flex align-items-center justify-content-between p-16 p-x-24" style="max-width: 800px;">
+      <div class="d-flex align-items-center gap-16">
+        <div *ngIf="isSubmitting" class="d-flex align-items-center gap-8">
+          <mat-spinner diameter="24"></mat-spinner>
+          <span class="mat-subtitle-2 m-0 text-muted">Submitting all documents...</span>
+        </div>
+        <div *ngIf="!isSubmitting">
+          <h4 class="mat-subtitle-1 m-0 f-w-600">Ready to complete?</h4>
+          <p class="mat-body-2 m-0 text-muted">Upload all selected documents securely.</p>
+        </div>
+      </div>
+      <button mat-flat-button color="primary" class="p-x-32" [disabled]="isSubmitting" (click)="submitAll()">
+        Submit All Documents
+      </button>
+    </div>
+  </div>
+
+  <!-- Vault Selection Overlay -->
+  <div *ngIf="isVaultViewOpen" class="position-fixed top-0 start-0 w-100 h-100 bg-white" style="z-index: 1000; overflow-y: auto;">
+    <div class="w-100 mx-auto p-24" style="max-width: 800px;">
+      
+      <div class="d-flex align-items-center justify-content-between m-b-24 border-bottom p-b-16">
+        <div class="d-flex align-items-center gap-16">
+          <button mat-icon-button (click)="selectedVaultFolder ? backToVaultFolders() : closeVaultSelection()">
+            <mat-icon>{{ selectedVaultFolder ? 'arrow_back' : 'close' }}</mat-icon>
+          </button>
+          <h2 class="mat-headline-6 m-0">{{ selectedVaultFolder ? selectedVaultFolder.document_type_name : 'Select from Document Vault' }}</h2>
+        </div>
+      </div>
+
+      <div *ngIf="vaultLoading" class="d-flex justify-content-center p-y-48">
+        <mat-spinner diameter="40"></mat-spinner>
+      </div>
+
+      <!-- Folders View -->
+      <div *ngIf="!vaultLoading && !selectedVaultFolder">
+        <div *ngIf="vaultFolders.length === 0" class="text-center p-y-48 text-muted">
+          <i-tabler name="folders" class="icon-48 m-b-16"></i-tabler>
+          <h3>Your vault is empty</h3>
+          <p>You haven't saved any documents to your vault yet.</p>
+        </div>
+
+        <div class="row" *ngIf="vaultFolders.length > 0">
+          <div class="col-sm-6 col-md-4 m-b-24" *ngFor="let folder of vaultFolders">
+            <mat-card class="folder-card cursor-pointer mat-elevation-z2" (click)="openVaultFolder(folder)">
+              <mat-card-content class="p-16 d-flex flex-column align-items-center text-center">
+                <i-tabler name="folder" class="icon-48 text-primary m-b-8"></i-tabler>
+                <div class="f-w-600 mat-subtitle-1 m-b-4">{{ folder.document_type_name }}</div>
+                <div class="text-muted f-s-12">{{ folder.file_count }} files</div>
+              </mat-card-content>
+            </mat-card>
+          </div>
+        </div>
+      </div>
+
+      <!-- Files View -->
+      <div *ngIf="!vaultLoading && selectedVaultFolder">
+        <div *ngIf="vaultFiles.length === 0" class="text-center p-y-48 text-muted">
+          <i-tabler name="file" class="icon-48 m-b-16"></i-tabler>
+          <h3>Folder is empty</h3>
+        </div>
+
+        <div class="d-flex flex-column gap-16" *ngIf="vaultFiles.length > 0">
+          <mat-card class="cardWithShadow cursor-pointer hover-bg-light" *ngFor="let file of vaultFiles" (click)="selectVaultFile(file)">
+            <mat-card-content class="p-16 d-flex align-items-center justify-content-between">
+              <div class="d-flex align-items-center gap-16">
+                <div class="bg-light-primary text-primary rounded p-8">
+                  <i-tabler name="file" class="icon-24"></i-tabler>
+                </div>
+                <div>
+                  <div class="f-w-600 mat-subtitle-1">{{ file.file_name }}</div>
+                  <div class="text-muted f-s-12">Uploaded on {{ file.created_at | date:'MMM d, y, h:mm a' }}</div>
+                </div>
+              </div>
+              <button mat-icon-button color="primary">
+                <mat-icon>add_circle_outline</mat-icon>
+              </button>
+            </mat-card-content>
+          </mat-card>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+</div>

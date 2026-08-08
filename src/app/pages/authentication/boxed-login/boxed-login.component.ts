@@ -42,29 +42,23 @@ interface Slide {
 })
 export class AppBoxedLoginComponent implements OnInit, OnDestroy, AfterViewInit {
   // --- STATE MANAGEMENT ---
-  currentStep: number = 1; 
+  mode: 'login' | 'register' = 'login';
+  registerType: 'client' | 'org' = 'client';
   isLoading: boolean = false;
+  isGoogleSignup: boolean = false;
   errorMessage: string = '';
   
   // --- FORMS ---
-  // Initialize with empty groups to prevent "undefined" errors in HTML
-  emailForm: FormGroup = this.fb.group({
-     email: ['', [Validators.required, Validators.email]]
-  });
-  
-  profileForm: FormGroup = this.fb.group({
-     firstName: ['', Validators.required],
-     lastName: ['', Validators.required],
-     companyName: ['', Validators.required],
-     mobileNumber: ['', [Validators.required, Validators.pattern('^[0-9]{10}$')]]
+  loginForm: FormGroup = this.fb.group({
+     email: ['', [Validators.required, Validators.email]],
+     otp: [''], // Will add validators when in otp mode
+     password: [''],
+     rememberMe: [true]
   });
 
   // --- OTP STATE ---
-  otpDigits: string[] = ['', '', '', '', '', '']; 
-  @ViewChildren('otpInput') otpInputs!: QueryList<ElementRef>;
-  resendTimer: number = 300; 
-  resendInterval: any;
-  userEmail: string = '';
+  otpMode = false;
+  passwordMode = false;
 
   // --- SLIDER STATE ---
   currentSlideIndex = 0;
@@ -124,19 +118,10 @@ export class AppBoxedLoginComponent implements OnInit, OnDestroy, AfterViewInit 
       if (token) {
         this.isInviteFlow = true;
         this.inviteToken = token;
-        
-        // If it's an invite, the Company Name is irrelevant (they are joining one), 
-        // so we remove the validator or set a dummy value to keep the form valid.
-        this.profileForm.get('companyName')?.clearValidators();
-        this.profileForm.get('companyName')?.updateValueAndValidity();
       }
 
       if (email) {
-        // Pre-fill email and disable the input if you don't want them changing it
-        this.emailForm.patchValue({ email: email });
-        
-        // Optional: specific logic if you want to lock the email field
-        // this.emailForm.get('email')?.disable(); 
+        this.loginForm.patchValue({ email: email });
       }
     });
 
@@ -147,12 +132,11 @@ export class AppBoxedLoginComponent implements OnInit, OnDestroy, AfterViewInit 
 
   ngOnDestroy(): void {
     this.stopSlider(); 
-    this.stopResendTimer();
   }
 
   ngAfterViewInit() {
     // Initial Render
-    if (this.currentStep === 1) {
+    if (this.mode === 'login') {
         this.initializeGoogleSignIn();
     }
   }
@@ -163,7 +147,7 @@ export class AppBoxedLoginComponent implements OnInit, OnDestroy, AfterViewInit 
 
   @HostListener('window:resize')
   onResize() {
-    if (this.currentStep === 1) {
+    if (this.mode === 'login') {
         clearTimeout(this.resizeTimeout);
         this.resizeTimeout = setTimeout(() => {
             this.initializeGoogleSignIn();
@@ -172,176 +156,99 @@ export class AppBoxedLoginComponent implements OnInit, OnDestroy, AfterViewInit 
   }
 
   // ==========================================
-  // STEP 1: SEND OTP
+  // AUTH LOGIC
   // ==========================================
-  onSendOtp() {
-    if (this.emailForm.invalid) return;
+
+  onSubmit() {
+    if (this.loginForm.invalid) return;
     
     this.isLoading = true;
     this.errorMessage = '';
-    this.userEmail = this.emailForm.get('email')?.value;
-
-    this.authService.sendLoginOtp(this.userEmail)
-      .pipe(finalize(() => this.isLoading = false))
-      .subscribe({
-        next: (res) => {
-          if (res.success) {
-            this.currentStep = 2;
-            this.startResendTimer();
-            // Focus first OTP input after view updates
-            setTimeout(() => {
-                if(this.otpInputs && this.otpInputs.first) {
-                    this.otpInputs.first.nativeElement.focus();
-                }
-            }, 100);
-          } else {
-            this.errorMessage = res.message;
-          }
-        },
-        error: (err) => this.errorMessage = err.error?.message || 'Failed to send OTP'
-      });
-  }
-
-  // ==========================================
-  // STEP 2: VERIFY OTP
-  // ==========================================
-
-  onOtpInput(event: any, index: number) {
-    const input = event.target;
-    const value = input.value;
-
-    // Allow only numbers
-    if (!/^[0-9]$/.test(value) && value !== '') {
-      this.otpDigits[index] = '';
-      input.value = '';
-      return;
-    }
-
-    this.otpDigits[index] = value;
-
-    // Move to next input if value exists
-    if (value && index < 5) {
-      this.otpInputs.toArray()[index + 1].nativeElement.focus();
-    }
-  }
-
-  onOtpKeyDown(event: KeyboardEvent, index: number) {
-    // Move to previous input on Backspace if current is empty
-    if (event.key === 'Backspace' && !this.otpDigits[index] && index > 0) {
-      this.otpInputs.toArray()[index - 1].nativeElement.focus();
-    }
-  }
-
-  onVerifyOtp() {
-    const otpCode = this.otpDigits.join('');
-    if (otpCode.length < 6) {
-      this.errorMessage = "Please enter the complete 6-digit code.";
-      return;
-    }
-
-    this.isLoading = true;
-    this.errorMessage = '';
-
-    this.authService.verifyLoginOtp({ email: this.userEmail, otpCode })
-      .pipe(finalize(() => this.isLoading = false))
-      .subscribe({
-        next: (res) => {
-          if (res.success && res.data) {
-            if (res.data.isNewUser) {
-              this.currentStep = 3;
-            } 
-            this.signalRService.startConnection();
-          } else {
-            this.errorMessage = res.message;
-          }
-        },
-        error: (err) => {
-          this.errorMessage = err.error?.message || 'Invalid OTP';
-          this.otpDigits = ['', '', '', '', '', ''];
-        }
-      });
-  }
-
-  resendOtp() {
-    this.otpDigits = ['', '', '', '', '', ''];
-    this.onSendOtp();
-  }
-
-  goBackToEmail() {
-    this.currentStep = 1;
-    this.stopResendTimer();
-    this.errorMessage = '';
-    this.otpDigits = ['', '', '', '', '', ''];
     
-    // ✨ FIX: Re-initialize Google Button when going back
-    // We wait 100ms to let *ngIf="currentStep === 1" render the div
-    this.initializeGoogleSignIn();
-  }
+    const email = this.loginForm.value.email;
 
-  // ==========================================
-  // STEP 3: COMPLETE PROFILE
-  // ==========================================
-  onCompleteProfile() {
-    if (this.profileForm.invalid) return;
-
-    this.isLoading = true;
-    this.errorMessage = '';
-
-    const payload: any = {
-      email: this.userEmail,
-      firstName: this.profileForm.get('firstName')?.value,
-      lastName: this.profileForm.get('lastName')?.value,
-      mobileNumber: this.profileForm.get('mobileNumber')?.value
-    };
-
-    // If it's NOT an invite flow, we send the company name
-    if (!this.isInviteFlow) {
-        payload.companyName = this.profileForm.get('companyName')?.value;
+    if (this.passwordMode) {
+      const password = this.loginForm.value.password;
+      this.authService.login(email, password, true)
+        .pipe(finalize(() => this.isLoading = false))
+        .subscribe({
+          next: (res) => {
+            if (res.success && res.data) {
+               this.signalRService.startConnection();
+            } else {
+               this.errorMessage = res.message;
+            }
+          },
+          error: (err) => {
+            this.errorMessage = err.error?.message || 'Invalid credentials';
+          }
+        });
+    } else if (!this.otpMode) {
+      // Send OTP
+      this.authService.sendLoginOtp(email)
+        .pipe(finalize(() => this.isLoading = false))
+        .subscribe({
+          next: (res) => {
+            if (res.success) {
+               this.otpMode = true;
+               this.loginForm.get('otp')?.setValidators([Validators.required, Validators.minLength(6)]);
+               this.loginForm.get('otp')?.updateValueAndValidity();
+            } else {
+               this.errorMessage = res.message;
+            }
+          },
+          error: (err) => {
+            this.errorMessage = err.error?.message || 'Failed to send OTP';
+          }
+        });
     } else {
-        // If it IS an invite flow, pass the token so backend links them to the right team
-        payload.inviteToken = this.inviteToken;
-    }
-
-    // You might need a specific service method for accepting invites, 
-    // or update 'completeUserProfile' to handle the 'inviteToken'
-    this.authService.completeUserProfile(payload)
-      .pipe(finalize(() => this.isLoading = false))
-      .subscribe({
-        next: (res) => {
-          if (!res.success) {
-            this.errorMessage = res.message;
+      // Verify OTP
+      const otpCode = this.loginForm.value.otp;
+      this.authService.verifyLoginOtp({ email, otpCode })
+        .pipe(finalize(() => this.isLoading = false))
+        .subscribe({
+          next: (res) => {
+            if (res.success && res.data) {
+               this.signalRService.startConnection();
+               // Routing is handled by authService.handleAuthResponse
+            } else {
+               this.errorMessage = res.message;
+            }
+          },
+          error: (err) => {
+            this.errorMessage = err.error?.message || 'Invalid or expired OTP';
           }
-          // Success logic here (redirect to dashboard)
-        },
-        error: (err) => this.errorMessage = err.error?.message || 'Failed to update profile'
-      });
+        });
+    }
+  }
+
+  togglePasswordMode() {
+    this.passwordMode = !this.passwordMode;
+    if (this.passwordMode) {
+      this.otpMode = false;
+      this.loginForm.get('otp')?.clearValidators();
+      this.loginForm.get('otp')?.updateValueAndValidity();
+      this.loginForm.patchValue({ otp: '' });
+      this.loginForm.get('password')?.setValidators([Validators.required]);
+      this.loginForm.get('password')?.updateValueAndValidity();
+    } else {
+      this.loginForm.get('password')?.clearValidators();
+      this.loginForm.get('password')?.updateValueAndValidity();
+      this.loginForm.patchValue({ password: '' });
+    }
+  }
+
+  resetOtpMode() {
+    this.otpMode = false;
+    this.loginForm.get('otp')?.clearValidators();
+    this.loginForm.get('otp')?.updateValueAndValidity();
+    this.loginForm.patchValue({ otp: '' });
+    this.errorMessage = '';
   }
 
   // ==========================================
   // UTILS
   // ==========================================
-
-  startResendTimer() {
-    this.resendTimer = 300; 
-    this.stopResendTimer();
-    this.resendInterval = setInterval(() => {
-      if (this.resendTimer > 0) {
-        this.resendTimer--;
-      } else {
-        this.stopResendTimer();
-      }
-    }, 1000);
-  }
-
-  stopResendTimer() {
-    if (this.resendInterval) clearInterval(this.resendInterval);
-  }
-
-  get formattedTimer() {
-    const minutes = Math.floor(this.resendTimer / 60);
-    const seconds = this.resendTimer % 60;
-    return `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
-  }
 
   startSlider() {
     this.slideInterval = setInterval(() => {
@@ -387,7 +294,7 @@ export class AppBoxedLoginComponent implements OnInit, OnDestroy, AfterViewInit 
     }
 
     // 2. Safety Check: Are we on the right step?
-    if (this.currentStep !== 1) return;
+    if (this.mode !== 'login') return;
 
     // 3. Initialize Config (Required every time we re-render)
     google.accounts.id.initialize({
@@ -400,7 +307,7 @@ export class AppBoxedLoginComponent implements OnInit, OnDestroy, AfterViewInit 
     // Use a retry mechanism to ensure CSS layout is fully settled before measuring width
     const tryRender = (attempts: number = 0) => {
         const googleBtnElement = document.getElementById('google-btn');
-        if (!googleBtnElement || this.currentStep !== 1) return;
+        if (!googleBtnElement || this.mode !== 'login') return;
         
         const formElement = document.querySelector('form');
         const formWidth = formElement ? formElement.clientWidth : 0;
@@ -414,7 +321,8 @@ export class AppBoxedLoginComponent implements OnInit, OnDestroy, AfterViewInit 
             return;
         }
 
-        const finalWidth = containerWidth > 0 ? containerWidth : 400;
+        let finalWidth = containerWidth > 0 ? containerWidth : 400;
+        if (finalWidth > 400) finalWidth = 400; // Google's renderButton API accepts a maximum width of 400px
         
         // Prevent unnecessary re-renders if the width is already perfectly matching
         const currentIframe = googleBtnElement.querySelector('iframe');
@@ -446,39 +354,8 @@ export class AppBoxedLoginComponent implements OnInit, OnDestroy, AfterViewInit 
     .pipe(finalize(() => this.isLoading = false))
     .subscribe({
       next: (apiResponse) => {
-        const data = apiResponse.data;
-        
-        if (apiResponse.success && data) {
-          
-          // 1. Is this a new/incomplete user? (Service returns early for this case)
-          if (data.isNewUser || !data.isProfileComplete) {
-             const googleToken: any = jwtDecode(response.credential);
-             this.userEmail = googleToken.email;
-             
-             this.profileForm.patchValue({
-               firstName: googleToken.given_name || '',
-               lastName: googleToken.family_name || ''
-             });
-
-             this.currentStep = 3;
-             return; 
-          }
-
-          this.signalRService.startConnection();
-
-          // 2. Standard Login
-          // ✅ FIX: We do NOT navigate here. We let AuthService.handleLoginResponse 
-          // (which ran inside the pipe) handle the session storage and redirection.
-          
-          if (data.requiresSelection) {
-             // Exception: Workspace selection is a UI state, so we handle it here if needed,
-             // but usually AuthService handles the redirect to /workspace-selection too.
-             // If your AuthService redirects, you don't need this block either.
-             // But keeping it harmless if the Service logic matches.
-          } 
-          
-          // 🛑 REMOVED: this.router.navigate(['/replacements']); 
-          // This line was causing the bug.
+        if (apiResponse.success && apiResponse.data) {
+           this.signalRService.startConnection();
         } else {
           this.errorMessage = apiResponse.message;
         }
@@ -487,31 +364,5 @@ export class AppBoxedLoginComponent implements OnInit, OnDestroy, AfterViewInit 
         this.errorMessage = err.error?.message || 'Google login failed.';
       }
     });
-  }
-
-  onOtpPaste(event: ClipboardEvent) {
-    event.preventDefault();
-    const clipboardData = event.clipboardData || (window as any).clipboardData;
-    const pastedText = clipboardData.getData('text').trim();
-
-    // Check if it's a number
-    if (/^\d+$/.test(pastedText)) {
-      const digits = pastedText.split('').slice(0, 6); // Take first 6 digits
-      
-      // ✨ FIX: Added ': string' and ': number' types here
-      digits.forEach((digit: string, index: number) => {
-        if (index < 6) this.otpDigits[index] = digit;
-      });
-
-      // Focus the last filled input or the next empty one
-      const focusIndex = Math.min(digits.length, 5);
-      setTimeout(() => {
-          if (this.otpInputs && this.otpInputs.toArray()[focusIndex]) {
-            this.otpInputs.toArray()[focusIndex].nativeElement.focus();
-          }
-          // Optional: Trigger verify automatically if full code pasted
-          if (digits.length === 6) this.onVerifyOtp();
-      }, 50);
-    }
   }
 }

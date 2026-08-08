@@ -166,13 +166,16 @@
       }
 
       &.activeMenu {
-        box-shadow: 0 17px 20px -8px rgba(77, 91, 236, 0.231372549);
+        box-shadow: none !important;
+        background-color: #f8fafc !important; /* Extremely light grey/blue */
+        
         .mdc-list-item__primary-text {
-          color: $white !important;
+          color: mat.m2-get-color-from-palette($theme-primary, 500) !important;
+          font-weight: 600 !important;
         }
 
         .mat-mdc-list-item-icon {
-          color: $white !important;
+          color: mat.m2-get-color-from-palette($theme-primary, 500) !important;
         }
       }
 

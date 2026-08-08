@@ -1,0 +1,114 @@
+<div class="client-dashboard bg-light" style="min-height: 100vh; padding: 24px;">
+  <div class="filter-bar m-b-24 bg-white p-24 rounded shadow-sm">
+    <div class="header-content">
+      <h1 class="f-s-24 f-w-600 m-0 text-dark">
+        {{ dashboardData?.workspaceName || 'My Portal' }}
+      </h1>
+      <p class="mat-subtitle-2 text-muted m-0">What does my Advocate need from me?</p>
+    </div>
+  </div>
+
+  @if (isLoading) {
+    <div class="d-flex justify-content-center align-items-center p-y-48">
+      <div class="text-muted f-s-16">Loading Dashboard Data...</div>
+    </div>
+  } @else if (errorMessage) {
+    <div class="text-center p-y-48">
+      <p class="text-error f-w-500 m-b-16">{{ errorMessage }}</p>
+      <button mat-stroked-button color="primary" (click)="loadDashboardData()">Retry</button>
+    </div>
+  } @else {
+    <!-- Quick Actions & Key Metrics -->
+    <div class="row m-b-24">
+      <div class="col-md-4">
+        <mat-card class="zenxius-card bg-light-primary text-primary border-primary" style="height: 100%;">
+          <mat-card-content class="p-24 d-flex flex-column justify-content-between h-100">
+            <div class="d-flex justify-content-between align-items-start m-b-16">
+              <div>
+                <p class="m-0 f-s-14 f-w-600 text-uppercase tracking-wider opacity-75">Connected Orgs</p>
+                <h3 class="m-0 f-s-32 f-w-700 m-t-8">{{ dashboardData?.connectedOrganizations || 0 }}</h3>
+              </div>
+              <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center" style="width: 48px; height: 48px;">
+                <i-tabler name="building" class="icon-24"></i-tabler>
+              </div>
+            </div>
+            <button mat-flat-button color="primary" routerLink="/dashboard/client-organizations" class="w-100">
+              Manage Organizations
+            </button>
+          </mat-card-content>
+        </mat-card>
+      </div>
+
+      <div class="col-md-4">
+        <mat-card class="zenxius-card bg-light-warning text-warning border-warning" style="height: 100%;">
+          <mat-card-content class="p-24 d-flex flex-column justify-content-between h-100">
+            <div class="d-flex justify-content-between align-items-start m-b-16">
+              <div>
+                <p class="m-0 f-s-14 f-w-600 text-uppercase tracking-wider opacity-75">Document Vault</p>
+                <h3 class="m-0 f-s-18 f-w-600 m-t-8 text-dark">Secure Storage</h3>
+              </div>
+              <div class="bg-warning text-white rounded-circle d-flex align-items-center justify-content-center" style="width: 48px; height: 48px;">
+                <i-tabler name="folder" class="icon-24"></i-tabler>
+              </div>
+            </div>
+            <button mat-flat-button color="accent" routerLink="/dashboard/document-vault" class="w-100">
+              Open My Vault
+            </button>
+          </mat-card-content>
+        </mat-card>
+      </div>
+
+      <div class="col-md-4">
+        <mat-card class="zenxius-card bg-light-success text-success border-success" style="height: 100%;">
+          <mat-card-content class="p-24 d-flex flex-column justify-content-between h-100">
+            <div class="d-flex justify-content-between align-items-start m-b-16">
+              <div>
+                <p class="m-0 f-s-14 f-w-600 text-uppercase tracking-wider opacity-75">My Applications</p>
+                <h3 class="m-0 f-s-18 f-w-600 m-t-8 text-dark">Track Progress</h3>
+              </div>
+              <div class="bg-success text-white rounded-circle d-flex align-items-center justify-content-center" style="width: 48px; height: 48px;">
+                <i-tabler name="file-invoice" class="icon-24"></i-tabler>
+              </div>
+            </div>
+            <button mat-flat-button class="bg-success text-white w-100" routerLink="/dashboard/applications">
+              View Applications
+            </button>
+          </mat-card-content>
+        </mat-card>
+      </div>
+    </div>
+
+    <!-- Recent Activity -->
+    <div class="row">
+      <div class="col-12">
+        <mat-card class="zenxius-card">
+          <mat-card-header class="p-24 border-bottom">
+            <mat-card-title class="f-s-18 f-w-600 m-0">Recent Activity</mat-card-title>
+          </mat-card-header>
+          <mat-card-content class="p-0">
+            @if (!dashboardData?.recentActivity || dashboardData!.recentActivity.length === 0) {
+              <div class="text-center p-y-48">
+                <i-tabler name="history" class="text-muted icon-48 m-b-16 opacity-50"></i-tabler>
+                <p class="text-muted m-0 f-s-14">No recent activity found in your portal.</p>
+              </div>
+            } @else {
+              <div class="activity-feed p-24" style="max-height: 400px; overflow-y: auto;">
+                @for (act of dashboardData?.recentActivity; track act.createdOn) {
+                  <div class="d-flex gap-16 m-b-24">
+                    <div class="bg-light text-muted rounded-circle d-flex align-items-center justify-content-center flex-shrink-0" style="width: 40px; height: 40px;">
+                      <i-tabler name="clock" class="icon-18"></i-tabler>
+                    </div>
+                    <div>
+                      <p class="m-0 f-w-500 text-dark f-s-14 line-height-1-5">{{ act.description }}</p>
+                      <p class="m-0 text-muted f-s-12 m-t-4">{{ act.createdOn | date:'medium' }}</p>
+                    </div>
+                  </div>
+                }
+              </div>
+            }
+          </mat-card-content>
+        </mat-card>
+      </div>
+    </div>
+  }
+</div>

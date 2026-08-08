@@ -192,15 +192,7 @@ export class FullComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    // DEV MODE: load profile gracefully (will fail without backend, ignore errors)
-    this.profileService.loadProfileAndSetLogo().subscribe({
-      next: (response) => {
-        if (response.success && response.data) {
-          this.profileData = response.data;
-        }
-      },
-      error: () => {} // silently ignore — no backend in dev mode
-    });
+
     // Listen to real-time permission updates and filter the sidebar
     this.authService.permissions$.pipe(takeUntil(this.destroy$)).subscribe(() => {
       this.buildAccessibleNavItems();
@@ -208,14 +200,41 @@ export class FullComponent implements OnInit {
   }
 
   private buildAccessibleNavItems(): void {
+    if (this.authService.getUserRole() === 'SuperAdmin') {
+      this.accessibleNavItems = [
+        { navCap: 'Super Admin', iconName: 'shield' },
+        { displayName: 'Dashboard', iconName: 'layout-dashboard', route: '/super-admin/dashboard' },
+        { displayName: 'Organization Types', iconName: 'building', route: '/super-admin/organization-types' },
+        { displayName: 'Document Types', iconName: 'files', route: '/super-admin/document-types' },
+        { displayName: 'Templates', iconName: 'file-text', route: '/super-admin/templates' },
+        { displayName: 'Settings', iconName: 'settings', route: '/settings' },
+      ];
+      return;
+    }
+
     const filtered: NavItem[] = [];
     let pendingNavCap: NavItem | null = null;
 
     for (const item of this.navItems) {
+      if (item.navCap === 'Administration' && this.authService.isOrganization()) {
+        filtered.push(item);
+        continue;
+      }
+
       if (item.navCap) {
         // Hold onto the header. We only add it if a child item is accessible.
         pendingNavCap = item;
       } else if (item.route) {
+        // Hide Client-only routes from Organizations
+        if ((item.route === '/dashboard/client-organizations' || item.route === '/dashboard/document-vault') && this.authService.isOrganization()) {
+          continue;
+        }
+        
+        // Hide Organization-only routes from Clients
+        if (item.route === '/dashboard/clients' && this.authService.getUserRole() === 'Client') {
+          continue;
+        }
+
         // Check if the user has CanView permission for this route
         if (this.authService.hasPermission(item.route, 'CanView')) {
           if (pendingNavCap) {

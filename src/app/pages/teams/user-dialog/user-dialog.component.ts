@@ -41,8 +41,7 @@ export class UserDialogComponent implements OnInit {
   constructor(
     public dialogRef: MatDialogRef<UserDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: DialogData,
-    private authService: AuthService,
-    private branchService: BranchService
+    private authService: AuthService
   ) {
     this.action = data.action;
     this.local_data = { ...data.user };
@@ -50,35 +49,11 @@ export class UserDialogComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.loadBranches();
-  }
-
-  loadBranches() {
-    this.isLoadingBranches = true;
-    this.branchService.getBranches().subscribe({
-      next: (res) => {
-        this.branches = res.data || [];
-        if (this.action === 'Update' && this.local_data.id) {
-          this.branchService.getUserBranches(this.local_data.id).subscribe({
-            next: (bRes) => {
-              this.selectedBranches = (bRes.data || []).map(b => b.id);
-              this.isLoadingBranches = false;
-            },
-            error: () => this.isLoadingBranches = false
-          });
-        } else {
-          this.isLoadingBranches = false;
-        }
-      },
-      error: () => {
-        this.isLoadingBranches = false;
-      }
-    });
   }
 
   doAction(): void {
     if (!this.canEdit) return; 
-    this.dialogRef.close({ event: this.action, data: this.local_data, branchIds: this.selectedBranches });
+    this.dialogRef.close({ event: this.action, data: this.local_data });
   }
 
   closeDialog(): void {

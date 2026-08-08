@@ -1,0 +1,187 @@
+<div class="org-dashboard bg-light" style="min-height: 100vh; padding: 24px;">
+  <div class="filter-bar m-b-24 bg-white p-24 rounded shadow-sm">
+    <div class="header-content">
+      <h1 class="f-s-24 f-w-600 m-0 text-dark">
+        {{ dashboardData?.workspaceName || 'Dashboard' }}
+      </h1>
+      <p class="mat-subtitle-2 text-muted m-0">What work do I have today?</p>
+    </div>
+  </div>
+
+  @if (isLoading) {
+    <div class="d-flex justify-content-center align-items-center p-y-48">
+      <div class="text-muted f-s-16">Loading Dashboard Data...</div>
+    </div>
+  } @else if (errorMessage) {
+    <div class="text-center p-y-48">
+      <p class="text-error f-w-500 m-b-16">{{ errorMessage }}</p>
+      <button mat-stroked-button color="primary" (click)="loadDashboardData()">Retry</button>
+    </div>
+  } @else {
+    <!-- KYC Alert -->
+    @if (authService.isOrganization() && kycStatus) {
+      @if (kycStatus.status === 'PENDING') {
+        <mat-card class="m-b-24 bg-light-warning border border-warning" style="box-shadow: none;">
+          <mat-card-content class="p-16 d-flex justify-content-between align-items-center">
+            <div class="d-flex align-items-center gap-16">
+              <i-tabler name="alert-triangle" class="text-warning icon-24"></i-tabler>
+              <div>
+                <h3 class="m-0 f-w-600 text-warning">KYC Verification Pending</h3>
+                <p class="m-0 text-muted f-s-14 m-t-4">Please complete your KYC to unlock all features.</p>
+              </div>
+            </div>
+            <button mat-flat-button color="accent" (click)="openKycModal()">Complete KYC</button>
+          </mat-card-content>
+        </mat-card>
+      } @else if (kycStatus.status === 'SUBMITTED') {
+        <mat-card class="m-b-24 bg-light-info border border-info" style="box-shadow: none;">
+          <mat-card-content class="p-16 d-flex align-items-center gap-16">
+            <i-tabler name="info-circle" class="text-info icon-24"></i-tabler>
+            <div>
+              <h3 class="m-0 f-w-600 text-info">KYC Under Review</h3>
+              <p class="m-0 text-muted f-s-14 m-t-4">Your KYC documents have been submitted and are pending approval.</p>
+            </div>
+          </mat-card-content>
+        </mat-card>
+      } @else if (kycStatus.status === 'REJECTED') {
+        <mat-card class="m-b-24 bg-light-error border border-error" style="box-shadow: none;">
+          <mat-card-content class="p-16 d-flex justify-content-between align-items-center">
+            <div class="d-flex align-items-center gap-16">
+              <i-tabler name="circle-x" class="text-error icon-24"></i-tabler>
+              <div>
+                <h3 class="m-0 f-w-600 text-error">KYC Rejected</h3>
+                <p class="m-0 text-muted f-s-14 m-t-4">Your KYC was rejected. Please review and resubmit your documents.</p>
+              </div>
+            </div>
+            <button mat-flat-button color="warn" (click)="openKycModal()">Resubmit KYC</button>
+          </mat-card-content>
+        </mat-card>
+      }
+    }
+
+    <!-- Key Metrics -->
+    <div class="row m-b-24">
+      <div class="col-12 col-sm-6 col-lg m-b-16">
+        <mat-card class="zenxius-card bg-light-primary text-primary border-primary cursor-pointer" routerLink="/dashboard/clients" style="transition: transform 0.2s;">
+          <mat-card-content class="p-16">
+            <div class="d-flex justify-content-between align-items-start">
+              <div>
+                <p class="m-0 f-s-12 f-w-600 text-uppercase tracking-wider opacity-75">Total Clients</p>
+                <h3 class="m-0 f-s-24 f-w-700 m-t-8">{{ dashboardData?.totalClients || 0 }}</h3>
+              </div>
+              <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center flex-shrink-0" style="width: 32px; height: 32px;">
+                <i-tabler name="users" class="icon-18"></i-tabler>
+              </div>
+            </div>
+          </mat-card-content>
+        </mat-card>
+      </div>
+
+      <div class="col-12 col-sm-6 col-lg m-b-16">
+        <mat-card class="zenxius-card bg-light-warning text-warning border-warning cursor-pointer" [routerLink]="['/dashboard/applications']" [queryParams]="{ status: 'OPEN' }" style="transition: transform 0.2s;">
+          <mat-card-content class="p-16">
+            <div class="d-flex justify-content-between align-items-start">
+              <div>
+                <p class="m-0 f-s-12 f-w-600 text-uppercase tracking-wider opacity-75">Open Apps</p>
+                <h3 class="m-0 f-s-24 f-w-700 m-t-8">{{ dashboardData?.openApplications || 0 }}</h3>
+              </div>
+              <div class="bg-warning text-white rounded-circle d-flex align-items-center justify-content-center flex-shrink-0" style="width: 32px; height: 32px;">
+                <i-tabler name="folder" class="icon-18"></i-tabler>
+              </div>
+            </div>
+          </mat-card-content>
+        </mat-card>
+      </div>
+
+      <div class="col-12 col-sm-6 col-lg m-b-16">
+        <mat-card class="zenxius-card bg-light-info text-info border-info cursor-pointer" [routerLink]="['/dashboard/applications']" [queryParams]="{ status: 'IN_PROGRESS' }" style="transition: transform 0.2s;">
+          <mat-card-content class="p-16">
+            <div class="d-flex justify-content-between align-items-start">
+              <div>
+                <p class="m-0 f-s-12 f-w-600 text-uppercase tracking-wider opacity-75">In Progress Apps</p>
+                <h3 class="m-0 f-s-24 f-w-700 m-t-8">{{ dashboardData?.inProgressApplications || 0 }}</h3>
+              </div>
+              <div class="bg-info text-white rounded-circle d-flex align-items-center justify-content-center flex-shrink-0" style="width: 32px; height: 32px;">
+                <i-tabler name="clock" class="icon-18"></i-tabler>
+              </div>
+            </div>
+          </mat-card-content>
+        </mat-card>
+      </div>
+
+      <div class="col-12 col-sm-6 col-lg m-b-16">
+        <mat-card class="zenxius-card bg-light-success text-success border-success cursor-pointer" [routerLink]="['/dashboard/applications']" [queryParams]="{ status: 'COMPLETED' }" style="transition: transform 0.2s;">
+          <mat-card-content class="p-16">
+            <div class="d-flex justify-content-between align-items-start">
+              <div>
+                <p class="m-0 f-s-12 f-w-600 text-uppercase tracking-wider opacity-75">Completed Apps</p>
+                <h3 class="m-0 f-s-24 f-w-700 m-t-8">{{ dashboardData?.completedApplications || 0 }}</h3>
+              </div>
+              <div class="bg-success text-white rounded-circle d-flex align-items-center justify-content-center flex-shrink-0" style="width: 32px; height: 32px;">
+                <i-tabler name="circle-check" class="icon-18"></i-tabler>
+              </div>
+            </div>
+          </mat-card-content>
+        </mat-card>
+      </div>
+    </div>
+
+    <!-- Charts and Activity -->
+    <div class="row">
+      <!-- Applications By Status -->
+      <div class="col-lg-6">
+        <mat-card class="zenxius-card">
+          <mat-card-header class="p-24 border-bottom">
+            <mat-card-title class="f-s-18 f-w-600 m-0">Applications Overview</mat-card-title>
+          </mat-card-header>
+          <mat-card-content class="p-24 text-center">
+            @if (statusChartOptions) {
+              <apx-chart
+                [series]="statusChartOptions.series"
+                [chart]="statusChartOptions.chart"
+                [colors]="statusChartOptions.colors"
+                [plotOptions]="statusChartOptions.plotOptions"
+                [dataLabels]="statusChartOptions.dataLabels"
+                [xaxis]="statusChartOptions.xaxis"
+                [yaxis]="statusChartOptions.yaxis"
+                [legend]="statusChartOptions.legend"
+                [grid]="statusChartOptions.grid"
+              ></apx-chart>
+            }
+          </mat-card-content>
+        </mat-card>
+      </div>
+
+      <!-- Recent Activity -->
+      <div class="col-lg-6">
+        <mat-card class="zenxius-card" style="height: 100%;">
+          <mat-card-header class="p-24 border-bottom">
+            <mat-card-title class="f-s-18 f-w-600 m-0">Recent Activity</mat-card-title>
+          </mat-card-header>
+          <mat-card-content class="p-0">
+            @if (!dashboardData?.recentActivity || dashboardData!.recentActivity.length === 0) {
+              <div class="text-center p-y-48">
+                <i-tabler name="history" class="text-muted icon-48 m-b-16 opacity-50"></i-tabler>
+                <p class="text-muted m-0 f-s-14">No recent activity found in your workspace.</p>
+              </div>
+            } @else {
+              <div class="activity-feed p-24" style="max-height: 350px; overflow-y: auto;">
+                @for (act of dashboardData?.recentActivity; track act.createdOn) {
+                  <div class="d-flex gap-16 m-b-24">
+                    <div class="bg-light text-muted rounded-circle d-flex align-items-center justify-content-center flex-shrink-0" style="width: 40px; height: 40px;">
+                      <i-tabler name="clock" class="icon-18"></i-tabler>
+                    </div>
+                    <div>
+                      <p class="m-0 f-w-500 text-dark f-s-14 line-height-1-5">{{ act.description }}</p>
+                      <p class="m-0 text-muted f-s-12 m-t-4">{{ act.createdOn | date:'medium' }}</p>
+                    </div>
+                  </div>
+                }
+              </div>
+            }
+          </mat-card-content>
+        </mat-card>
+      </div>
+    </div>
+  }
+</div>

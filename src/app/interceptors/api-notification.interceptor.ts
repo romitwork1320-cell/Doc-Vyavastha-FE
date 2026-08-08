@@ -17,11 +17,14 @@ export class ApiNotificationInterceptor implements HttpInterceptor {
   private snackBar = inject(MatSnackBar);
 
   intercept(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
-    return next.handle(request).pipe(
+    const skipInterceptor = request.headers.has('X-Skip-Interceptor');
+    const req = skipInterceptor ? request.clone({ headers: request.headers.delete('X-Skip-Interceptor') }) : request;
+
+    return next.handle(req).pipe(
       tap((event: HttpEvent<any>) => {
         if (event instanceof HttpResponse) {
           const body = event.body;
-          
+
           if (body) {
             // 1. Handle Logical Errors (Backend returns HTTP 200 but success = false)
             if (body.success === false && body.message) {
@@ -36,8 +39,9 @@ export class ApiNotificationInterceptor implements HttpInterceptor {
             else if (body.success === true && body.message && typeof body.message === 'string') {
               // Only automatically show success messages for create/update/delete actions
               const isMutatingRequest = ['POST', 'PUT', 'PATCH', 'DELETE'].includes(request.method.toUpperCase());
-              
-              if (isMutatingRequest && body.message.trim() !== '' && body.message !== 'Success') {
+              const isAuthEndpoint = request.url.toLowerCase().includes('/auth/');
+
+              if (isMutatingRequest && !isAuthEndpoint && body.message.trim() !== '' && body.message !== 'Success') {
                 this.snackBar.open(body.message, 'Close', {
                   duration: 3000,
                   horizontalPosition: 'right',
@@ -57,13 +61,15 @@ export class ApiNotificationInterceptor implements HttpInterceptor {
           errorMessage = error.message;
         }
 
-        this.snackBar.open(errorMessage, 'Close', {
-          duration: 3000,
-          horizontalPosition: 'right',
-          verticalPosition: 'top',
-          panelClass: ['error-snackbar']
-        });
-        
+        if (!skipInterceptor && errorMessage !== 'Invalid or expired token') {
+          this.snackBar.open(errorMessage, 'Close', {
+            duration: 3000,
+            horizontalPosition: 'right',
+            verticalPosition: 'top',
+            panelClass: ['error-snackbar']
+          });
+        }
+
         return throwError(() => error);
       })
     );

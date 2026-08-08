@@ -217,6 +217,12 @@ export class HeaderComponent implements OnInit, OnDestroy {
   ) {
     translate.setDefaultLang('en');
     this.companyLogoUrl$ = this.profileService.companyLogoUrl$;
+
+    this.profileService.userName$.subscribe(name => {
+      if (name && name !== 'User') {
+        this.userName = name;
+      }
+    });
   }
 
   @HostListener('document:keydown', ['$event'])
@@ -255,11 +261,8 @@ export class HeaderComponent implements OnInit, OnDestroy {
           this.subService.checkSubscriptionStatus(this.currentTenantId);
         }
 
-        this.currentTenantId = Number(decodedToken.TenantId || decodedToken.tenantId || decodedToken.tid || 0);
-        
-        if (this.currentTenantId > 0) {
-          this.subService.checkSubscriptionStatus(this.currentTenantId);
-        }
+        // Load the real profile to update name and logo across the app
+        this.profileService.loadProfileAndSetLogo().subscribe();
       }
     } catch (error) {
       console.error("Error decoding token:", error);

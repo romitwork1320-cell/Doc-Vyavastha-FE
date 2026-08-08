@@ -1,0 +1,58 @@
+<div class="dialog-container">
+  <div class="dialog-header d-flex justify-content-between align-items-center p-x-24 p-y-16 b-b-1">
+    <h2 class="m-0 f-s-20 f-w-600">Review KYC Documents</h2>
+    <button mat-icon-button (click)="dialogRef.close()">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+
+  <mat-dialog-content class="p-24" style="max-height: 70vh;">
+    <div class="org-details m-b-24 p-16 bg-light-primary rounded">
+      <h4 class="f-w-600 m-b-16 m-t-0">{{ data.organization.company_name || data.organization.CompanyName }}</h4>
+      <div class="row">
+        <div class="col-sm-6 m-b-8"><strong>Email:</strong> {{ data.organization.contact_email || data.organization.ContactEmail }}</div>
+        <div class="col-sm-6 m-b-8"><strong>Phone:</strong> {{ data.organization.contact_phone || data.organization.ContactPhone }}</div>
+        <div class="col-sm-6 m-b-8"><strong>Type:</strong> {{ data.organization.org_type || data.organization.OrgType }}</div>
+        <div class="col-sm-6 m-b-8"><strong>Status:</strong> {{ data.organization.kyc_status || data.organization.KycStatus }}</div>
+      </div>
+    </div>
+
+    <mat-tab-group>
+      <mat-tab label="Registration Certificate">
+        <div class="document-viewer m-t-16 b-1 b-color-divider rounded overflow-hidden" style="height: 500px;">
+          <iframe [src]="certUrl" width="100%" height="100%" style="border: none;"></iframe>
+        </div>
+      </mat-tab>
+      <mat-tab label="PAN Card">
+        <div class="document-viewer m-t-16 b-1 b-color-divider rounded overflow-hidden" style="height: 500px;">
+          <iframe [src]="panUrl" width="100%" height="100%" style="border: none;"></iframe>
+        </div>
+      </mat-tab>
+    </mat-tab-group>
+
+    @if (showRejectionInput) {
+      <div class="rejection-input m-t-24 p-16 bg-light-error rounded">
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Rejection Reason</mat-label>
+          <textarea matInput [(ngModel)]="rejectionReason" rows="3" placeholder="Explain why the KYC is rejected..."></textarea>
+        </mat-form-field>
+        <div class="d-flex justify-content-end gap-12">
+          <button mat-button (click)="cancelReject()">Cancel</button>
+          <button mat-flat-button color="warn" (click)="onReject()">Confirm Reject</button>
+        </div>
+      </div>
+    }
+  </mat-dialog-content>
+
+  <mat-dialog-actions class="p-24 justify-content-end gap-12 b-t-1">
+    @if ((data.organization.kyc_status || data.organization.KycStatus) === 'PENDING_VERIFICATION') {
+      @if (!showRejectionInput) {
+        <button mat-stroked-button color="warn" (click)="onReject()">Reject</button>
+        <button mat-flat-button color="primary" (click)="onApprove()">Approve</button>
+      }
+    } @else {
+      <button mat-flat-button color="primary" (click)="dialogRef.close()">Close</button>
+    }
+  </mat-dialog-actions>
+</div>
+

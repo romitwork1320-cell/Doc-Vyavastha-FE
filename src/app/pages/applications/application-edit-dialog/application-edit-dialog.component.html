@@ -1,0 +1,21 @@
+<h2 mat-dialog-title>Edit Application</h2>
+<mat-dialog-content class="mat-typography p-y-24">
+  <form [formGroup]="editForm">
+    <mat-form-field appearance="outline" class="w-100" color="primary">
+      <mat-label>Application Title</mat-label>
+      <input matInput formControlName="title" placeholder="e.g. FY 2024 Tax Filing" />
+      <mat-error *ngIf="editForm.get('title')?.hasError('required')">
+        Title is required.
+      </mat-error>
+    </mat-form-field>
+  </form>
+</mat-dialog-content>
+<mat-dialog-actions align="end" class="p-b-24 p-x-24">
+  <button mat-button (click)="onNoClick()" [disabled]="isLoading">Cancel</button>
+  <button mat-flat-button color="primary" (click)="save()" [disabled]="editForm.invalid || isLoading">
+    <div class="d-flex align-items-center gap-8">
+      <mat-spinner diameter="20" *ngIf="isLoading"></mat-spinner>
+      Save Changes
+    </div>
+  </button>
+</mat-dialog-actions>

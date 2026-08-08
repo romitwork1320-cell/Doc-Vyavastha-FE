@@ -1,0 +1,60 @@
+<h2 mat-dialog-title class="m-0 p-y-16 p-x-24 border-bottom d-flex justify-content-between align-items-center">
+  Manage Document Access
+  <button mat-icon-button (click)="close()">
+    <mat-icon>close</mat-icon>
+  </button>
+</h2>
+
+<mat-dialog-content class="p-24" style="min-height: 250px;">
+  <div class="m-b-24">
+    <div class="f-s-14 text-muted m-b-4">Document</div>
+    <div class="f-w-600 f-s-16 text-primary">{{ document.file_name }}</div>
+  </div>
+
+  <div *ngIf="loading" class="d-flex justify-content-center p-y-48">
+    <mat-spinner diameter="30"></mat-spinner>
+  </div>
+
+  <div *ngIf="!loading">
+    <div class="f-s-14 f-w-600 m-b-16">Organizations</div>
+    
+    <div *ngIf="organizations.length === 0" class="text-muted f-s-14 p-y-24 text-center">
+      You are not connected to any organizations yet.
+    </div>
+
+    <mat-list>
+      <mat-list-item *ngFor="let org of organizations" class="m-b-8 border rounded">
+        <div class="d-flex justify-content-between align-items-center w-100 p-y-8 p-x-12">
+          <div class="d-flex align-items-center gap-12">
+            <div class="bg-light-primary text-primary rounded d-flex align-items-center justify-content-center" style="width: 32px; height: 32px;">
+              <mat-icon class="icon-16">business</mat-icon>
+            </div>
+            <div>
+              <div class="f-w-600 f-s-14">{{ org.tenant_name || org.TenantName }}</div>
+              <div class="f-s-12 text-muted">Connected {{ (org.created_at || org.CreatedAt) | date:'M/d/yy, h:mm a' }}</div>
+            </div>
+          </div>
+          <div>
+            <mat-slide-toggle 
+              [checked]="org.hasAccess" 
+              color="primary"
+              (change)="toggleAccess(org, $event)">
+              {{ org.hasAccess ? 'Access Granted' : 'Access Revoked' }}
+            </mat-slide-toggle>
+          </div>
+        </div>
+      </mat-list-item>
+    </mat-list>
+  </div>
+
+  <div class="m-t-24 p-16 bg-light-warning text-warning rounded d-flex gap-12">
+    <mat-icon>info</mat-icon>
+    <div class="f-s-13">
+      Revoking access will immediately hide this document from the organization's dashboard. It will also mark any open application requirements using this document as missing.
+    </div>
+  </div>
+</mat-dialog-content>
+
+<mat-dialog-actions class="p-x-24 p-y-16 border-top d-flex justify-content-end">
+  <button mat-stroked-button (click)="close()">Done</button>
+</mat-dialog-actions>

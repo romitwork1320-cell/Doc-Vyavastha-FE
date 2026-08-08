@@ -1,0 +1,28 @@
+<h2 mat-dialog-title>Manage Connection Permissions</h2>
+<mat-dialog-content class="p-t-24">
+  <p class="text-muted m-b-24 f-s-14">
+    Control what permissions your organization has over this client.
+  </p>
+
+  <div style="display: flex; flex-direction: column; gap: 12px;">
+    <mat-checkbox [(ngModel)]="permissions.viewProfile" color="primary">View Profile</mat-checkbox>
+    <mat-checkbox [(ngModel)]="permissions.viewDocuments" color="primary">View Documents</mat-checkbox>
+    <mat-checkbox [(ngModel)]="permissions.uploadDocuments" color="primary">Upload Documents</mat-checkbox>
+    <mat-checkbox [(ngModel)]="permissions.createApplications" color="primary">Create Applications</mat-checkbox>
+    <mat-checkbox [(ngModel)]="permissions.viewApplications" color="primary">View Applications</mat-checkbox>
+    <mat-checkbox [(ngModel)]="permissions.approveApplications" color="primary">Approve Applications</mat-checkbox>
+    <mat-checkbox [(ngModel)]="permissions.manageConnection" color="primary">Manage Connection Settings</mat-checkbox>
+  </div>
+
+  @if (error) {
+    <div class="p-16 bg-light-error text-error rounded m-t-24 f-s-14">
+      {{ error }}
+    </div>
+  }
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+  <button mat-button mat-dialog-close [disabled]="isSaving">Cancel</button>
+  <button mat-flat-button color="primary" (click)="save()" [disabled]="isSaving">
+    {{ isSaving ? 'Saving...' : 'Save Permissions' }}
+  </button>
+</mat-dialog-actions>

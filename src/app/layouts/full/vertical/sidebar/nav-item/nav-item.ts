@@ -14,4 +14,5 @@ export interface NavItem {
     children?: NavItem[];
     ddType?: string;
     subItemIcon?: boolean;
+    exactMatch?: boolean;
 }

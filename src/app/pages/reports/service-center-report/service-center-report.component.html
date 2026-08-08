@@ -146,7 +146,7 @@
                  <div class="desktop-only">
                     @if(element.warrantyStatus) {
                         <p class="m-0">{{ element.warrantyMonths }} Months</p>
-                        <small class="text-muted d-block">End: {{ element.warrantyEndDate | date:'dd-MM-yyyy' }}</small>
+                        <small class="text-muted d-block">End: {{ element.warrantyEndDate | date:'dd-MM-yyyy, hh:mm a' }}</small>
                         <span class="" [class.text-success]="element.warrantyStatus === 'In Warranty'" [class.text-error]="element.warrantyStatus === 'Out of Warranty'">
                             {{ element.warrantyStatus }}
                         </span>
@@ -230,7 +230,7 @@
           <ng-container matColumnDef="updatedDate">
             <th mat-header-cell *matHeaderCellDef mat-sort-header="UpdatedDate" class=" f-w-600 mobile-right-col">Updated Date</th>
             <td mat-cell *matCellDef="let element" class="mobile-right-col">
-                <span class=" text-muted">{{ element.updatedDate | date:'dd-MM-yyyy' }}</span>
+                <span class=" text-muted">{{ element.updatedDate | date:'dd-MM-yyyy, hh:mm a' }}</span>
             </td>
           </ng-container>
 
@@ -308,7 +308,7 @@
 
           <ng-container matColumnDef="serviceCenterName"><th mat-header-cell *matHeaderCellDef mat-sort-header="ServiceCenterName" class=" f-w-600 mobile-hide">Service Center</th><td mat-cell *matCellDef="let element" class="mobile-hide">{{ element.serviceCenterName }}</td></ng-container>
 
-          <ng-container matColumnDef="updatedDate"><th mat-header-cell *matHeaderCellDef mat-sort-header="UpdatedDate" class=" f-w-600 mobile-hide">Updated Date</th><td mat-cell *matCellDef="let element" class="mobile-hide">{{ element.updatedDate | date:'dd-MM-yyyy' }}</td></ng-container>
+          <ng-container matColumnDef="updatedDate"><th mat-header-cell *matHeaderCellDef mat-sort-header="UpdatedDate" class=" f-w-600 mobile-hide">Updated Date</th><td mat-cell *matCellDef="let element" class="mobile-hide">{{ element.updatedDate | date:'dd-MM-yyyy, hh:mm a' }}</td></ng-container>
 
           <ng-container matColumnDef="pdf">
             <th mat-header-cell *matHeaderCellDef class=" f-w-600 text-end"> PDF </th>
@@ -388,7 +388,7 @@
           
           <ng-container matColumnDef="notes"><th mat-header-cell *matHeaderCellDef class=" f-w-600 mobile-hide">Notes</th><td mat-cell *matCellDef="let element" class="mobile-hide">{{ element.note || '-' }}</td></ng-container>
 
-          <ng-container matColumnDef="completedDate"><th mat-header-cell *matHeaderCellDef mat-sort-header="CompletedDate" class=" f-w-600 mobile-hide">Completed Date</th><td mat-cell *matCellDef="let element" class="mobile-hide">{{ element.completedDate | date:'dd-MM-yyyy' }}</td></ng-container>
+          <ng-container matColumnDef="completedDate"><th mat-header-cell *matHeaderCellDef mat-sort-header="CompletedDate" class=" f-w-600 mobile-hide">Completed Date</th><td mat-cell *matCellDef="let element" class="mobile-hide">{{ element.completedDate | date:'dd-MM-yyyy, hh:mm a' }}</td></ng-container>
 
           <ng-container matColumnDef="pdf">
             <th mat-header-cell *matHeaderCellDef class=" f-w-600 text-end"> PDF </th>

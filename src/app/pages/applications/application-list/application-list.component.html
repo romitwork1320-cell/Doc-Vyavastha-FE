@@ -1,0 +1,127 @@
+<div class="p-24">
+  <div class="d-flex justify-content-between align-items-end m-b-24">
+    <div>
+      <h1 class="zenxius-page-title">Applications</h1>
+      <div class="zenxius-page-subtitle">Manage and track client applications.</div>
+    </div>
+    <div class="d-flex gap-16 align-items-center">
+      <button *ngIf="isOrganization && canAdd" mat-button class="zenxius-btn-primary" (click)="openCreateDialog()">
+        <span class="d-flex align-items-center">
+          <i-tabler name="plus" class="icon-18 m-r-8"></i-tabler> Create Application
+        </span>
+      </button>
+    </div>
+  </div>
+
+  <div class="zenxius-card">
+    <div class="p-x-24 p-y-16 d-flex justify-content-between align-items-center border-bottom">
+      <div class="d-flex gap-16 align-items-center">
+        <div class="zenxius-select-wrapper">
+          <button class="zenxius-select d-flex justify-content-between align-items-center text-left" [matMenuTriggerFor]="statusMenu">
+            {{ getFilterDisplay() }}
+            <i-tabler name="chevron-down" class="icon-16 select-chevron"></i-tabler>
+          </button>
+          <mat-menu #statusMenu="matMenu" class="zenxius-menu">
+            <button mat-menu-item (click)="applyFilter('All')">All Status</button>
+            <button mat-menu-item (click)="applyFilter('DRAFT')">Draft</button>
+            <button mat-menu-item (click)="applyFilter('OPEN')">Open</button>
+            <button mat-menu-item (click)="applyFilter('IN_PROGRESS')">In Progress</button>
+            <button mat-menu-item (click)="applyFilter('COMPLETED')">Completed</button>
+          </mat-menu>
+        </div>
+      </div>
+      
+      <div class="zenxius-search-wrapper">
+        <i-tabler name="search" class="icon-18 search-icon"></i-tabler>
+        <input type="text" placeholder="Search...." class="zenxius-search-input" (input)="applySearch($event)">
+      </div>
+    </div>
+    <div class="p-0">
+      <div class="table-container">
+        <table mat-table [dataSource]="paginatedApplications" class="w-100">
+
+          <!-- Title Column -->
+          <ng-container matColumnDef="title">
+            <th mat-header-cell *matHeaderCellDef class="f-w-500 text-muted f-s-13" style="padding-left: 24px;"> Title </th>
+            <td mat-cell *matCellDef="let element" class="mat-body-1" style="padding-left: 24px;">
+              <h6 class="mat-subtitle-1 f-s-14 f-w-500 m-b-0">{{element.Title || element.title}}</h6>
+            </td>
+          </ng-container>
+
+          <!-- Client Column -->
+          <ng-container matColumnDef="client">
+            <th mat-header-cell *matHeaderCellDef class="f-w-500 text-muted f-s-13"> Client </th>
+            <td mat-cell *matCellDef="let element"> 
+              <span class="text-muted f-s-13">{{ clientsMap[element.ClientID || element.client_id || element.clientId] || (element.ClientID || element.client_id || element.clientId) }}</span>
+            </td>
+          </ng-container>
+
+          <!-- Status Column -->
+          <ng-container matColumnDef="status">
+            <th mat-header-cell *matHeaderCellDef class="f-w-500 text-muted f-s-13"> Status </th>
+            <td mat-cell *matCellDef="let element">
+              <span class="p-x-12 p-y-4 rounded-pill f-w-600 f-s-12 d-inline-block text-center"
+                [ngClass]="{
+                  'bg-light-success text-success': (element.Status || element.status)?.toUpperCase() === 'COMPLETED',
+                  'bg-light-primary text-primary': (element.Status || element.status)?.toUpperCase() === 'OPEN',
+                  'bg-light-info text-info': (element.Status || element.status)?.toUpperCase() === 'IN_PROGRESS',
+                  'bg-light-warning text-warning': (element.Status || element.status)?.toUpperCase() === 'DRAFT'
+                }">
+                <ng-container *ngIf="element.ArchivedAt || element.archived_at; else statusLabel">
+                  Archived
+                </ng-container>
+                <ng-template #statusLabel>
+                  {{ ((element.Status || element.status)?.toUpperCase() === 'IN_PROGRESS' ? 'In Progress' : (element.Status || element.status)) | titlecase }}
+                </ng-template>
+              </span>
+            </td>
+          </ng-container>
+
+          <!-- Created At Column -->
+          <ng-container matColumnDef="created_at">
+            <th mat-header-cell *matHeaderCellDef class="f-w-500 text-muted f-s-13"> Created </th>
+            <td mat-cell *matCellDef="let element"> 
+              <span class="text-muted f-s-13">{{ (element.CreatedAt || element.created_at) | date:'MMM d, y' }}</span>
+            </td>
+          </ng-container>
+
+          <!-- Actions Column -->
+          <ng-container matColumnDef="actions">
+            <th mat-header-cell *matHeaderCellDef class="f-w-500 text-muted f-s-13 text-right" style="padding-right: 24px;"> Actions </th>
+            <td mat-cell *matCellDef="let element" class="text-right" style="padding-right: 24px;">
+              <div class="d-flex justify-content-end align-items-center gap-8">
+                @if (isOrganization) {
+                  <button mat-button class="zenxius-btn-white text-primary" (click)="$event.stopPropagation(); generateLink(element)" [disabled]="element.generatingLink" style="padding: 0 12px; height: 32px; font-size: 13px;">
+                    <span class="d-flex align-items-center">
+                      <i-tabler name="link" class="icon-16 m-r-4"></i-tabler> Copy Link
+                    </span>
+                  </button>
+                }
+                <button mat-icon-button class="text-muted" (click)="$event.stopPropagation(); viewDetails(element)">
+                  <i-tabler name="eye" class="icon-18"></i-tabler>
+                </button>
+                <button *ngIf="canDelete" [style.visibility]="(element.ArchivedAt || element.archived_at) ? 'hidden' : 'visible'" mat-icon-button class="text-warning" (click)="!(element.ArchivedAt || element.archived_at) ? archiveApplication(element, $event) : null">
+                  <i-tabler name="archive" class="icon-18"></i-tabler>
+                </button>
+              </div>
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns;" (click)="viewDetails(row)" style="cursor: pointer;" class="hover-row"></tr>
+          
+          <tr class="mat-row" *matNoDataRow>
+            <td class="mat-cell text-center p-24" colspan="5">No applications found.</td>
+          </tr>
+        </table>
+      </div>
+      
+      <mat-paginator 
+        [length]="totalRecords"
+        [pageSize]="pageSize"
+        [pageSizeOptions]="[5, 10, 25, 50]"
+        (page)="onPageChange($event)">
+      </mat-paginator>
+    </div>
+  </div>
+</div>

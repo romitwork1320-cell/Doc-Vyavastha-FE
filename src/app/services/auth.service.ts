@@ -1,4 +1,4 @@
-import { Injectable, Inject, PLATFORM_ID } from '@angular/core';
+import { Injectable, Inject, PLATFORM_ID, NgZone } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable, BehaviorSubject, of, firstValueFrom } from 'rxjs';
@@ -15,30 +15,37 @@ export interface ApiResponse<T> {
   statusCode: number;
 }
 
-export interface TenantSelection {
-  tenantId: number;
+export interface WorkspaceSelection {
+  tenantId: number | null;
+  workspaceType: string;
   tenantName: string;
   role: string;
   isActive: boolean;
 }
 
-export interface GoogleLoginResponse {
-  requiresSelection: boolean;
-  token?: string;
+export interface AuthResponse {
+  nextStep: string;
+  accessToken?: string;
+  tempToken?: string;
   refreshToken?: string;
-  tenants?: TenantSelection[];
-  isProfileComplete?: boolean;
-  isNewUser?: boolean;
+  workspaces?: WorkspaceSelection[];
+  currentWorkspace?: WorkspaceSelection;
 }
 
-export interface LoginResponseData {
-  token: string;
-  refreshToken?: string;
-}
-
-export interface SignUpRequest {
+export interface RegisterIdentityRequest {
   email: string;
-  password: string;
+  password?: string;
+}
+
+export interface CreateWorkspaceRequest {
+  workspaceType: 'PERSONAL' | 'ORGANIZATION';
+  name: string;
+  firstName: string;
+  lastName: string;
+  email?: string;
+  phone?: string;
+  orgType?: string;
+  orgTypeId?: number;
 }
 
 export interface TokenResponseData {
@@ -46,12 +53,13 @@ export interface TokenResponseData {
   refreshToken?: string;
 }
 
-interface DecodedToken {
+export interface DecodedToken {
   permissions: PagePermission[];
   exp: number;
   TenantId: string;
   role: string;
   UserId: string;
+  workspace_type?: string;
 }
 
 export interface PagePermission {
@@ -70,7 +78,8 @@ export interface SetPasswordDto {
 }
 
 export interface SelectTenantRequest {
-  tenantId: number;
+  tenantId: number | null;
+  workspaceType: string;
   rememberMe: boolean;
 }
 
@@ -81,21 +90,6 @@ export interface SendOtpRequest {
 export interface VerifyOtpRequest {
   email: string;
   otpCode: string;
-}
-
-export interface CompleteProfileRequest {
-  email: string;
-  firstName: string;
-  lastName: string;
-  mobileNumber: string;
-  companyName: string;
-}
-
-export interface OtpLoginResponse {
-  isProfileComplete: boolean;
-  isNewUser: boolean;
-  authData?: LoginResponseData;
-  tenantData?: GoogleLoginResponse;
 }
 
 @Injectable({
@@ -118,6 +112,7 @@ export class AuthService {
   constructor(
     private http: HttpClient,
     private router: Router,
+    private zone: NgZone,
     @Inject(PLATFORM_ID) private platformId: Object
   ) {
     // ✨ REMOVED: checkInitialLoginState() from here.
@@ -175,7 +170,9 @@ export class AuthService {
     }
 
     // Call GET api/Users/{id}/permissions
-    return this.http.get<ApiResponse<PagePermission[]>>(`${this.usersApiUrl}/${userId}/permissions`).pipe(
+    return this.http.get<ApiResponse<PagePermission[]>>(`${this.usersApiUrl}/${userId}/permissions`, {
+      headers: { 'X-Skip-Interceptor': 'true' }
+    }).pipe(
       tap(response => {
         if (response.success && response.data) {
           // Simply assign the full permissions directly from the backend
@@ -199,7 +196,9 @@ export class AuthService {
   }
 
   public getUserBranches(): Observable<ApiResponse<any[]>> {
-    return this.http.get<ApiResponse<any[]>>(`${environment.apiUrl}/UserBranches/me`);
+    return this.http.get<ApiResponse<any[]>>(`${environment.apiUrl}/UserBranches/me`, {
+      headers: { 'X-Skip-Interceptor': 'true' }
+    });
   }
 
   public getUserId(): number | null {
@@ -217,59 +216,83 @@ export class AuthService {
     }
   }
 
+  public isOrganization(): boolean {
+    if (!this.isPlatformBrowser()) return false;
+    const token = this.getAccessToken();
+    if (!token) return false;
+    try {
+      const decoded: DecodedToken = jwtDecode(token);
+      return decoded.role !== 'Client' && decoded.role !== 'SuperAdmin' && decoded.TenantId !== '0' && !!decoded.TenantId;
+    } catch (e) {
+      return false;
+    }
+  }
+
   // --- 2. AUTH METHODS ---
 
   public sendLoginOtp(email: string): Observable<ApiResponse<string>> {
     return this.http.post<ApiResponse<string>>(`${this.apiUrl}/send-otp`, { email });
   }
 
-  public verifyLoginOtp(data: VerifyOtpRequest): Observable<ApiResponse<OtpLoginResponse>> {
-    return this.http.post<ApiResponse<OtpLoginResponse>>(`${this.apiUrl}/verify-otp`, data)
-      .pipe(tap(res => {
-        if (res.success && res.data?.isProfileComplete && res.data.tenantData) {
-          this.handleOtpSuccess(res.data.tenantData);
-        }
-      }));
+  public verifyLoginOtp(data: VerifyOtpRequest): Observable<ApiResponse<AuthResponse>> {
+    return this.http.post<ApiResponse<AuthResponse>>(`${this.apiUrl}/verify-otp`, data)
+      .pipe(tap(res => this.handleAuthResponse(res, true)));
   }
 
-  public completeUserProfile(data: CompleteProfileRequest): Observable<ApiResponse<GoogleLoginResponse>> {
-    return this.http.post<ApiResponse<GoogleLoginResponse>>(`${this.apiUrl}/complete-profile`, data)
-      .pipe(tap(res => {
-        if (res.success && res.data) {
-          this.handleLoginResponse(res, true);
-        }
-      }));
+  public registerIdentity(data: RegisterIdentityRequest): Observable<ApiResponse<AuthResponse>> {
+    return this.http.post<ApiResponse<AuthResponse>>(`${this.apiUrl}/register-identity`, data)
+      .pipe(tap(res => this.handleAuthResponse(res, true)));
   }
 
-  public login(username: string, password: string, rememberMe: boolean): Observable<ApiResponse<GoogleLoginResponse>> {
-    return this.http.post<ApiResponse<GoogleLoginResponse>>(`${this.apiUrl}/login`, { username, password, rememberMe }).pipe(
-      tap(response => this.handleLoginResponse(response, rememberMe))
+  public createWorkspace(data: CreateWorkspaceRequest): Observable<ApiResponse<AuthResponse>> {
+    // Requires sending the temp token. Handled by interceptor if stored in temp_token.
+    return this.http.post<ApiResponse<AuthResponse>>(`${this.apiUrl}/create-workspace`, data)
+      .pipe(tap(res => this.handleAuthResponse(res, true)));
+  }
+
+  public getOrganizationTypes(): Observable<ApiResponse<any[]>> {
+    return this.http.get<ApiResponse<any[]>>(`${environment.apiUrl}/organization-types`).pipe(
+      map(res => ({
+        success: res.success,
+        statusCode: res.statusCode,
+        message: res.message,
+        data: (res.data || []).map((d: any) => ({
+          id: d.ID,
+          name: d.Name,
+          description: d.Description
+        }))
+      }))
     );
   }
 
-  public loginWithGoogle(idToken: string, rememberMe: boolean): Observable<ApiResponse<GoogleLoginResponse>> {
-    return this.http.post<ApiResponse<GoogleLoginResponse>>(`${this.apiUrl}/google-login`, { idToken, rememberMe }).pipe(
-      tap(response => this.handleLoginResponse(response, rememberMe))
+  public login(email: string, password: string, rememberMe: boolean): Observable<ApiResponse<AuthResponse>> {
+    return this.http.post<ApiResponse<AuthResponse>>(`${this.apiUrl}/login`, { email, password, rememberMe }).pipe(
+      tap(response => this.handleAuthResponse(response, rememberMe))
     );
   }
 
-  public selectTenant(tenantId: number): Observable<ApiResponse<LoginResponseData>> {
-    const isRemembered = this.isPlatformBrowser() && !!localStorage.getItem('temp_token');
+  public loginSilent(email: string, password: string, rememberMe: boolean): Observable<ApiResponse<AuthResponse>> {
+    return this.http.post<ApiResponse<AuthResponse>>(`${this.apiUrl}/login`, { email, password, rememberMe });
+  }
+
+  public loginWithGoogle(idToken: string, rememberMe: boolean): Observable<ApiResponse<AuthResponse>> {
+    return this.http.post<ApiResponse<AuthResponse>>(`${this.apiUrl}/google-login`, { idToken, rememberMe }).pipe(
+      tap(response => this.handleAuthResponse(response, rememberMe))
+    );
+  }
+
+  public selectTenant(tenantId: number | null, workspaceType: string): Observable<ApiResponse<AuthResponse>> {
+    const isRemembered = localStorage.getItem('access_token') !== null;
 
     const payload: SelectTenantRequest = {
       tenantId: tenantId,
+      workspaceType: workspaceType,
       rememberMe: isRemembered
     };
 
-    return this.http.post<ApiResponse<LoginResponseData>>(`${this.apiUrl}/select-tenant`, payload)
+    return this.http.post<ApiResponse<AuthResponse>>(`${this.apiUrl}/select-tenant`, payload)
       .pipe(
-        tap(response => {
-          if (response.success && response.data?.token) {
-            this.setFinalSession(response.data.token, isRemembered);
-          } else {
-            this.logout();
-          }
-        })
+        tap(response => this.handleAuthResponse(response, isRemembered))
       );
   }
 
@@ -321,27 +344,26 @@ export class AuthService {
     return of(true);
   }
 
-  private handleLoginResponse(response: ApiResponse<GoogleLoginResponse>, rememberMe: boolean): void {
+  public handleAuthResponse(response: ApiResponse<AuthResponse>, rememberMe: boolean = false): void {
     if (!response.success || !response.data) return;
 
-    if (response.data.isNewUser || response.data.isProfileComplete === false) {
-      return;
-    }
+    const nextStep = response.data.nextStep;
 
-    if (response.data.requiresSelection) {
-      this.storeAccessToken(response.data.token!, 'temp_token', rememberMe);
-      this.router.navigate(['/workspace-selection'], {
-        state: { tenants: response.data.tenants },
-      });
-    } else {
-      if (response.data.token) {
-        this.setFinalSession(response.data.token, rememberMe);
+    if (nextStep === 'CREATE_WORKSPACE') {
+      if (response.data.tempToken) {
+        this.storeAccessToken(response.data.tempToken, 'temp_token', rememberMe);
+      }
+      this.router.navigate(['/workspaces'], { state: { action: 'create' } });
+    } else if (nextStep === 'SELECT_WORKSPACE') {
+      if (response.data.tempToken) {
+        this.storeAccessToken(response.data.tempToken, 'temp_token', rememberMe);
+      }
+      this.router.navigate(['/workspaces'], { state: { workspaces: response.data.workspaces } });
+    } else if (nextStep === 'ENTER_WORKSPACE' || nextStep === 'DONE') {
+      if (response.data.accessToken) {
+        this.setFinalSession(response.data.accessToken, rememberMe);
       }
     }
-  }
-
-  public handleSuccessfulLogin(data: LoginResponseData, rememberMe: boolean = false): void {
-    this.setFinalSession(data.token, rememberMe);
   }
 
   // ✨ MODIFIED: Now waits for permissions before navigating
@@ -358,7 +380,9 @@ export class AuthService {
 
     // ✨ Fetch fresh permissions immediately, THEN navigate
     this.loadPermissionsFromApi().subscribe(() => {
-      this.navigateBasedOnRole();
+      this.zone.run(() => {
+        this.navigateBasedOnRole();
+      });
     });
   }
 
@@ -435,6 +459,22 @@ export class AuthService {
       return true;
     }
 
+    // Allow Clients to view their own dashboard and profile
+    if (role === 'Client') {
+      const url = requestedUrl.toLowerCase();
+      if (
+        url === '/dashboard' || 
+        url === '/dashboard/client-organizations' || 
+        url === '/dashboard/document-vault' || 
+        url === '/dashboard/applications' || 
+        url === '/my-profile' || 
+        url === '/settings' || 
+        url === '/support'
+      ) {
+        return true;
+      }
+    }
+
     // Check userPermissions array
     const p = this.userPermissions.find(x => x.PageUrl && requestedUrl && x.PageUrl.toLowerCase() === requestedUrl.toLowerCase());
     if (!p) {
@@ -451,13 +491,6 @@ export class AuthService {
   }
 
   // Standard API wrappers...
-  public signUp(dto: SignUpRequest): Observable<ApiResponse<object>> {
-    return this.http.post<ApiResponse<object>>(`${this.apiUrl}/signup`, dto);
-  }
-  public signUpWithGoogle(idToken: string): Observable<ApiResponse<LoginResponseData>> {
-    return this.http.post<ApiResponse<LoginResponseData>>(`${this.apiUrl}/google-signup`, { idToken })
-      .pipe(tap(response => { if (response.success && response.data) this.setFinalSession(response.data.token); }));
-  }
   public verifyEmail(userId: string, token: string): Observable<ApiResponse<any>> {
     const params = new HttpParams().set('userId', userId).set('token', token);
     return this.http.get<ApiResponse<any>>(`${this.apiUrl}/verify-email`, { params });
@@ -469,48 +502,25 @@ export class AuthService {
     return this.http.post<ApiResponse<any>>(`${this.apiUrl}/set-password`, dto);
   }
 
-  private handleOtpSuccess(data: GoogleLoginResponse) {
-    const rememberMe = true;
-    if (data.requiresSelection) {
-      this.storeAccessToken(data.token!, 'temp_token', rememberMe);
-      this.router.navigate(['/workspace-selection'], { state: { tenants: data.tenants } });
-    } else {
-      this.setFinalSession(data.token!, rememberMe);
-    }
-  }
+
 
   public navigateBasedOnRole(): void {
-    // Check user branches first
-    this.getUserBranches().subscribe({
-      next: (res) => {
-        if (res.success && res.data && res.data.length > 0) {
-          const activeId = this.getActiveBranchId();
-          if (res.data.length === 1) {
-            // Auto-select the only branch if none selected
-            if (!activeId) {
-              this.setActiveBranch(res.data[0].id);
-            }
-            this.router.navigate(['/dashboard']);
-          } else {
-            // Check if active branch is valid
-            const isValid = activeId ? res.data.some(b => b.id === activeId) : false;
-            if (isValid) {
-              this.router.navigate(['/dashboard']);
-            } else {
-              // Need to select a branch
-              this.router.navigate(['/branch-selection'], { state: { branches: res.data } });
-            }
-          }
-        } else {
-          // No branches found for user. Let them into dashboard but they might see errors.
-          this.router.navigate(['/dashboard']);
-        }
-      },
-      error: () => {
-        // Fallback
-        this.router.navigate(['/dashboard']);
-      }
-    });
+    if (!this.isPlatformBrowser()) return;
+    const tenantId = localStorage.getItem('tenant_id') || sessionStorage.getItem('tenant_id');
+    const userRole = this.getUserRole();
+
+    if (userRole === 'SuperAdmin') {
+      this.router.navigate(['/super-admin/dashboard']);
+      return;
+    }
+
+    // If no tenant is selected, user needs to select a workspace.
+    // Note: tenantId '0' is valid for Personal Workspaces!
+    if (!tenantId || tenantId === 'undefined') {
+      this.router.navigate(['/workspaces']);
+    } else {
+      this.router.navigate(['/dashboard']);
+    }
   }
 
   public getUserRole(): string | null {
@@ -524,6 +534,11 @@ export class AuthService {
    */
   public getUserPermissions(userId: number): Observable<ApiResponse<string[]>> {
     // Matches GET api/Users/{id}/permissions
-    return this.http.get<ApiResponse<string[]>>(`${this.usersApiUrl}/${userId}/permissions`);
+    return this.http.get<ApiResponse<string[]>>(`${this.usersApiUrl}/${userId}/permissions`, {
+      headers: { 'X-Skip-Interceptor': 'true' }
+    });
   }
+
+
+
 }

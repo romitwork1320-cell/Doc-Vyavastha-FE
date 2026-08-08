@@ -9,13 +9,6 @@ import { Subject, forkJoin, of } from 'rxjs';
 import { takeUntil, catchError, distinctUntilChanged } from 'rxjs/operators';
 import { PaginationRequestDto } from 'src/app/common/interfaces/common';
 
-import { StudentCasteService } from 'src/app/services/student-caste.service';
-import { StudentCategoryService } from 'src/app/services/student-category.service';
-import { ApplicationTypeService } from 'src/app/services/application-type.service';
-import { ApplicationStatusService } from 'src/app/services/application-status.service';
-import { CollegeService } from 'src/app/services/college.service';
-import { FormTypeService } from 'src/app/services/form-type.service';
-import { StudentCodeConfigurationService } from 'src/app/services/student-code-configuration.service';
 
 interface ChangeItem {
   fullKey: string;
@@ -51,36 +44,19 @@ export class AppRecentActivityComponent implements OnInit, OnDestroy {
   pageSize = 10;
   hasMoreData = true;
 
-  // UUID to Name mapping cache
-  lookupMap: { [key: string]: { [id: string]: string } } = {
-    caste_id: {},
-    category_id: {},
-    application_type_id: {},
-    application_status_id: {},
-    form_type_id: {},
-    college_id: {},
-    year_config_id: {}
-  };
+
 
   private destroy$ = new Subject<void>(); 
 
   constructor(
     private authService: AuthService,
     private activityService: UserActivityService,
-    private dashboardService: DashboardService,
-    private casteService: StudentCasteService,
-    private categoryService: StudentCategoryService,
-    private typeService: ApplicationTypeService,
-    private statusService: ApplicationStatusService,
-    private collegeService: CollegeService,
-    private formTypeService: FormTypeService,
-    private codeConfigService: StudentCodeConfigurationService
+    private dashboardService: DashboardService
   ) {}
 
   ngOnInit(): void {
-    // Load lookup dictionaries first, then load data
-    this.loadLookups();
-
+    // Load initial data
+    this.loadData(true);
     this.dashboardService.activityUpdated$
       .pipe(takeUntil(this.destroy$))
       .subscribe(() => {
@@ -102,29 +78,6 @@ export class AppRecentActivityComponent implements OnInit, OnDestroy {
     this.destroy$.complete();
   }
 
-  loadLookups(): void {
-    const pageReq: PaginationRequestDto = { pageIndex: 0, pageSize: 1000 };
-    forkJoin({
-      castes: this.casteService.getAll(pageReq).pipe(catchError(() => of({ data: [] }))),
-      categories: this.categoryService.getAll(pageReq).pipe(catchError(() => of({ data: [] }))),
-      types: this.typeService.getAll(pageReq).pipe(catchError(() => of({ data: [] }))),
-      statuses: this.statusService.getAll(pageReq).pipe(catchError(() => of({ data: [] }))),
-      colleges: this.collegeService.getAll(pageReq).pipe(catchError(() => of({ data: [] }))),
-      formTypes: this.formTypeService.getAll(pageReq).pipe(catchError(() => of({ data: [] }))),
-      codeConfigs: this.codeConfigService.getAll(pageReq).pipe(catchError(() => of({ data: [] })))
-    }).subscribe(res => {
-      res.castes.data?.forEach(x => this.lookupMap['caste_id'][x.id] = x.name);
-      res.categories.data?.forEach(x => this.lookupMap['category_id'][x.id] = x.name);
-      res.types.data?.forEach(x => this.lookupMap['application_type_id'][x.id] = x.name);
-      res.statuses.data?.forEach(x => this.lookupMap['application_status_id'][x.id] = x.name);
-      res.colleges.data?.forEach(x => this.lookupMap['college_id'][x.id] = x.name);
-      res.formTypes.data?.forEach(x => this.lookupMap['form_type_id'][x.id] = x.name);
-      res.codeConfigs.data?.forEach(x => this.lookupMap['year_config_id'][x.id] = `${x.prefix} (${x.businessYear})`);
-      
-      // Now that lookups are ready, load the activities
-      this.loadData(true);
-    });
-  }
 
   loadData(reset: boolean = false): void {
     if (reset) {
@@ -227,15 +180,6 @@ export class AppRecentActivityComponent implements OnInit, OnDestroy {
 
   formatValue(val: any, fieldName: string = ''): string {
     if (val === null || val === undefined || val === '') return '-';
-
-    // Map foreign keys to readable names if available in lookupMap
-    const lowerField = fieldName.toLowerCase();
-    if (this.lookupMap[lowerField] && typeof val === 'string') {
-      const resolvedName = this.lookupMap[lowerField][val];
-      if (resolvedName) {
-        return resolvedName;
-      }
-    }
 
     const str = String(val);
     return str.length > 30 ? str.substring(0, 30) + '...' : str;

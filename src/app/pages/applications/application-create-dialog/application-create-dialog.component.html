@@ -1,0 +1,103 @@
+<h2 mat-dialog-title class="m-0 p-24 p-b-16 d-flex justify-content-between align-items-center">
+  <span class="f-w-600 f-s-20">Create Service Application</span>
+  <button mat-icon-button mat-dialog-close tabindex="-1" class="bg-light text-muted" style="border-radius: 8px;">
+    <i-tabler name="x" class="icon-20 d-flex"></i-tabler>
+  </button>
+</h2>
+
+<mat-dialog-content class="p-x-24 p-b-24 p-t-0" style="max-width: 540px; overflow-x: hidden;">
+  <form [formGroup]="form" class="p-t-8" autocomplete="off">
+    
+    <div class="row">
+      <!-- Client Selection -->
+      <div class="col-lg-12 m-b-16">
+        <label class="mat-subtitle-2 f-w-600 m-b-8 d-block">Select Client <span class="text-error">*</span></label>
+        <mat-form-field appearance="outline" class="w-100" subscriptSizing="dynamic">
+          <mat-select formControlName="clientId" placeholder="Choose a client">
+            <mat-option *ngFor="let client of filteredClients" [value]="client.id">
+              {{ client.fullName }} ({{ client.connectionCode }})
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+
+      <!-- Template Selection (Optional) -->
+      <div class="col-lg-12 m-b-16">
+        <label class="mat-subtitle-2 f-w-600 m-b-8 d-block">Load From Template (Optional)</label>
+        <mat-form-field appearance="outline" class="w-100" subscriptSizing="dynamic">
+          <mat-select formControlName="applicationType" placeholder="Select a template...">
+            <mat-option [value]="null">None</mat-option>
+            <mat-option *ngFor="let tmpl of templates" [value]="tmpl.id">
+              {{ tmpl.name }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+
+      <!-- Application Title -->
+      <div class="col-lg-12 m-b-16">
+        <label class="mat-subtitle-2 f-w-600 m-b-8 d-block">Application Title <span class="text-error">*</span></label>
+        <mat-form-field appearance="outline" class="w-100" subscriptSizing="dynamic">
+          <input matInput formControlName="title" placeholder="Ex: Rent Agreement">
+        </mat-form-field>
+      </div>
+
+      <div class="col-lg-12 m-t-8">
+        <h3 class="f-w-600 f-s-16 m-b-16">Required Documents</h3>
+        
+        <div formArrayName="requirements">
+          <div *ngFor="let req of requirements.controls; let i = index" [formGroupName]="i" class="p-16 border rounded bg-light m-b-16 position-relative">
+              
+              <button *ngIf="requirements.controls.length > 1" mat-icon-button color="warn" type="button" class="position-absolute" style="right: -12px; top: -12px; background: white; box-shadow: 0 2px 4px rgba(0,0,0,0.1); width: 28px; height: 28px;" (click)="removeRequirement(i)">
+                <i-tabler name="x" class="icon-16 d-flex"></i-tabler>
+              </button>
+
+              <div class="row">
+                <div class="col-md-8 m-b-16">
+                  <label class="mat-subtitle-2 f-w-600 m-b-8 d-block">Document Name <span class="text-error">*</span></label>
+                  <mat-form-field appearance="outline" class="w-100" subscriptSizing="dynamic">
+                    <mat-select formControlName="documentTypeId" placeholder="Select a document type">
+                      <mat-option *ngFor="let dt of documentTypes" [value]="dt.id">
+                        {{ dt.name }}
+                      </mat-option>
+                    </mat-select>
+                  </mat-form-field>
+                </div>
+                
+                <div class="col-md-4 d-flex align-items-center p-t-16">
+                  <div class="form-check">
+                    <input class="form-check-input" type="checkbox" formControlName="isRequired" [id]="'req-'+i">
+                    <label class="form-check-label" [for]="'req-'+i">
+                      Required
+                    </label>
+                  </div>
+                </div>
+
+                <div class="col-lg-12">
+                  <label class="mat-subtitle-2 f-w-600 m-b-8 d-block">Instructions / Description (Optional)</label>
+                  <mat-form-field appearance="outline" class="w-100" subscriptSizing="dynamic">
+                    <textarea matInput formControlName="description" rows="2" placeholder="Ex: Please upload front and back"></textarea>
+                  </mat-form-field>
+                </div>
+              </div>
+            </div>
+        </div>
+        
+        <button mat-stroked-button color="primary" type="button" class="w-100 p-y-12" (click)="addRequirement()">
+          <div class="d-flex align-items-center justify-content-center gap-4">
+            <i-tabler name="plus" class="icon-18"></i-tabler> 
+            <span>Add Another Document</span>
+          </div>
+        </button>
+      </div>
+    </div>
+
+  </form>
+</mat-dialog-content>
+
+<div mat-dialog-actions class="p-24 p-t-0 d-flex justify-content-end gap-12 border-t">
+  <button mat-stroked-button mat-dialog-close [disabled]="submitting">Cancel</button>
+  <button mat-flat-button color="primary" [disabled]="form.invalid || submitting" (click)="submit()">
+    {{ submitting ? 'Creating...' : 'Create Application' }}
+  </button>
+</div>

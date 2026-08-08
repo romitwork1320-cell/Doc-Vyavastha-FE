@@ -1,0 +1,42 @@
+<h2 mat-dialog-title>Complete KYC Verification</h2>
+<mat-dialog-content>
+  <p class="mat-body-1 m-b-16">Please upload your organization documents to complete the verification process.</p>
+  
+  @if (errorMessage) {
+    <div class="alert alert-error m-b-16 text-error">
+      {{ errorMessage }}
+    </div>
+  }
+
+  <div class="upload-section m-b-24">
+    <mat-label class="f-w-600 d-block m-b-8">Registration Certificate</mat-label>
+    <div class="file-upload-box d-flex align-items-center justify-content-between p-16 b-1 b-color-divider rounded bg-light">
+      <div class="d-flex align-items-center gap-12">
+        <mat-icon color="primary">description</mat-icon>
+        <span class="f-w-500">{{ certificateFile ? certificateFile.name : 'No file selected' }}</span>
+      </div>
+      <button mat-stroked-button color="primary" (click)="certInput.click()">Browse</button>
+      <input type="file" #certInput hidden (change)="onFileSelected($event, 'certificate')" accept=".pdf,.jpg,.jpeg,.png" />
+    </div>
+  </div>
+
+  <div class="upload-section m-b-24">
+    <mat-label class="f-w-600 d-block m-b-8">PAN Card</mat-label>
+    <div class="file-upload-box d-flex align-items-center justify-content-between p-16 b-1 b-color-divider rounded bg-light">
+      <div class="d-flex align-items-center gap-12">
+        <mat-icon color="primary">badge</mat-icon>
+        <span class="f-w-500">{{ panFile ? panFile.name : 'No file selected' }}</span>
+      </div>
+      <button mat-stroked-button color="primary" (click)="panInput.click()">Browse</button>
+      <input type="file" #panInput hidden (change)="onFileSelected($event, 'pan')" accept=".pdf,.jpg,.jpeg,.png" />
+    </div>
+  </div>
+
+</mat-dialog-content>
+<mat-dialog-actions align="end" class="p-b-16 p-r-16">
+  <button mat-button mat-dialog-close [disabled]="isLoading">Cancel</button>
+  <button mat-flat-button color="primary" (click)="submitKyc()" [disabled]="!certificateFile || !panFile || isLoading">
+    @if (isLoading) { <mat-progress-spinner [diameter]="20" mode="indeterminate" class="d-inline-block m-r-8"></mat-progress-spinner> }
+    Submit for Verification
+  </button>
+</mat-dialog-actions>

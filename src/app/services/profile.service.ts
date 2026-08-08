@@ -30,6 +30,7 @@ export interface UserProfileDto {
   lastName?: string;
   jobTitle?: string;
   contactNumber?: string;
+  connectionCode?: string;
 }
 
 export interface FullProfileDto {
@@ -57,6 +58,10 @@ export class ProfileService {
   
   // Public observable for components to subscribe to
   public companyLogoUrl$ = this.companyLogoUrlSubject.asObservable();
+
+  // Holds the user's full name
+  private userNameSubject = new BehaviorSubject<string>('User');
+  public userName$ = this.userNameSubject.asObservable();
   // ---
 
   constructor() { }
@@ -75,6 +80,17 @@ export class ProfileService {
         } else {
           // Use default if no logo is set or call fails
           this.companyLogoUrlSubject.next(this.defaultLogoUrl);
+        }
+
+        if (response.success && response.data?.userProfile) {
+          const first = response.data.userProfile.firstName || '';
+          const last = response.data.userProfile.lastName || '';
+          const fullName = `${first} ${last}`.trim();
+          if (fullName) {
+            this.userNameSubject.next(fullName);
+          } else {
+            this.userNameSubject.next('User');
+          }
         }
       })
     );

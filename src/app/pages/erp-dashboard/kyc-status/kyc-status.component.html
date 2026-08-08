@@ -1,0 +1,67 @@
+<div class="p-24">
+  <div class="m-b-24 d-flex justify-content-between align-items-end">
+    <div>
+      <h1 class="zenxius-page-title">KYC Status</h1>
+      <div class="zenxius-page-subtitle">Manage your Organization's KYC verifications.</div>
+    </div>
+    
+    @if (kycStatus && (kycStatus.status === 'PENDING_SUBMISSION' || kycStatus.status === 'REJECTED')) {
+      <button mat-button class="zenxius-btn-primary d-flex align-items-center" (click)="openUploadModal()">
+        <i-tabler name="upload" class="icon-18 m-r-8"></i-tabler> Upload Documents
+      </button>
+    }
+  </div>
+
+  @if (isLoading) {
+    <div class="d-flex justify-content-center p-24">
+      <mat-spinner diameter="40"></mat-spinner>
+    </div>
+  } @else if (errorMessage) {
+    <div class="alert alert-error text-error m-b-24">
+      {{ errorMessage }}
+    </div>
+  } @else if (kycStatus) {
+    <div class="zenxius-card m-b-24">
+      <div class="p-24">
+        <div class="d-flex align-items-center gap-16 m-b-16">
+          <div class="f-s-16 f-w-500 text-muted">Current Status:</div>
+          <span class="rounded-pill p-x-12 p-y-4 f-s-12 f-w-600 d-inline-block text-center"
+            [ngClass]="{
+              'bg-light-warning text-warning': kycStatus.status === 'PENDING_VERIFICATION' || kycStatus.status === 'PENDING_SUBMISSION',
+              'bg-light-error text-error': kycStatus.status === 'REJECTED',
+              'bg-light-success text-success': kycStatus.status === 'VERIFIED'
+            }">
+            {{ kycStatus.status | titlecase }}
+          </span>
+        </div>
+
+        @if (kycStatus.status === 'REJECTED' && kycStatus.rejectionReason) {
+          <div class="alert alert-error bg-light-error text-error p-16 rounded m-b-0 b-1 b-color-error">
+            <div class="f-w-600 m-b-4">Rejection Reason:</div>
+            {{ kycStatus.rejectionReason }}
+          </div>
+        }
+      </div>
+    </div>
+
+    @if (kycStatus.status !== 'PENDING_SUBMISSION' && certUrl && panUrl) {
+      <div class="zenxius-card">
+        <div class="p-24">
+          <h4 class="f-w-600 m-b-16 m-t-0 text-dark">Uploaded Documents</h4>
+          <mat-tab-group>
+            <mat-tab label="Registration Certificate">
+              <div class="document-viewer m-t-16 rounded overflow-hidden" style="height: 600px; border: 1px solid #e5e7eb;">
+                <iframe [src]="certUrl" width="100%" height="100%" style="border: none;"></iframe>
+              </div>
+            </mat-tab>
+            <mat-tab label="PAN Card">
+              <div class="document-viewer m-t-16 rounded overflow-hidden" style="height: 600px; border: 1px solid #e5e7eb;">
+                <iframe [src]="panUrl" width="100%" height="100%" style="border: none;"></iframe>
+              </div>
+            </mat-tab>
+          </mat-tab-group>
+        </div>
+      </div>
+    }
+  }
+</div>

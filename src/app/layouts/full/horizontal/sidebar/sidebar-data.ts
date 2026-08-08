@@ -9,9 +9,5 @@ export const navItems: NavItem[] = [
     iconName: 'users-group',
     route: '/teams'
   },
-  {
-    displayName: 'Daily Collections',
-    iconName: 'cash',
-    route: '/daily-collections'
-  },
+
 ];

@@ -124,7 +124,7 @@ export class TeamsComponent implements OnInit, AfterViewInit, OnDestroy {
     this.canDeleteUser = this.authService.hasPermission(usersPageUrl, 'CanDelete');
 
     // --- Role Permissions Permissions ---
-    const permissionsPageUrl = '/permissions'; // Or the route defined in your DB for permissions
+    const permissionsPageUrl = '/teams'; // Or the route defined in your DB for permissions
     this.canEditPermissions = this.authService.hasPermission(permissionsPageUrl, 'CanEdit');
 
     this.globalSearchService.searchQuery$
@@ -348,65 +348,26 @@ export class TeamsComponent implements OnInit, AfterViewInit, OnDestroy {
         next: (response: ApiResponse<any>) => {
           if (response.success) {
             
-            // Branch Assignment Logic
-            let branchObs: Observable<any> = of(null);
-            if ((action === 'Add' || action === 'Update') && branchIds) {
-               const targetUserId = action === 'Add' ? response.data.id : data.id;
-               
-               if (action === 'Update') {
-                  // For update, we need to compare existing vs new branches, or simply assign all and rely on BE upsert,
-                  // but BE only has assignUserToBranch and removeUserFromBranch. 
-                  // For robust UI, we should fetch existing first, or just have BE handle upserts. 
-                  // Since we have branchIds, let's just make sequentially delete and assign calls, 
-                  // but we'll fetch existing and diff them to be safe.
-                  branchObs = new Observable(obs => {
-                      this.branchService.getUserBranches(targetUserId).subscribe(res => {
-                          const existingIds = (res.data || []).map((b: any) => b.id);
-                          const toAdd = branchIds.filter(id => !existingIds.includes(id));
-                          const toRemove = existingIds.filter(id => !branchIds.includes(id));
-                          
-                          const operations: Observable<any>[] = [];
-                          toAdd.forEach(id => operations.push(this.branchService.assignUserToBranch(id, targetUserId)));
-                          toRemove.forEach(id => operations.push(this.branchService.removeUserFromBranch(id, targetUserId)));
-                          
-                          if (operations.length > 0) {
-                              forkJoin(operations).subscribe(() => { obs.next(); obs.complete(); });
-                          } else {
-                              obs.next(); obs.complete();
-                          }
-                      });
-                  });
-               } else {
-                  // Add mode
-                  const operations = branchIds.map(id => this.branchService.assignUserToBranch(id, targetUserId));
-                  if (operations.length > 0) {
-                      branchObs = forkJoin(operations);
-                  }
-               }
-            }
-            
-            branchObs.subscribe(() => {
-                this.showSuccess(response.message);
+            this.showSuccess(response.message);
 
-                if (action === 'Add') {
-                  const newUser = response.data as User;
-                  if (newUser) {
-                    this.users.unshift(newUser); // Add new user to the top of the local array
-                    this.usersDataSource.data = [...this.users]; // Trigger table update
-                  } else {
-                    this.resetAndLoadUsers();
-                  }
-                } else if (action === 'Update') {
-                  const index = this.users.findIndex((u) => u.id === data.id);
-                  if (index > -1) {
-                    this.users[index] = { ...this.users[index], ...data };
-                    this.usersDataSource.data = [...this.users]; // Trigger table update
-                  }
-                } else if (action === 'Delete') {
-                  this.users = this.users.filter((u) => u.id !== data.id);
-                  this.usersDataSource.data = [...this.users]; // Trigger table update
-                }
-            });
+            if (action === 'Add') {
+              const newUser = response.data as User;
+              if (newUser) {
+                this.users.unshift(newUser); // Add new user to the top of the local array
+                this.usersDataSource.data = [...this.users]; // Trigger table update
+              } else {
+                this.resetAndLoadUsers();
+              }
+            } else if (action === 'Update') {
+              const index = this.users.findIndex((u) => u.id === data.id);
+              if (index > -1) {
+                this.users[index] = { ...this.users[index], ...data };
+                this.usersDataSource.data = [...this.users]; // Trigger table update
+              }
+            } else if (action === 'Delete') {
+              this.users = this.users.filter((u) => u.id !== data.id);
+              this.usersDataSource.data = [...this.users]; // Trigger table update
+            }
           } else {
             this.showError(`Error: ${response.message}`);
           }
@@ -444,8 +405,8 @@ export class TeamsComponent implements OnInit, AfterViewInit, OnDestroy {
       .subscribe({
         next: (response) => {
           if (response.success && response.data) {
-            this.pages = response.data.pages;
-            this.roles = response.data.roles;
+            this.pages = response.data.pages.filter((p: any) => p.pageName !== 'Organizations' && p.pageName !== 'Document Vault');
+            this.roles = response.data.roles.filter((r: any) => r.roleName !== 'Client');
 
             this.permissionsDisplayedColumns = ['pageName', ...this.roles.map(r => r.roleName)];
             this.permissionsDataSource.data = this.pages; 
@@ -468,6 +429,11 @@ export class TeamsComponent implements OnInit, AfterViewInit, OnDestroy {
         },
         error: (err) => this.showError('Failed to load permissions.')
       });
+  }
+
+  togglePermission(perm: any, field: string): void {
+    if (!this.canEditPermissions) return;
+    perm[field] = !perm[field];
   }
 
   savePermissions(): void {

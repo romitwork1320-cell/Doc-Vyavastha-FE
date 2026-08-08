@@ -116,12 +116,7 @@ $darkbluetheme: mat.m2-define-dark-theme(
   ) !important;
 }
 
-.activeMenu {
-  background-color: mat.m2-get-color-from-palette(
-    $theme-primary,
-    500
-  ) !important;
-}
+/* .activeMenu styles handled by _sidebar.scss now */
 
 .mat-mdc-outlined-button {
   &.mat-primary {
