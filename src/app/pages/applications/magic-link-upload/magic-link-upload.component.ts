@@ -158,13 +158,18 @@ export class MagicLinkUploadComponent implements OnInit {
         this.stagedVaultFiles[this.activeReqIdForVault] = [];
       }
       
-      // Check if already selected
-      const exists = this.stagedVaultFiles[this.activeReqIdForVault].some(f => f.id === file.id);
-      if (!exists) {
+      const index = this.stagedVaultFiles[this.activeReqIdForVault].findIndex(f => f.id === file.id);
+      if (index === -1) {
         this.stagedVaultFiles[this.activeReqIdForVault].push(file);
+      } else {
+        this.stagedVaultFiles[this.activeReqIdForVault].splice(index, 1);
       }
     }
-    // Don't close immediately, allow them to select multiple
+  }
+
+  isVaultFileSelected(file: VaultFile): boolean {
+    if (!this.activeReqIdForVault || !this.stagedVaultFiles[this.activeReqIdForVault]) return false;
+    return this.stagedVaultFiles[this.activeReqIdForVault].some(f => f.id === file.id);
   }
 
   removeStagedVaultFile(reqId: number, index: number): void {

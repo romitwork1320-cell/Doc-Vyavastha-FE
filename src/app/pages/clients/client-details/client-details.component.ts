@@ -1,12 +1,15 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, RouterModule, Router } from '@angular/router';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
-import { MatTableModule } from '@angular/material/table';
+import { MatTableModule, MatTableDataSource } from '@angular/material/table';
+import { MatPaginatorModule, MatPaginator } from '@angular/material/paginator';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
 import { ClientManagementService } from '../../../services/client-management.service';
 import { ApplicationService } from '../../../services/application.service';
 import { TablerIconsModule } from 'angular-tabler-icons';
@@ -22,7 +25,10 @@ import { TablerIconsModule } from 'angular-tabler-icons';
     MatIconModule, 
     MatButtonModule, 
     MatTableModule,
+    MatPaginatorModule,
     MatProgressSpinnerModule,
+    MatFormFieldModule,
+    MatInputModule,
     TablerIconsModule
   ],
   templateUrl: './client-details.component.html',
@@ -31,12 +37,14 @@ import { TablerIconsModule } from 'angular-tabler-icons';
 export class ClientDetailsComponent implements OnInit {
   clientId: string | null = null;
   clientDetails: any = null;
-  applications: any[] = [];
+  applications = new MatTableDataSource<any>([]);
   
   isLoadingDetails = true;
   isLoadingApps = true;
   
   displayedColumns: string[] = ['Title', 'Status', 'CreatedAt', 'actions'];
+
+  @ViewChild(MatPaginator) paginator!: MatPaginator;
 
   constructor(
     private route: ActivatedRoute,
@@ -86,7 +94,10 @@ export class ClientDetailsComponent implements OnInit {
     this.isLoadingApps = true;
     this.applicationService.getApplications(parseInt(id, 10)).subscribe({
       next: (res: any) => {
-        this.applications = Array.isArray(res.data) ? res.data : (res.data?.records || []);
+        this.applications.data = Array.isArray(res.data) ? res.data : (res.data?.records || []);
+        setTimeout(() => {
+          this.applications.paginator = this.paginator;
+        });
         this.isLoadingApps = false;
       },
       error: (err) => {
@@ -98,5 +109,10 @@ export class ClientDetailsComponent implements OnInit {
 
   viewApplication(appId: number) {
     this.router.navigate(['/dashboard/applications', appId]);
+  }
+
+  applyFilter(event: Event) {
+    const filterValue = (event.target as HTMLInputElement).value;
+    this.applications.filter = filterValue.trim().toLowerCase();
   }
 }

@@ -1,11 +1,14 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, RouterModule } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { MatTableModule } from '@angular/material/table';
+import { MatTableModule, MatTableDataSource } from '@angular/material/table';
+import { MatPaginatorModule, MatPaginator } from '@angular/material/paginator';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
 import { Subject, forkJoin } from 'rxjs';
 import { takeUntil, switchMap } from 'rxjs/operators';
 import { ApplicationService } from '../../../../services/application.service';
@@ -21,7 +24,10 @@ import { TablerIconsModule } from 'angular-tabler-icons';
     MatButtonModule,
     MatIconModule,
     MatTableModule,
+    MatPaginatorModule,
     MatProgressSpinnerModule,
+    MatFormFieldModule,
+    MatInputModule,
     TablerIconsModule
   ],
   templateUrl: './organization-details.component.html',
@@ -32,7 +38,7 @@ export class OrganizationDetailsComponent implements OnInit, OnDestroy {
   tenantId: number;
   
   organization: any = null;
-  applications: any[] = [];
+  applications = new MatTableDataSource<any>([]);
   
   isLoadingOrg = true;
   isLoadingApps = true;
@@ -40,6 +46,8 @@ export class OrganizationDetailsComponent implements OnInit, OnDestroy {
   appError = '';
 
   displayedColumns: string[] = ['appNumber', 'title', 'status', 'createdAt', 'actions'];
+
+  @ViewChild(MatPaginator) paginator!: MatPaginator;
 
   constructor(
     private route: ActivatedRoute,
@@ -104,7 +112,10 @@ export class OrganizationDetailsComponent implements OnInit, OnDestroy {
     // Note: getApplications accepts (clientId, tenantId). For current client, clientId can be undefined/null
     this.applicationService.getApplications(undefined, this.tenantId).pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: any) => {
-        this.applications = res.data || [];
+        this.applications.data = res.data || [];
+        setTimeout(() => {
+          this.applications.paginator = this.paginator;
+        });
         this.isLoadingApps = false;
       },
       error: (err: any) => {
@@ -112,6 +123,11 @@ export class OrganizationDetailsComponent implements OnInit, OnDestroy {
         this.isLoadingApps = false;
       }
     });
+  }
+
+  applyFilter(event: Event) {
+    const filterValue = (event.target as HTMLInputElement).value;
+    this.applications.filter = filterValue.trim().toLowerCase();
   }
 
   ngOnDestroy(): void {

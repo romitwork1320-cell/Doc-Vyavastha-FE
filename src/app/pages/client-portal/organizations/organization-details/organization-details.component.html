@@ -94,8 +94,12 @@
 
     <!-- Applications Section -->
     <div class="zenxius-card">
-      <div class="p-24 border-bottom">
-        <h4 class="mat-subtitle-1 f-s-16 f-w-600 m-b-0">Applications</h4>
+      <div class="p-24 border-bottom d-flex justify-content-between align-items-center">
+        <h4 class="mat-subtitle-1 f-s-16 f-w-600 m-b-0">Applications ({{applications.data?.length || 0}})</h4>
+        <div class="zenxius-search-wrapper" style="width: 250px; margin-bottom: 0;">
+          <i-tabler name="search" class="icon-18 search-icon"></i-tabler>
+          <input type="text" placeholder="Search applications..." class="zenxius-search-input" (input)="applyFilter($event)">
+        </div>
       </div>
       
       <div class="p-0">
@@ -105,7 +109,7 @@
           </div>
         } @else if (appError) {
           <div class="p-24 text-center text-error">{{ appError }}</div>
-        } @else if (applications.length === 0) {
+        } @else if (!applications.data || applications.data.length === 0) {
           <div class="p-24 text-center text-muted">
             <i-tabler name="folder-off" class="icon-48 m-b-16 text-gray-300"></i-tabler>
             <p>No applications found for this organization.</p>
@@ -162,8 +166,9 @@
 
               <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
               <tr mat-row *matRowDef="let row; columns: displayedColumns;" [routerLink]="['/dashboard/applications', (row.ID || row.id)]" [queryParams]="{ tenantId: tenantId }" style="cursor: pointer;" class="hover-row"></tr>
-            </table>
-          </div>
+              </table>
+              <mat-paginator [pageSizeOptions]="[5, 10, 25]" showFirstLastButtons aria-label="Select page of applications"></mat-paginator>
+            </div>
         }
       </div>
     </div>

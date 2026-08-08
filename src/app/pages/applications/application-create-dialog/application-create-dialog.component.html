@@ -48,8 +48,8 @@
         <div formArrayName="requirements">
           <div *ngFor="let req of requirements.controls; let i = index" [formGroupName]="i" class="p-16 border rounded bg-light m-b-16 position-relative">
               
-              <button *ngIf="requirements.controls.length > 1" mat-icon-button color="warn" type="button" class="position-absolute" style="right: -12px; top: -12px; background: white; box-shadow: 0 2px 4px rgba(0,0,0,0.1); width: 28px; height: 28px;" (click)="removeRequirement(i)">
-                <i-tabler name="x" class="icon-16 d-flex"></i-tabler>
+              <button *ngIf="requirements.controls.length > 1" mat-icon-button class="text-error position-absolute" type="button" style="right: 4px; top: 4px;" (click)="removeRequirement(i)" matTooltip="Remove Requirement">
+                <i-tabler name="trash" class="icon-18 d-flex"></i-tabler>
               </button>
 
               <div class="row">
@@ -65,12 +65,9 @@
                 </div>
                 
                 <div class="col-md-4 d-flex align-items-center p-t-16">
-                  <div class="form-check">
-                    <input class="form-check-input" type="checkbox" formControlName="isRequired" [id]="'req-'+i">
-                    <label class="form-check-label" [for]="'req-'+i">
-                      Required
-                    </label>
-                  </div>
+                  <mat-checkbox formControlName="isRequired" color="primary">
+                    Required
+                  </mat-checkbox>
                 </div>
 
                 <div class="col-lg-12">

@@ -1,0 +1,51 @@
+.vault-drawer {
+  position: fixed;
+  top: 0;
+  right: -100%;
+  width: 100%;
+  height: 100vh;
+  z-index: 1000;
+  background-color: #fff;
+  transition: right 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: -4px 0 24px rgba(0, 0, 0, 0.15);
+  display: flex;
+  flex-direction: column;
+  
+  &.open {
+    right: 0;
+  }
+
+  @media (min-width: 768px) {
+    width: 450px;
+    right: -450px;
+    
+    &.open {
+      right: 0;
+    }
+  }
+}
+
+.folder-card {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  &:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 16px rgba(0,0,0,0.1) !important;
+  }
+}
+
+.file-card {
+  transition: background-color 0.2s ease, transform 0.2s ease;
+  border: 1px solid transparent;
+  &:hover {
+    background-color: #f8f9fa;
+    border-color: #e5e7eb;
+    transform: translateX(4px);
+  }
+}
+
+.line-clamp-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;  
+  overflow: hidden;
+}
